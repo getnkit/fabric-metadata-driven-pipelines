@@ -265,15 +265,15 @@ The `requested_parallel_copies` column is a scenario-selector input repeated acr
 runtime parallelism measurement. These snapshots demonstrate metadata configuration, not completed execution
 results or independently verified configuration-to-run linkage.
 
-[![DEV B1 benchmark metadata with NONE and no parallel override](../assets/screenshots/performance/source-config/px-s8-b1-config.png)](../assets/screenshots/performance/source-config/px-s8-b1-config.png)
+[![DEV B1 benchmark metadata with NONE and no parallel override](../assets/screenshots/performance/source-config/p01-b1-none-no-override.png)](../assets/screenshots/performance/source-config/p01-b1-none-no-override.png)
 
 *P01-B1 — DEV metadata enables config 10 for copy_source_partitioned with partition_option NONE and no parallel_copies override. requested_parallel_copies is NULL; config 9 is inactive. This is a configuration snapshot, not execution evidence.*
 
-[![DEV B2 benchmark metadata with DYNAMIC_RANGE on event_date and no override](../assets/screenshots/performance/source-config/px-s8-b2-config.png)](../assets/screenshots/performance/source-config/px-s8-b2-config.png)
+[![DEV B2 benchmark metadata with DYNAMIC_RANGE on event_date and no override](../assets/screenshots/performance/source-config/p01-b2-dynamic-range-no-override.png)](../assets/screenshots/performance/source-config/p01-b2-dynamic-range-no-override.png)
 
 *P01-B2 — DEV metadata configures copy_source_partitioned with DYNAMIC_RANGE on event_date and no parallel_copies override. The checked-in routing interprets the omitted override as service-managed AUTO.*
 
-[![DEV B3 benchmark metadata with DYNAMIC_RANGE on event_date and explicit override 4](../assets/screenshots/performance/source-config/px-s8-b3-config.png)](../assets/screenshots/performance/source-config/px-s8-b3-config.png)
+[![DEV B3 benchmark metadata with DYNAMIC_RANGE on event_date and explicit override 4](../assets/screenshots/performance/source-config/p01-b3-dynamic-range-override-4.png)](../assets/screenshots/performance/source-config/p01-b3-dynamic-range-override-4.png)
 
 *P01-B3 — DEV metadata configures DYNAMIC_RANGE on event_date with an explicit parallel_copies override of 4. This is a requested setting; observed runtime parallelism must be read separately from Copy results.*
 
@@ -325,15 +325,15 @@ PoC above. The visible activity names identify AUTO or TUNED branches; the check
 `parallelCopies`, while TUNED supplies a positive explicit override. A successful Copy activity does not
 independently prove terminal SQL audit `SUCCESS`.
 
-[![Completed DEV AUTO Copy reporting one used parallel copy](../assets/screenshots/performance/p02-query-none.png)](../assets/screenshots/performance/p02-query-none.png)
+[![Completed DEV AUTO Copy reporting one used parallel copy](../assets/screenshots/performance/p02-auto-used-1-copy.png)](../assets/screenshots/performance/p02-auto-used-1-copy.png)
 
 *P02 — The DEV copy_source_to_bronze_auto activity reports Succeeded, 10,000,000 rows read/written, Total duration 00:05:16, throughput 40.753 MB/s, and one used parallel copy. Partition settings are not shown in this result capture.*
 
-[![Completed DEV AUTO Copy reporting four used parallel copies](../assets/screenshots/performance/p03-query-dynamic-range-auto.png)](../assets/screenshots/performance/p03-query-dynamic-range-auto.png)
+[![Completed DEV AUTO Copy reporting four used parallel copies](../assets/screenshots/performance/p03-auto-used-4-copies.png)](../assets/screenshots/performance/p03-auto-used-4-copies.png)
 
 *P03 — The DEV copy_source_to_bronze_auto activity reports Succeeded, 10,000,000 rows read/written, Total duration 00:04:33, throughput 47.011 MB/s, and four used parallel copies. This completed observation is separate from the 2026-10-12 PoC.*
 
-[![Completed DEV TUNED Copy reporting four used parallel copies](../assets/screenshots/performance/p04-query-dynamic-range-tuned.png)](../assets/screenshots/performance/p04-query-dynamic-range-tuned.png)
+[![Completed DEV TUNED Copy reporting four used parallel copies](../assets/screenshots/performance/p04-tuned-used-4-copies.png)](../assets/screenshots/performance/p04-tuned-used-4-copies.png)
 
 *P04 — The DEV copy_source_to_bronze_tuned activity reports Succeeded, 10,000,000 rows read/written, Total duration 00:02:34, throughput 85.388 MB/s, and four used parallel copies. The capture does not independently establish the cause of the duration difference.*
 

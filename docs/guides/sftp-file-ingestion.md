@@ -104,7 +104,7 @@ The FILE Router checks the file format before choosing an adapter. Its `if_suppo
 the requested format against `DELIMITED_TEXT`; its `sw_file_route` activity uses connection type and load strategy
 to choose the path.
 
-[![DEV FILE Router selecting the SFTP INCREMENTAL adapter](../assets/screenshots/supporting/s1-orchestration/cx-s1-file-router-detail-1.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-file-router-detail-1.png)
+[![DEV FILE Router selecting the SFTP INCREMENTAL adapter](../assets/screenshots/core/c07-01-file-router.png)](../assets/screenshots/core/c07-01-file-router.png)
 
 *C07 — The DEV FILE Router evaluates SFTP|INCREMENTAL after its file-format check and records a successful incremental-adapter invocation. This capture does not demonstrate FULL execution.*
 
@@ -247,7 +247,7 @@ diagram. See [FILE Ingestion Design](../architecture/file-ingestion-design.md) a
 **What the diagrams establish:** these are conceptual traces of the checked-in Pipeline activities, not evidence of
 a new DEV execution or a measured file scan. They do not imply support for JSON/Parquet readers or CDC.
 
-[![DEV SFTP INCREMENTAL adapter activity results](../assets/screenshots/supporting/s1-orchestration/cx-s1-sftp-incremental-adapter-2.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-sftp-incremental-adapter-2.png)
+[![DEV SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
 
 *C07 — This DEV adapter activity list records successful Landing Copy, file-count validation, Bronze Notebook, and finalization activities. Activity success alone does not independently establish the terminal SQL audit outcome.*
 

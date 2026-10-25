@@ -113,7 +113,7 @@ The current design uses sequential pages and bounded object parallelism inside e
 
 ### C04 — Pagination
 
-[![DEV pagination output and page dispatch activity runs](../assets/screenshots/supporting/s1-orchestration/cx-s1-config-pagination-detail-1.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-config-pagination-detail-1.png)
+[![DEV pagination output and page dispatch activity runs](../assets/screenshots/core/c04-01-pagination.png)](../assets/screenshots/core/c04-01-pagination.png)
 
 *C04 — The DEV pagination Lookup reports eight active configurations across four pages; the activity list shows repeated page Lookups and Dispatcher invocations.*
 
@@ -132,7 +132,7 @@ in parallel.
 
 ### C04 — Dispatcher
 
-[![DEV Dispatcher execution with two Object Controller invocations](../assets/screenshots/supporting/s1-orchestration/cx-s1-dispatcher-execution.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-dispatcher-execution.png)
+[![DEV Dispatcher execution with two Object Controller invocations](../assets/screenshots/core/c04-02-dispatcher.png)](../assets/screenshots/core/c04-02-dispatcher.png)
 
 *C04 — This DEV Dispatcher execution shows two Object Controller invocations starting in the same displayed second and completing successfully; it does not demonstrate eight simultaneous requests.*
 
@@ -160,9 +160,9 @@ passed the relevant checks.
 
 ### C04 — Controller Routing
 
-[![DEV Object Controller execution invoking the DATABASE Router](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-database.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-database.png)
+[![DEV Object Controller execution invoking the DATABASE Router](../assets/screenshots/core/c04-03-database-controller.png)](../assets/screenshots/core/c04-03-database-controller.png)
 
-[![DEV Object Controller execution invoking the FILE Router](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-file.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-file.png)
+[![DEV Object Controller execution invoking the FILE Router](../assets/screenshots/core/c04-04-file-controller.png)](../assets/screenshots/core/c04-04-file-controller.png)
 
 *C04 — Separate DEV object executions show configuration lookup and request checks followed by DATABASE Router invocation (first image) or FILE Router invocation (second image). These are routing examples, not a single-object execution sequence.*
 
@@ -179,7 +179,7 @@ The route key joins the uppercased connection type and load strategy with the pi
 
 ### C04 — Database Routing
 
-[![DEV DATABASE route output selecting the SQL Server FULL Adapter](../assets/screenshots/supporting/s1-orchestration/cx-s1-database-router-detail-1.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-database-router-detail-1.png)
+[![DEV DATABASE route output selecting the SQL Server FULL Adapter](../assets/screenshots/core/c04-05-database-router.png)](../assets/screenshots/core/c04-05-database-router.png)
 
 *C04 — The DEV DATABASE Router evaluates SQL_SERVER|FULL and records a successful FULL Adapter invocation; this capture does not demonstrate the INCREMENTAL branch.*
 
