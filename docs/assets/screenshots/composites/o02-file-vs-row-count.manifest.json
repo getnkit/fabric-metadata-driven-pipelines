@@ -2,20 +2,24 @@
   "candidate": "O02",
   "asset_role": "derived_composite",
   "publication_decision": "owner_approved_with_evidence_limitations",
+  "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/o02-file-vs-row-count.png",
   "output_dimensions": [
     1362,
-    726
+    680
   ],
-  "output_sha256": "a214807c50fa87351047453e7159acf07e805f49cd29fb65a82ba3aedc6471f6",
+  "output_sha256": "10c8f4b1a3362d722717fdca1a21be8d7fffe3e153a8229cf9e8314e8beab7d6",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
-  "presentation": "Composite of DEV evidence; native pixels; no resizing or retouching.",
+  "title": "SFTP Ingestion - Files Transferred vs Rows Parsed",
+  "subtitle": "O02 \u00b7 DEV evidence composite \u00b7 selected UI excerpts",
+  "presentation": "DEV evidence composite; genuine UI crops; metrics enlarged 2x with NEAREST; no retouching or token reflow.",
   "supported_claim": "Binary Copy reports one file read and one written; the Notebook reports six source rows and six target rows. These are different measurement units.",
   "limitations": [
     "Both Notebook row metrics reuse one parsed DataFrame count; no independent Bronze recount.",
     "End-to-end execution correlation is not independently verified.",
-    "Separated native UI crops omit operational/environment identifiers and intervening metadata."
+    "Separated UI crops omit operational/environment identifiers and intervening metadata.",
+    "Metrics alone are enlarged 2x with NEAREST; original wrapping and relative positions retained."
   ],
   "sources": [
     {
@@ -33,6 +37,8 @@
             1720,
             422
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             20,
             164,
@@ -57,6 +63,8 @@
             545,
             867
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             695,
             196,
@@ -71,6 +79,8 @@
             1340,
             588
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             695,
             252,
@@ -85,11 +95,13 @@
             1564,
             741
           ],
+          "scale": 2,
+          "resampling": "NEAREST",
           "rectangle": [
-            735,
-            344,
-            276,
-            16
+            747,
+            350,
+            552,
+            32
           ]
         },
         {
@@ -99,15 +111,17 @@
             1278,
             758
           ],
+          "scale": 2,
+          "resampling": "NEAREST",
           "rectangle": [
-            709,
-            363,
-            16,
-            14
+            695,
+            388,
+            32,
+            28
           ]
         }
       ],
-      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops."
+      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping under a shared 2x NEAREST transform. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops."
     }
   ]
 }

@@ -2,22 +2,23 @@
   "candidate": "C10",
   "asset_role": "derived_composite",
   "publication_decision": "owner_approved_with_evidence_limitations",
+  "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/c10-no-new-data-skipped.png",
   "output_dimensions": [
     1453,
     664
   ],
-  "output_sha256": "1c59d1d7fa5f57294419e7c8782263861806a29c3f6b72f52385f75fa1bbc286",
+  "output_sha256": "0c8cc02f41cdd69e6a43355ba1050ecae0495cd8c7a74461bb1f254b05c7cdbc",
   "generator": "scripts/evidence/build_incremental_composites.py",
   "pillow_version": "11.3.0",
-  "title": "C10 | Composite of DEV evidence",
-  "subtitle": "SKIPPED audit and checkpoint context - not a verified execution trace.",
+  "title": "No New Data - SKIPPED Audit and Checkpoint Context",
+  "subtitle": "C10 \u00b7 DEV evidence composite",
   "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
   "supported_claim": "DEV customers and inventory_movement audits report SKIPPED with zero source/target rows. A separate Bronze result lists bronze_rows = 0 with no visible query scope. The watermark source files are byte-identical.",
   "limitations": [
-    "Watermark before/after source files are byte-identical; independent state observations are not verified.",
-    "The Bronze query/filter is not visible; its zero count does not independently prove no append.",
-    "Run type is not shown and some Run IDs are truncated; exact execution correlation is not verified."
+    "Byte-identical watermark source files do not establish independent before/after observations.",
+    "Bronze query/filter is not visible; the zero count does not independently prove no append.",
+    "Run type is not shown; some Run IDs are truncated. Exact execution correlation is unverified."
   ],
   "watermark_duplicate_handling": {
     "source_paths": [
@@ -47,7 +48,7 @@
           ]
         }
       ],
-      "heading": "1. SKIPPED Audit Records",
+      "heading": "SKIPPED audit records",
       "heading_y": 124
     },
     {
@@ -68,7 +69,7 @@
           ]
         }
       ],
-      "heading": "2. Bronze Count Result | Query Scope Not Shown",
+      "heading": "Bronze count result - query scope not shown",
       "heading_y": 262
     },
     {
@@ -89,7 +90,7 @@
           ]
         }
       ],
-      "heading": "3. Watermark State | Identical Before/After Source Files",
+      "heading": "Watermark state - duplicate source files shown once",
       "heading_y": 400
     },
     {

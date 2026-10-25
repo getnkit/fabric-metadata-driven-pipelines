@@ -2,23 +2,24 @@
   "candidate": "C13",
   "asset_role": "derived_composite",
   "publication_decision": "owner_approved_with_evidence_limitations",
+  "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/c13-incremental-backfill.png",
   "output_dimensions": [
     1453,
     508
   ],
-  "output_sha256": "f841714057fef8fed170803442e8a7722346b3c81f8bd3eb5fd3883f879b863c",
+  "output_sha256": "6995236c81cdde8c4c5827b3b1e61c03c96f2aceb483e5450bf1431c4900dc11",
   "generator": "scripts/evidence/build_incremental_composites.py",
   "pillow_version": "11.3.0",
-  "title": "C13 | Composite of DEV evidence",
-  "subtitle": "BACKFILL audit and checkpoint context - not independent before/after evidence.",
+  "title": "BACKFILL - Audit and Checkpoint Evidence",
+  "subtitle": "C13 \u00b7 DEV evidence composite",
   "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
   "supported_claim": "The DEV customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2. Both watermark source files display 2026-10-24T01:08:00.941Z and are byte-identical.",
   "limitations": [
-    "Watermark source files are byte-identical; independent before/after observations are not verified.",
-    "Audit LOW/HIGH and Batch ID are truncated; missing values and identifiers have not been reconstructed.",
-    "Checkpoint non-advancement, Bronze append and exact execution correlation are not independently verified.",
-    "This evidence does not establish exactly-once business semantics."
+    "Byte-identical watermark source files do not establish independent before/after observations.",
+    "Audit LOW/HIGH and Batch ID are truncated; the complete processing window is unavailable.",
+    "Checkpoint non-advancement, Bronze append and exact execution correlation are unverified.",
+    "Exactly-once business semantics are not established."
   ],
   "watermark_duplicate_handling": {
     "source_paths": [
@@ -48,7 +49,7 @@
           ]
         }
       ],
-      "heading": "1. BACKFILL INCREMENTAL SUCCESS Audit Record",
+      "heading": "BACKFILL / INCREMENTAL - SUCCESS audit",
       "heading_y": 124
     },
     {
@@ -69,7 +70,7 @@
           ]
         }
       ],
-      "heading": "2. Watermark State | Identical Before/After Source Files",
+      "heading": "Watermark state - duplicate source files shown once",
       "heading_y": 238
     },
     {

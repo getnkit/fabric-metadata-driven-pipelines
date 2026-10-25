@@ -258,9 +258,11 @@ REGULAR run repeats that original LOW-to-new-HIGH range, allowing late-arriving
 files to be discovered before any subsequent successful nonempty advance. This
 is not a complete late-arrival guarantee once a later nonempty run advances state.
 
+The DEV captures below show SKIPPED audit outcomes alongside separate Bronze and checkpoint context.
+
 [![Composite of DEV SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
 
-*C10 — Composite of DEV evidence: customers and inventory_movement audits report SKIPPED with zero source/target rows. A separate Bronze result lists bronze_rows = 0, but its query scope is not shown. The watermark files named before/after are byte-identical, not independently verified state observations. Run type and exact execution correlation are not established by these captures.*
+*C10 — DEV customers and inventory_movement audits report SKIPPED with zero source/target rows. A separate Bronze result lists bronze_rows = 0, but its query scope is not shown. The watermark files named before/after are byte-identical, not independently verified state observations. Run type and exact execution correlation are not established by these captures.*
 
 ## Run types and recovery
 

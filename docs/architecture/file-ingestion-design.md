@@ -122,9 +122,9 @@ write; it is not an independent target reconciliation.
 
 [![Composite comparing DEV Binary Copy file counts with Notebook parsed-row counts](../assets/screenshots/composites/o02-file-vs-row-count.png)](../assets/screenshots/composites/o02-file-vs-row-count.png)
 
-*O02 — DEV Binary Copy reports one file read and written, while the Notebook reports six parsed rows. These are different measurement units; both Notebook row metrics reuse one parsed DataFrame count rather than an independent Bronze recount.*
+*O02 — DEV Binary Copy reports one file read and written, while the Notebook reports six source rows and six target rows. These are different measurement units; both Notebook row metrics reuse one parsed DataFrame count rather than an independent Bronze recount.*
 
-The comparison uses separate UI crops; exact end-to-end execution correlation is not independently verified.
+The comparison uses separate UI crops. The metrics excerpt is enlarged 2x with original line wrapping and no reconstructed text; exact end-to-end execution correlation is not independently verified.
 
 For future FILE connectors, use native Data Consistency Verification when the
 actual Copy pair and execution mode support it. Otherwise use a

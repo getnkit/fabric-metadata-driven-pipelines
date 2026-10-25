@@ -30,9 +30,11 @@ Both paths support FULL and INCREMENTAL loads into **Bronze Delta tables in a Fa
 
 ## Architecture
 
-![Metadata-driven ingestion architecture in Microsoft Fabric. Fabric SQL Database holds source configuration, logical
+The diagram summarizes the framework's logical responsibilities and two ingestion paths.
+
+[![Metadata-driven ingestion architecture in Microsoft Fabric. Fabric SQL Database holds source configuration, logical
 connection references, incremental state, and object-run audits; orchestration routes requests to SQL Server and SFTP
-adapters that write to Bronze Delta tables in a Fabric Lakehouse.](docs/assets/architecture-overview.svg)
+adapters that write to Bronze Delta tables in a Fabric Lakehouse.](docs/assets/architecture-overview.svg)](docs/assets/architecture-overview.svg)
 
 Fabric SQL Database holds source configurations, logical source/target connection references, incremental state
 (**committed watermarks**), and terminal object-run audits. Each **source object** is a configured ingestion unit:

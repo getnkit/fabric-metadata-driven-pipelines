@@ -2,15 +2,18 @@
   "candidate": "C12",
   "asset_role": "derived_composite",
   "publication_decision": "owner_approved_with_evidence_limitations",
+  "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/c12-sftp-new-file-incremental.png",
   "output_dimensions": [
     1450,
     804
   ],
-  "output_sha256": "1cfa2b65a90889531acdcbbf04245ea047fd5508113c2337c2a7a2ed8bb515e5",
+  "output_sha256": "45728cb0bb0d450fbeecd66c3a103d80e9d226e68bce98432ddfe0724c0800aa",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
-  "presentation": "Composite of DEV evidence; native pixels; no resizing or retouching.",
+  "title": "SFTP Incremental - Bronze Lineage and Checkpoint Context",
+  "subtitle": "C12 \u00b7 DEV evidence composite",
+  "presentation": "DEV evidence composite; complete native panels; no cropping, resizing or retouching.",
   "supported_claim": "The DEV movement audit reports SUCCESS and six processed rows. Six visible Bronze rows share the after-state Batch ID. The checkpoint advances from 2026-10-23T12:31:47.787Z to 2026-10-24T02:04:02.238Z.",
   "limitations": [
     "Run type is not visible; some run identifiers are truncated. Exact execution correlation is not independently verified.",
@@ -33,6 +36,8 @@
             1409,
             52
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             20,
             158,
@@ -57,6 +62,8 @@
             1409,
             52
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             20,
             272,
@@ -81,6 +88,8 @@
             1410,
             172
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             20,
             386,
@@ -105,6 +114,8 @@
             1409,
             52
           ],
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
             20,
             620,

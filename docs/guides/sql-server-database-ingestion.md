@@ -168,9 +168,11 @@ watermark. It appends a distinct Bronze batch, preserving the existing successfu
 
 Read [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md) and [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for the full contract.
 
+The DEV captures below compare audit processing bounds with persisted checkpoint values.
+
 [![Composite of DEV SQL audit and checkpoint screenshots](../assets/screenshots/composites/c11-sql-server-incremental.png)](../assets/screenshots/composites/c11-sql-server-incremental.png)
 
-*C11 — Composite: four DEV SUCCESS audits show processing bounds matching the displayed before/after checkpoints, which advance to 2026-10-24T01:08:00.941Z. Run type is not shown and audit Run IDs are truncated; exact execution correlation is not independently verified.*
+*C11 — Four DEV SUCCESS audits show processing bounds matching the displayed before/after checkpoints, which advance to 2026-10-24T01:08:00.941Z. Run type is not shown and audit Run IDs are truncated; exact execution correlation is not independently verified.*
 
 ## 5. Copy settings come from metadata
 

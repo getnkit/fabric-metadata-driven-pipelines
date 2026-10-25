@@ -296,7 +296,9 @@ C08/C09 and C12 show different DEV execution examples. They are not one continuo
 
 [![Composite of DEV SFTP audit, Bronze lineage, and before/after checkpoint evidence](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)
 
-*C12 — Composite: the DEV movement audit reports SUCCESS with six processed rows, and six visible Bronze rows share the after-state Batch ID. The checkpoint advances from 2026-10-23T12:31:47.787Z to 2026-10-24T02:04:02.238Z. Run type is not shown and some Run IDs are truncated; exact execution correlation is not independently verified.*
+*C12 — The DEV movement audit reports SUCCESS with six processed rows, and six visible Bronze rows share the after-state Batch ID. The checkpoint advances from 2026-10-23T12:31:47.787Z to 2026-10-24T02:04:02.238Z. Run type is not shown and some Run IDs are truncated; exact execution correlation is not independently verified.*
+
+The C12 captures do not show the remote files' Last Modified values.
 
 The [Power BI monitoring report](../operations/monitoring-report.md) summarizes persisted object audits. It cannot
 show master runs that fail before an object audit is written, or every in-progress activity. Use Fabric Monitor for

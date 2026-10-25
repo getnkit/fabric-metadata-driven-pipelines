@@ -18,12 +18,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = Path("docs/assets/screenshots/supporting/s3-sql-incremental")
 OUTPUT = Path("docs/assets/screenshots/composites/c11-sql-server-incremental.png")
 PANELS = [
-    ("1. Watermark Before", SOURCE / "cx-s3-watermark-before.png"),
-    ("2. SUCCESS Audit Records", SOURCE / "cx-s3-audit-success.png"),
-    ("3. Watermark After", SOURCE / "cx-s3-watermark-after.png"),
+    ("Earlier checkpoint capture", SOURCE / "cx-s3-watermark-before.png"),
+    ("SUCCESS audit records", SOURCE / "cx-s3-audit-success.png"),
+    ("Later checkpoint capture", SOURCE / "cx-s3-watermark-after.png"),
 ]
-TITLE = "C11 | Composite of DEV evidence"
-SUBTITLE = "Audit and checkpoint comparison - not a single-run execution trace."
+TITLE = "SQL Server Incremental - Audit and Watermark Evidence"
+SUBTITLE = "C11 · DEV evidence composite"
 LIMITATION = (
     "Run type is not visible; exact execution correlation is not independently verified."
 )
@@ -50,6 +50,7 @@ def main():
         sources.append({
             "path": path.as_posix(),
             "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
+            "dimensions": list(image.size),
             "label": label,
             "heading_y": cursor,
             "rectangle": [margin, cursor + heading_height, image.width, image.height],
@@ -70,8 +71,8 @@ def main():
     for source, image in zip(sources, images):
         text((margin, source["heading_y"]), source["label"], 23)
         canvas.paste(image, tuple(source["rectangle"][:2]))
-    draw.rectangle((margin, cursor, width - margin, cursor + 54), fill="#E6E9EC")
-    text((margin + 12, cursor + 16), LIMITATION, 18)
+    draw.line((margin, cursor, width - margin, cursor), fill="#CDD5DD")
+    text((margin, cursor + 16), LIMITATION, 18, "#53616B")
 
     output = ROOT / OUTPUT
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -80,6 +81,7 @@ def main():
         "candidate": "C11",
         "asset_role": "derived_composite",
         "publication_decision": "owner_approved_with_evidence_limitations",
+        "presentation_review": "pending_owner_review",
         "output": OUTPUT.as_posix(),
         "output_dimensions": list(canvas.size),
         "output_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),

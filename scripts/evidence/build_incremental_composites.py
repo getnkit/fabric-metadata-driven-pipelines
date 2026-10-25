@@ -23,11 +23,12 @@ SPECS = [
         "candidate": "C10",
         "directory": "s2-no-new-data",
         "output": "c10-no-new-data-skipped.png",
-        "subtitle": "SKIPPED audit and checkpoint context - not a verified execution trace.",
+        "title": "No New Data - SKIPPED Audit and Checkpoint Context",
+        "subtitle": "C10 · DEV evidence composite",
         "panels": [
-            ("1. SKIPPED Audit Records", "cx-s2-skipped-audit.png"),
-            ("2. Bronze Count Result | Query Scope Not Shown", "cx-s2-no-bronze-append.png"),
-            ("3. Watermark State | Identical Before/After Source Files", "cx-s2-watermark-before.png"),
+            ("SKIPPED audit records", "cx-s2-skipped-audit.png"),
+            ("Bronze count result - query scope not shown", "cx-s2-no-bronze-append.png"),
+            ("Watermark state - duplicate source files shown once", "cx-s2-watermark-before.png"),
         ],
         "duplicate": "cx-s2-watermark-after.png",
         "supported_claim": (
@@ -36,19 +37,20 @@ SPECS = [
             "no visible query scope. The watermark source files are byte-identical."
         ),
         "limitations": [
-            "Watermark before/after source files are byte-identical; independent state observations are not verified.",
-            "The Bronze query/filter is not visible; its zero count does not independently prove no append.",
-            "Run type is not shown and some Run IDs are truncated; exact execution correlation is not verified.",
+            "Byte-identical watermark source files do not establish independent before/after observations.",
+            "Bronze query/filter is not visible; the zero count does not independently prove no append.",
+            "Run type is not shown; some Run IDs are truncated. Exact execution correlation is unverified.",
         ],
     },
     {
         "candidate": "C13",
         "directory": "s5-backfill",
         "output": "c13-incremental-backfill.png",
-        "subtitle": "BACKFILL audit and checkpoint context - not independent before/after evidence.",
+        "title": "BACKFILL - Audit and Checkpoint Evidence",
+        "subtitle": "C13 · DEV evidence composite",
         "panels": [
-            ("1. BACKFILL INCREMENTAL SUCCESS Audit Record", "cx-s5-audit-backfill.png"),
-            ("2. Watermark State | Identical Before/After Source Files", "cx-s5-watermark-before.png"),
+            ("BACKFILL / INCREMENTAL - SUCCESS audit", "cx-s5-audit-backfill.png"),
+            ("Watermark state - duplicate source files shown once", "cx-s5-watermark-before.png"),
         ],
         "duplicate": "cx-s5-watermark-after.png",
         "supported_claim": (
@@ -57,10 +59,10 @@ SPECS = [
             "2026-10-24T01:08:00.941Z and are byte-identical."
         ),
         "limitations": [
-            "Watermark source files are byte-identical; independent before/after observations are not verified.",
-            "Audit LOW/HIGH and Batch ID are truncated; missing values and identifiers have not been reconstructed.",
-            "Checkpoint non-advancement, Bronze append and exact execution correlation are not independently verified.",
-            "This evidence does not establish exactly-once business semantics.",
+            "Byte-identical watermark source files do not establish independent before/after observations.",
+            "Audit LOW/HIGH and Batch ID are truncated; the complete processing window is unavailable.",
+            "Checkpoint non-advancement, Bronze append and exact execution correlation are unverified.",
+            "Exactly-once business semantics are not established.",
         ],
     },
 ]
@@ -103,22 +105,22 @@ def build(spec):
     canvas = Image.new("RGB", (width, cursor + 36 + 30 * len(spec["limitations"])), "#F4F5F6")
     draw = ImageDraw.Draw(canvas)
 
-    def text(xy, value, size):
+    def text(xy, value, size, color="#263238"):
         font = ImageFont.load_default(size=size)
         box = draw.textbbox(xy, value, font=font)
         if box[2] > width - 20 or box[3] > canvas.height - 20:
             raise ValueError("Label exceeds canvas bounds")
-        draw.text(xy, value, font=font, fill="#263238")
+        draw.text(xy, value, font=font, fill=color)
 
-    title = spec["candidate"] + " | Composite of DEV evidence"
+    title = spec["title"]
     text((20, 22), title, 30)
-    text((20, 70), spec["subtitle"], 19)
+    text((20, 70), spec["subtitle"], 19, "#53616B")
     for (_, filename), source in zip(spec["panels"], sources):
         text((20, source["heading_y"]), source["heading"], 23)
         canvas.paste(images[filename], tuple(source["placements"][0]["rectangle"][:2]))
-    draw.rectangle((20, cursor, width - 20, canvas.height - 20), fill="#E6E9EC")
+    draw.line((20, cursor, width - 20, cursor), fill="#CDD5DD")
     for index, limitation in enumerate(spec["limitations"]):
-        text((32, cursor + 14 + index * 30), limitation, 18)
+        text((20, cursor + 14 + index * 30), limitation, 18, "#53616B")
 
     output = BASE / "composites" / spec["output"]
     (ROOT / output).parent.mkdir(parents=True, exist_ok=True)
@@ -127,6 +129,7 @@ def build(spec):
         "candidate": spec["candidate"],
         "asset_role": "derived_composite",
         "publication_decision": "owner_approved_with_evidence_limitations",
+        "presentation_review": "pending_owner_review",
         "output": output.as_posix(),
         "output_dimensions": list(canvas.size),
         "output_sha256": hashlib.sha256((ROOT / output).read_bytes()).hexdigest(),
