@@ -137,7 +137,7 @@ timestamp, not the CSV payload date.
 | Execution | Implemented behavior | Operational watermark |
 | --- | --- | --- |
 | REGULAR + FULL | Read the configured current source scope and append a new Bronze batch | None for FULL |
-| REGULAR + INCREMENTAL | Read after saved LOW and up to the run's source-derived HIGH | Advance only after guarded successful finalization |
+| REGULAR + INCREMENTAL | Read the saved LOW-to-HIGH window using SQL Server source bounds or the SFTP run-start boundary | Advance only after guarded successful finalization |
 | BACKFILL + FULL | Reread the current full scope, append new batch | None for FULL |
 | BACKFILL + INCREMENTAL | Read explicitly supplied historical LOW/HIGH, append new batch | **Never advance** |
 

@@ -2,5 +2,5 @@
 scripts/source/sftp/outbound/inventory/movements/**/inventory_movement_*.csv
 
 # EC2 runtime credentials and SSH host identity (never commit)
-infrastructure/source/.env
-infrastructure/source/hostkeys/
+infra/source/.env
+infra/source/hostkeys/

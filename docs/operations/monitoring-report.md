@@ -72,7 +72,7 @@ The page uses 16:9 layout. The visuals are:
 
 | Section | Content |
 | --- | --- |
-| Header | `Ingestion Operations`; `Latest Recorded Batch per Source System | All Timestamps in UTC` |
+| Header | `Ingestion Operations`; `Latest Recorded Batch per Source System \| All Timestamps in UTC` |
 | Slicer | `Source System`, nonblank values, no hardcoded source allowlist |
 | KPI cards (4) | `Source Systems`, `Failed Sources`, `Objects`, `Latest Activity (UTC)` |
 | Table | `Latest Batch Summary by Source System`: Source System, Status, Objects, Success, Failed, Skipped, Last End (UTC) |

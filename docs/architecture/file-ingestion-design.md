@@ -146,10 +146,13 @@ before deletion; it cannot delete another config's shared-batch Landing files.
 
 When a failed path may already have appended rows to Bronze, the framework invokes
 the reusable `nb_cleanup_bronze_batch_rows` notebook. Cleanup is scoped to both the
-current `_batch_id` and object `_pipeline_run_id`, verifies that zero rows for
-that object execution remain in Bronze, and only then allows the FAILED run to
-be finalized. This makes a subsequent rerun
-safe without turning Bronze into a MERGE/deduplication layer.
+current `_batch_id` and object `_pipeline_run_id`. If cleanup succeeds and verifies
+that zero rows for that execution remain, the original ingestion failure is
+finalized with watermark advancement disabled. If cleanup fails, the framework
+can still finalize the run as FAILED with `BRONZE_CLEANUP_FAILED`; residual Bronze
+rows may remain. Investigate and reconcile the affected batch before rerunning.
+Unsuccessful cleanup does not guarantee rerun safety or provide business-key
+deduplication.
 
 The framework intentionally does not auto-clean after an ambiguous
 `sp_finalize_success` failure because the control transaction may already have

@@ -14,8 +14,11 @@
       NULL = service-managed AUTO (recommended baseline)
       positive integer = explicit benchmark-backed override
 
-    After running a non-DISABLE scenario, use the returned ingestion_config_id
-    as p_config_id in pl_ingest_orchestrator. Run DISABLE after the benchmark.
+    After running a non-DISABLE scenario, run pl_ingest_orchestrator with:
+      p_run_requests = [{"config_id": <returned ingestion_config_id>, "run_type": "REGULAR"}]
+      p_source_system = ""
+    Leave the optional source scope blank for explicit requests.
+    Run DISABLE after the benchmark.
 */
 
 SET NOCOUNT ON;
