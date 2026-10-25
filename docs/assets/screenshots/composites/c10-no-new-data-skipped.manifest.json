@@ -1,0 +1,108 @@
+{
+  "candidate": "C10",
+  "asset_role": "derived_composite",
+  "publication_decision": "owner_approved_with_evidence_limitations",
+  "output": "docs/assets/screenshots/composites/c10-no-new-data-skipped.png",
+  "output_dimensions": [
+    1453,
+    664
+  ],
+  "output_sha256": "1c59d1d7fa5f57294419e7c8782263861806a29c3f6b72f52385f75fa1bbc286",
+  "generator": "scripts/evidence/build_incremental_composites.py",
+  "pillow_version": "11.3.0",
+  "title": "C10 | Composite of DEV evidence",
+  "subtitle": "SKIPPED audit and checkpoint context - not a verified execution trace.",
+  "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
+  "supported_claim": "DEV customers and inventory_movement audits report SKIPPED with zero source/target rows. A separate Bronze result lists bronze_rows = 0 with no visible query scope. The watermark source files are byte-identical.",
+  "limitations": [
+    "Watermark before/after source files are byte-identical; independent state observations are not verified.",
+    "The Bronze query/filter is not visible; its zero count does not independently prove no append.",
+    "Run type is not shown and some Run IDs are truncated; exact execution correlation is not verified."
+  ],
+  "watermark_duplicate_handling": {
+    "source_paths": [
+      "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-before.png",
+      "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-after.png"
+    ],
+    "byte_identical": true,
+    "display_count": 1,
+    "independent_before_after_observations_verified": false
+  },
+  "sources": [
+    {
+      "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-skipped-audit.png",
+      "sha256": "341b5dfda4cef3ee945e517b1c0332a056ff5bea21a15d1b91af1699f12500bc",
+      "dimensions": [
+        1409,
+        76
+      ],
+      "displayed": true,
+      "placements": [
+        {
+          "rectangle": [
+            20,
+            158,
+            1409,
+            76
+          ]
+        }
+      ],
+      "heading": "1. SKIPPED Audit Records",
+      "heading_y": 124
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-no-bronze-append.png",
+      "sha256": "5481ac6e4b5d5abd292827ab5e7b2efad9dff7179b2dcae84ab87efdb228547b",
+      "dimensions": [
+        1413,
+        76
+      ],
+      "displayed": true,
+      "placements": [
+        {
+          "rectangle": [
+            20,
+            296,
+            1413,
+            76
+          ]
+        }
+      ],
+      "heading": "2. Bronze Count Result | Query Scope Not Shown",
+      "heading_y": 262
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-before.png",
+      "sha256": "17b6a7e7e5ff6b389ac9b644012c5ccf3ce17b5316f4260e8f7b6067c91b89a1",
+      "dimensions": [
+        1409,
+        76
+      ],
+      "displayed": true,
+      "placements": [
+        {
+          "rectangle": [
+            20,
+            434,
+            1409,
+            76
+          ]
+        }
+      ],
+      "heading": "3. Watermark State | Identical Before/After Source Files",
+      "heading_y": 400
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-after.png",
+      "sha256": "17b6a7e7e5ff6b389ac9b644012c5ccf3ce17b5316f4260e8f7b6067c91b89a1",
+      "dimensions": [
+        1409,
+        76
+      ],
+      "displayed": false,
+      "placements": [],
+      "duplicate_of": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-before.png",
+      "omission_reason": "Byte-identical watermark displayed once; not a separate observation."
+    }
+  ]
+}

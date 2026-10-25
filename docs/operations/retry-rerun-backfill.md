@@ -94,6 +94,10 @@ BACKFILL + INCREMENTAL
 Processing-boundary fields are populated only when relevant to the selected scope. In the current V1 contract,
 BACKFILL + INCREMENTAL records requested LOW/HIGH while BACKFILL + FULL does not.
 
+[![Composite of a DEV BACKFILL INCREMENTAL SUCCESS audit and a single watermark state panel](../assets/screenshots/composites/c13-incremental-backfill.png)](../assets/screenshots/composites/c13-incremental-backfill.png)
+
+*C13 — Composite of DEV evidence: the customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2. Both watermark source files display 2026-10-24T01:08:00.941Z and are byte-identical; they do not independently establish before/after state. Audit bounds and Batch ID are truncated, limiting exact window and execution correlation.*
+
 ## Retry policy by side effect
 
 Choose retries by **side effects and idempotency**, not activity type alone. A Copy or SQL finalizer may have committed durable state before the activity reports failure.

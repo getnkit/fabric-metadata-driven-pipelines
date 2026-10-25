@@ -1,0 +1,88 @@
+{
+  "candidate": "C13",
+  "asset_role": "derived_composite",
+  "publication_decision": "owner_approved_with_evidence_limitations",
+  "output": "docs/assets/screenshots/composites/c13-incremental-backfill.png",
+  "output_dimensions": [
+    1453,
+    508
+  ],
+  "output_sha256": "f841714057fef8fed170803442e8a7722346b3c81f8bd3eb5fd3883f879b863c",
+  "generator": "scripts/evidence/build_incremental_composites.py",
+  "pillow_version": "11.3.0",
+  "title": "C13 | Composite of DEV evidence",
+  "subtitle": "BACKFILL audit and checkpoint context - not independent before/after evidence.",
+  "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
+  "supported_claim": "The DEV customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2. Both watermark source files display 2026-10-24T01:08:00.941Z and are byte-identical.",
+  "limitations": [
+    "Watermark source files are byte-identical; independent before/after observations are not verified.",
+    "Audit LOW/HIGH and Batch ID are truncated; missing values and identifiers have not been reconstructed.",
+    "Checkpoint non-advancement, Bronze append and exact execution correlation are not independently verified.",
+    "This evidence does not establish exactly-once business semantics."
+  ],
+  "watermark_duplicate_handling": {
+    "source_paths": [
+      "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-before.png",
+      "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-after.png"
+    ],
+    "byte_identical": true,
+    "display_count": 1,
+    "independent_before_after_observations_verified": false
+  },
+  "sources": [
+    {
+      "path": "docs/assets/screenshots/supporting/s5-backfill/cx-s5-audit-backfill.png",
+      "sha256": "1266905d24d9f1ee2ca93958fed3ef47fb5c1ae5fcca8d3849d4f4e4dce44311",
+      "dimensions": [
+        1413,
+        52
+      ],
+      "displayed": true,
+      "placements": [
+        {
+          "rectangle": [
+            20,
+            158,
+            1413,
+            52
+          ]
+        }
+      ],
+      "heading": "1. BACKFILL INCREMENTAL SUCCESS Audit Record",
+      "heading_y": 124
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-before.png",
+      "sha256": "cbc0eb1f895d632ea48fe162f9254b81d2270706cb5beadc5aee9095c5035cbf",
+      "dimensions": [
+        1409,
+        52
+      ],
+      "displayed": true,
+      "placements": [
+        {
+          "rectangle": [
+            20,
+            272,
+            1409,
+            52
+          ]
+        }
+      ],
+      "heading": "2. Watermark State | Identical Before/After Source Files",
+      "heading_y": 238
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-after.png",
+      "sha256": "cbc0eb1f895d632ea48fe162f9254b81d2270706cb5beadc5aee9095c5035cbf",
+      "dimensions": [
+        1409,
+        52
+      ],
+      "displayed": false,
+      "placements": [],
+      "duplicate_of": "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-before.png",
+      "omission_reason": "Byte-identical watermark displayed once; not a separate observation."
+    }
+  ]
+}

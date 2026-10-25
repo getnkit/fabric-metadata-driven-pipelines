@@ -65,6 +65,10 @@ rejected at the master with `AMBIGUOUS_RUN_SCOPE`, before any child ingestion
 starts. The master does **not** silently filter explicit requests or ignore the
 scope. Existing duplicate-request validation remains unchanged for explicit mode.
 
+[![DEV orchestrator rejecting ambiguous run scope with AMBIGUOUS_RUN_SCOPE](../assets/screenshots/core/c14-ambiguous-run-scope.png)](../assets/screenshots/core/c14-ambiguous-run-scope.png)
+
+*C14 — The DEV orchestrator reports AMBIGUOUS_RUN_SCOPE at fail_ambiguous_run_scope. The error requires choosing either p_source_system or explicit p_run_requests; the checked-in dependency chain places this validation before child dispatch.*
+
 ### Execution and concurrency boundaries
 
 The master currently uses **`concurrency = 1`**, so source-scoped master
