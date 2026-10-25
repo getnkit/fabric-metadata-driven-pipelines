@@ -4,7 +4,7 @@
 > **Purpose:** Preserve the implementation boundary, prior design decisions, evidence inventory, documentation strategy, and next actionable work when continuing in a new ChatGPT conversation.  
 > **Scope:** Personal GitHub portfolio only, separate from client delivery work.  
 > **Storage:** Temporary public `.project-handoff/` folder. Do not publish credentials or private environment-specific identifiers.  
-> **Status at handoff:** Framework and D01/D02 diagrams are complete for the current portfolio scope; 58 screenshots and 2 SVG diagrams have been committed and grouped on GitHub. **Visual evidence curation, composite authoring, Markdown image insertion, and final QA are still pending.**
+> **Status at handoff:** Framework and D01/D02 diagrams are complete for the current portfolio scope; 58 screenshots and 2 SVG diagrams have been committed and grouped on GitHub. **Batch A (C01, C02, D01) is reviewed, owner-approved, and integrated in `docs/guides/control-plane.md` on `docs/evidence-curation`; remaining evidence batches, composite authoring, and final portfolio QA are pending.**
 
 ## 0. How to use this handoff
 
@@ -137,8 +137,8 @@ docs/assets/
 
 | Candidate | Intended filename | Snapshot status |
 |---|---|---|
-| C01 | `c01-control-metadata.png` | Direct file present; visual review pending |
-| C02 | `c02-logical-connections.png` | Direct file present; visual review pending |
+| C01 | `c01-control-metadata.png` | Batch A reviewed and owner-approved; integrated in Control Plane guide |
+| C02 | `c02-logical-connections.png` | Batch A reviewed and owner-approved; integrated in Control Plane guide |
 | C03 | `c03-master-orchestration.png` | Direct file present; visual review pending |
 | C04 | `c04-object-routing.png` | **No single C04 file**; user chose **multiple separate captures** (S1 CX group) |
 | C05 | `c05-sql-server-copy-execution.png` | Direct file present; visual review pending |
@@ -174,7 +174,7 @@ docs/assets/
 | O04 | `o04-copy-performance-details.png` | **SKIP / dropped by user** |
 | O05 | `o05-source-scoped-run.png` | Pending composite from 3 source-scope screenshots |
 
-**D01 / D02:** real SVGs exist and are finalized; intended Markdown integration is pending.
+**D01 / D02:** real SVGs exist and are finalized. D01 is reviewed, owner-approved, and integrated in the Control Plane guide with its original SVG preserved; D02 Markdown integration is pending.
 
 ### 5.2 What S1–S5 mean (do not misinterpret duplicates)
 
@@ -189,7 +189,7 @@ docs/assets/
 
 1. Screenshot from an actual completed execution or persisted real state; capture master/object Run IDs and Batch IDs where needed.
 2. Crop irrelevant UI without changing or inventing outcomes; any composite must use **real** source screenshots and be explicitly labeled a **Composite**.
-3. Don't expose credentials, tokens, connection strings, personal IDs, or confidential business data. **Public repository currently contains images; no visual privacy audit has yet been completed in this workflow. Perform a proportional safety scan before prominently publishing/linking selected images.**
+3. Don't expose credentials, tokens, connection strings, personal IDs, or confidential business data. **Batch A visual privacy review found no visible sensitive data in C01, C02, or D01; the remaining assets have not been privacy-reviewed in this workflow. Perform a proportional safety scan before prominently publishing/linking other selected images.**
 4. Caption tells **what an artifact proves** (e.g. final audit and checkpoint non-advancement), not just what UI it shows.
 5. `evidence-log.csv` is optional **local/private working metadata**, useful for IDs and provenance; don't backfill unavailable IDs by guessing, and don't commit environment GUIDs unnecessarily.
 6. If screenshot A and B support the same claim, use the clearer one. A guide need not include every image in the archive.
@@ -231,6 +231,15 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 **Technical QA after integration:** confirm pipeline/activity names from checked-in definitions, paths, environment claims, execution semantics, AUTO-vs-zero language, reproducible performance claims, privacy and run provenance, screenshot captions, readability, and no false impression that UAT/PROD has been tested. Current Markdown had **no references to C/P/CX/PX or D01/D02** when filenames were reorganized, so the path relocation did not break already-inserted screenshot links.
 
 ## 8. Current work plan — what to do next and in what order
+
+### Batch A completed — 2026-10-25 (Asia/Bangkok)
+
+- Owner approved the evidence review and implementation. C01, C02, and D01 are integrated at the approved locations in `docs/guides/control-plane.md`, using the approved captions and links to the full-size original assets.
+- C01 shows selected DEV configuration columns; C02 is explicitly introduced as a DEV configuration-to-connection mapping, not the exact output of the preceding two-column query or proof of connectivity. Neither screenshot proves execution outcomes or universal configuration values.
+- D01 remains the finalized editable SVG. Its selected-field overview and distinction between enforced FKs and the non-FK audit association agree with the SQL Database Project. No PNG/SVG source asset was changed.
+- Validation covers relative figure links, unique placement, Markdown structure, preservation of existing guide text and original asset blobs, CSV scope limited to C01/C02/D01, and final Git diff review.
+- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate control plane evidence and data model`. Merge into `main` remains pending owner review. No other screenshot batch was inspected or integrated.
+- Next proposed batch is Batch B from `SCREENSHOT_IMPLEMENTATION_PLAN.md`; wait for owner direction before starting it. Other handoff files retain their original planning context and were not updated in Batch A.
 
 ### Phase A — Filename-first curation (next task)
 
@@ -303,4 +312,4 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 - **User-provided decisions:** exact C/P/O target filenames and `SKIP`/`COMPOSITE`/`multiple screenshots` notes; D01/D02 visual preferences; request for minimum-effort filename-first batch curation; temporary public-repository handoff strategy.
 - **Not established by this handoff:** visual content or privacy review of each PNG, completed review of all 26 candidates, availability of original Run IDs or Test SHA for every scenario, values for final P05 comparison, existence of planned C10–C13/P05/O01/O02/O05 composites, UAT/PROD deployment success, full Activator alert delivery.
 
-**Next action when continuing:** Start **Evidence Curation Batch 1**, choose a small group and review filenames plus the user's annotation first; request/inspect actual image content only where necessary to decide which particular screenshot(s) can substantiate the intended claim. No redesign, no mass visual scan.
+**Next action when continuing:** Review the completed Batch A changes on `docs/evidence-curation`; do not merge into `main` without owner direction. Wait for authorization before starting Batch B (Orchestration) from `SCREENSHOT_IMPLEMENTATION_PLAN.md`. Review only its scoped evidence; no redesign or mass visual scan.
