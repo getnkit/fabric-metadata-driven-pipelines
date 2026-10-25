@@ -191,13 +191,10 @@ Pipeline reports a failure.
 | Absent/other terminal result | Preserve Bronze and Landing for operator reconciliation. | `FAILED / FINALIZE_OUTCOME_UNCONFIRMED` |
 | Audit Lookup itself fails | Preserve data; report lookup failure. | `FAILED / FINALIZE_OUTCOME_LOOKUP_FAILED` |
 
-The exact-match `FAILED / WATERMARK_CONFLICT` audit row is emitted *and
-committed by* `control.usp_finalize_ingestion_run` when its guarded watermark
-UPDATE affects no row. That procedure does **not** advance watermark on this
-outcome; it commits the FAILED audit before raising the conflict exception.
-This is why the child pipeline can automatically compensate this specific
-outcome, but **cannot infer safety from a failed Stored Procedure activity
-alone**.
+If the guarded watermark UPDATE affects no row, `control.usp_finalize_ingestion_run` commits an exact-match
+`FAILED / WATERMARK_CONFLICT` audit row before raising the conflict exception. The procedure does **not** advance
+the watermark. This committed audit lets the recovery child automatically compensate this specific outcome;
+a failed Stored Procedure activity alone **does not establish that cleanup is safe**.
 
 For DATABASE, the existing `nb_cleanup_bronze_batch_rows` removes rows
 matching **both** `_batch_id` and `_pipeline_run_id`. For FILE, that same

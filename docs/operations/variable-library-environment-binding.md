@@ -27,10 +27,9 @@ credentials but are **not portable** to a new workspace. Do not deploy/run in an
 and validating all five active values. See the [Environment Rebuild guide](environment-rebuild.md) for an explicit
 inventory and setup order. Do not commit passwords, tokens, or other credentials.
 
-Each of the twelve framework pipelines declares only the library variables it
-consumes under `properties.libraryVariables` and resolves them locally with
-`@pipeline().libraryVariables.<name>`. This deliberately **does not** introduce
-pipeline parameter forwarding for runtime connection IDs.
+Each of the twelve framework pipelines declares only the Library variables it uses under
+`properties.libraryVariables`. It reads those values locally with `@pipeline().libraryVariables.<name>`.
+The pipelines do not forward runtime connection IDs as pipeline parameters.
 
 The supported **external entry point** remains `pl_ingest_orchestrator`. Its
 `if_required_connections_provided` guard rejects any missing/empty value with

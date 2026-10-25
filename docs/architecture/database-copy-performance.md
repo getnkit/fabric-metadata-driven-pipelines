@@ -98,7 +98,7 @@ Copy activity. The AUTO branch omits the `parallelCopies` property completely.
 
 ## Runtime flow
 
-The current SQL Server 2022 Developer on EC2 workers normalize metadata to:
+The SQL Server 2022 Developer on EC2 ingestion path converts Copy metadata into these execution parameters:
 
 ```text
 p_copy_partition_option
@@ -106,7 +106,7 @@ p_copy_partition_column
 p_copy_parallel_copies
 ```
 
-and validate the supported combination before data movement.
+The pipeline validates the supported combination before moving data.
 
 Execution then selects one of two **query** Copy branches:
 
@@ -199,9 +199,8 @@ for the normal non-partitioned path.
 
 The framework deliberately does **not** expose the SQL Server connector's
 `PhysicalPartitionsOfTable` / `PHYSICAL_PARTITIONS` Table-mode strategy.
-Although that feature may help for some SQL Server physical layouts, the
-Table-mode `additionalColumns` path auto-creates
-`_ingestion_timestamp` as String without explicit destination mapping.
+Table mode may help for some SQL Server physical layouts. However, its `additionalColumns` path creates
+`_ingestion_timestamp` as String unless destination mapping is set explicitly.
 A DEV PoC confirmed that a manual `timestamp` mapping works on a newly
 created Bronze table (SQL endpoint: `datetime2(6)`), but manually maintained
 per-source mappings conflict with schema-agnostic metadata-driven ingestion.

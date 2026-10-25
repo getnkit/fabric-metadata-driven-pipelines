@@ -20,7 +20,8 @@ The current machine keeps:
 - **Persistent SFTP host identity:** `/opt/fabric-sftp/hostkeys/ssh_host_ed25519_key*` (do not regenerate when Fabric already trusts the host key).
 - **Real credentials:** local `.env`, excluded from Git.
 
-Do not remove working containers or persisted volumes during routine updates. This file documents the desired-state artifacts, not an instruction to recreate current containers.
+Do not remove working containers or persisted volumes during routine updates. This guide describes the intended
+service configuration; it does not instruct you to recreate the current containers.
 
 From the EC2 shell, inspect first:
 

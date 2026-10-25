@@ -5,13 +5,12 @@ runtime behavior, consult the linked Fabric Pipelines, Notebooks, and SQL defini
 
 ## What problem does this solve?
 
-A growing batch-ingestion estate can become a collection of nearly identical
-per-table/per-file pipelines. Each duplicate pipeline is another place to
-inconsistently handle incremental checkpoints, retries, missing source data,
-audit, source configuration or destination naming.
+As the number of source objects grows, separate table and file pipelines tend to repeat the same ingestion logic.
+Each copy can handle incremental checkpoints, retries, missing source data, audits, source configuration or
+destination naming differently.
 
-The project centralizes these decisions in a **metadata-backed Control Plane**
-and delegates only *source-specific physical behavior* to adapters.
+The framework manages these shared decisions through a **metadata-backed Control Plane**. Adapters handle only
+the *physical ingestion steps that depend on the source*.
 
 ## Orchestration and routing
 

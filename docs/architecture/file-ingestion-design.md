@@ -275,7 +275,7 @@ and formatted as UTC with `Z` only for SFTP Copy. BACKFILL bounds must
 represent UTC instants; convert any non-UTC offset to UTC before supplying
 it rather than just appending `Z`.
 
-and selects source files whose Last Modified value is in:
+The adapter selects source files whose remote Last Modified timestamp falls within this window:
 
 ```text
 LOW <= LastModified < HIGH

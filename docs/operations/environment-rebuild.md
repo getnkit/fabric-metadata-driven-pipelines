@@ -28,11 +28,10 @@ historical Bronze, audit, or watermark state from Git alone.
 | Original SQL Server database files, remote SFTP uploads, SFTP private host key | **No** | Recreate demo data; restoring original state needs separate backups |
 | Historic schedules, notification recipient, test results | Not guaranteed | Reconfigure explicitly where used |
 
-**New DEV** means resetting processing to demo initial state and creating
-new Batch/Run IDs. **Disaster recovery with historical continuity** needs
-consistent, separately verified backups of SQL Control/Audit state, Bronze
-Delta/Files, source systems and credentials, plus an approved reconciliation
-plan; these are not provided by this repository. Never describe a fresh
+**New DEV** means resetting processing to demo initial state and creating new Batch/Run IDs. To recover an
+environment with its previous data and processing state, you need consistent, separately verified backups of SQL
+Control/Audit state, Bronze Delta/Files, source systems and credentials. This disaster recovery also requires an
+approved reconciliation plan. The repository does not provide those backups or that plan. Never describe a fresh
 install as recovery of production state.
 
 ## B. Readiness / inventory (complete before changing anything)
