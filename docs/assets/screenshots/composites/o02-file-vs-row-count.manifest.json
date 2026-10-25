@@ -1,0 +1,98 @@
+{
+  "candidate": "O02",
+  "asset_role": "derived_composite",
+  "publication_decision": "owner_approved_with_evidence_limitations",
+  "output": "docs/assets/screenshots/composites/o02-file-vs-row-count.png",
+  "output_dimensions": [
+    1362,
+    726
+  ],
+  "output_sha256": "d6f70663a444ddbea90d95b01edd9f4de21af911bef55e1f647b3e46f9beef27",
+  "generator": "scripts/evidence/build_sftp_composites.py",
+  "pillow_version": "11.3.0",
+  "presentation": "Composite of DEV evidence; native pixels; no resizing or retouching.",
+  "supported_claim": "Binary Copy reports one file read and one written; the Notebook reports six source rows and six target rows. These are different measurement units.",
+  "limitations": [
+    "Both Notebook row metrics reuse one parsed DataFrame count; no independent Bronze recount.",
+    "End-to-end execution correlation is not independently verified.",
+    "Separated native UI crops omit operational/environment identifiers and intervening metadata."
+  ],
+  "sources": [
+    {
+      "path": "docs/assets/screenshots/supporting/optional/o02-file-row-count/cx-o02-binary-copy.png",
+      "sha256": "daed1d777eea011932c55d9a1e2be784644effb6b5bea22376f9509929beda25",
+      "dimensions": [
+        1731,
+        913
+      ],
+      "placements": [
+        {
+          "crop_box": [
+            1073,
+            18,
+            1720,
+            422
+          ],
+          "rectangle": [
+            20,
+            164,
+            647,
+            404
+          ]
+        }
+      ]
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/optional/o02-file-row-count/cx-o02-notebook-parse.png",
+      "sha256": "aee3b3182e05ea7e0e963b99c6c19b6989d409db313bd163a1de0e6d6489d912",
+      "dimensions": [
+        1731,
+        913
+      ],
+      "placements": [
+        {
+          "crop_box": [
+            90,
+            835,
+            545,
+            867
+          ],
+          "rectangle": [
+            695,
+            196,
+            455,
+            32
+          ]
+        },
+        {
+          "crop_box": [
+            1255,
+            554,
+            1510,
+            625
+          ],
+          "rectangle": [
+            695,
+            276,
+            255,
+            71
+          ]
+        },
+        {
+          "crop_box": [
+            1260,
+            725,
+            1646,
+            758
+          ],
+          "rectangle": [
+            695,
+            402,
+            386,
+            33
+          ]
+        }
+      ]
+    }
+  ]
+}

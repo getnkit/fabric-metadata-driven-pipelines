@@ -1,0 +1,118 @@
+{
+  "candidate": "C12",
+  "asset_role": "derived_composite",
+  "publication_decision": "owner_approved_with_evidence_limitations",
+  "output": "docs/assets/screenshots/composites/c12-sftp-new-file-incremental.png",
+  "output_dimensions": [
+    1450,
+    804
+  ],
+  "output_sha256": "1cfa2b65a90889531acdcbbf04245ea047fd5508113c2337c2a7a2ed8bb515e5",
+  "generator": "scripts/evidence/build_sftp_composites.py",
+  "pillow_version": "11.3.0",
+  "presentation": "Composite of DEV evidence; native pixels; no resizing or retouching.",
+  "supported_claim": "The DEV movement audit reports SUCCESS and six processed rows. Six visible Bronze rows share the after-state Batch ID. The checkpoint advances from 2026-10-23T12:31:47.787Z to 2026-10-24T02:04:02.238Z.",
+  "limitations": [
+    "Run type is not visible; some run identifiers are truncated. Exact execution correlation is not independently verified.",
+    "Remote file Last Modified values are not visible.",
+    "C08/C09 depict a different DEV execution example."
+  ],
+  "sources": [
+    {
+      "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-watermark-before.png",
+      "sha256": "6d567b433e869bb511f3987778c6ac167e0b7a1c512a24698bceff2765498978",
+      "dimensions": [
+        1409,
+        52
+      ],
+      "placements": [
+        {
+          "crop_box": [
+            0,
+            0,
+            1409,
+            52
+          ],
+          "rectangle": [
+            20,
+            158,
+            1409,
+            52
+          ]
+        }
+      ]
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-audit-success.png",
+      "sha256": "cfaf87221a3b7dc04a416f3b9cd58e9561c0361faec2e477cd8c76c7ffe320c0",
+      "dimensions": [
+        1409,
+        52
+      ],
+      "placements": [
+        {
+          "crop_box": [
+            0,
+            0,
+            1409,
+            52
+          ],
+          "rectangle": [
+            20,
+            272,
+            1409,
+            52
+          ]
+        }
+      ]
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-bronze-new-file-lineage.png",
+      "sha256": "e54245a570a7100c761816d2d894c1e1a0f6555eb9366811d7c538db3a5dfe8b",
+      "dimensions": [
+        1410,
+        172
+      ],
+      "placements": [
+        {
+          "crop_box": [
+            0,
+            0,
+            1410,
+            172
+          ],
+          "rectangle": [
+            20,
+            386,
+            1410,
+            172
+          ]
+        }
+      ]
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-watermark-after.png",
+      "sha256": "0cb3dd2c811789e108b9eb94bb5b32df5ec82b3ac15b3a173bf78068b38df620",
+      "dimensions": [
+        1409,
+        52
+      ],
+      "placements": [
+        {
+          "crop_box": [
+            0,
+            0,
+            1409,
+            52
+          ],
+          "rectangle": [
+            20,
+            620,
+            1409,
+            52
+          ]
+        }
+      ]
+    }
+  ]
+}

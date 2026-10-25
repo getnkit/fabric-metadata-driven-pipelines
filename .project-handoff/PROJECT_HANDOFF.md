@@ -4,7 +4,7 @@
 > **Purpose:** Preserve the implementation boundary, prior design decisions, evidence inventory, documentation strategy, and next actionable work when continuing in a new ChatGPT conversation.  
 > **Scope:** Personal GitHub portfolio only, separate from client delivery work.  
 > **Storage:** Temporary public `.project-handoff/` folder. Do not publish credentials or private environment-specific identifiers.  
-> **Status at handoff:** Framework and D01/D02 diagrams are complete for the current portfolio scope; 58 original screenshots and 2 SVG diagrams are preserved, with the first derived composite C11 now added. **Batches A and B are merged into `main` through `d3f9b17`. Batch C (C05, C06, and qualified C11) is owner-approved and integrated in `docs/guides/sql-server-database-ingestion.md` on `docs/evidence-curation`; its merge, remaining evidence batches, other composite authoring, and final portfolio QA are pending.**
+> **Status at handoff:** Framework and D01/D02 diagrams are complete for the current portfolio scope; 58 original screenshots and 2 SVG diagrams are preserved, with derived composites C11, C12, and O02 now added. **Batches A, B, and C are merged into `main` through `9cb42e3`. Batch D (C07, C08, C09, qualified C12, and cropped O02) is owner-approved and integrated on `docs/evidence-curation`; its merge, remaining evidence batches, other composite authoring, and final portfolio QA are pending.**
 
 ## 0. How to use this handoff
 
@@ -112,7 +112,7 @@ docs/assets/
 │   ├── d01-control-audit-er.svg
 │   └── d02-environment-binding.svg
 └── screenshots/
-    ├── composites/                          1 derived C11 composite + manifest
+    ├── composites/                          3 derived composites + per-artifact manifests
     ├── core/                                10 screenshots
     ├── performance/                          3 direct screenshots
     │   └── source-config/                    3 PX screenshots
@@ -130,7 +130,7 @@ docs/assets/
 
 **Counts:** 10 + 3 + 3 + 22 + 4 + 3 + 4 + 3 + 1 + 2 + 3 = **58**. Two SVG diagrams, **60 total committed visual assets**. Every screenshot was moved by Git path only—original PNG filename and Git Blob content preserved. No flat screenshots remain at `docs/assets/screenshots/*.png`.
 
-**Batch C addition:** C11 adds one derived PNG, bringing the curated inventory to **61 visual assets** (58 original screenshots + 2 diagrams + 1 composite). Its public-safe per-artifact manifest is `docs/assets/screenshots/composites/c11-sql-server-incremental.manifest.json`; its reproducible Python/Pillow builder is `scripts/evidence/build_c11_composite.py`. The original asset snapshot above remains unchanged.
+**Batch C addition:** C11 adds one derived PNG, bringing the curated inventory to **61 visual assets** (58 original screenshots + 2 diagrams + 1 composite). Its public-safe per-artifact manifest is `docs/assets/screenshots/composites/c11-sql-server-incremental.manifest.json`; its reproducible Python/Pillow builder is `scripts/evidence/build_c11_composite.py`. Batch D adds C12 and O02, bringing the curated inventory to **63 visual assets** (58 originals + 2 diagrams + 3 composites). Their adjacent public-safe manifests and `scripts/evidence/build_sftp_composites.py` record reproducible composition. The original asset snapshot above remains unchanged.
 
 `EVIDENCE_INVENTORY.csv` records individual current paths, batch/scenario tags, likely candidate, and unreviewed status. Prefer inventory/`git ls-files` over rereading all images to locate things.
 
@@ -146,12 +146,12 @@ docs/assets/
 | C04 | `c04-object-routing.png` | **No single C04 file**; five original CX-S1 images integrated under Pagination, Dispatcher, Controller Routing, and Database Routing; unselected inventory entries unchanged |
 | C05 | `c05-sql-server-copy-execution.png` | Batch C reviewed and owner-approved; original integrated in SQL Server guide |
 | C06 | `c06-sql-bronze-lineage.png` | Batch C reviewed and owner-approved; original integrated in SQL Server guide |
-| C07 | `c07-sftp-ingestion-flow.png` | **No single C07 file**; user chose **multiple separate captures** (S1 CX group) |
-| C08 | `c08-sftp-landing.png` | Direct file present; visual review pending |
-| C09 | `c09-sftp-bronze-lineage.png` | Direct file present; visual review pending |
+| C07 | `c07-sftp-ingestion-flow.png` | **No single C07 file**; two owner-approved S1 originals integrated separately in SFTP guide: FILE Router detail 1 and SFTP INCREMENTAL Adapter 2 |
+| C08 | `c08-sftp-landing.png` | Batch D reviewed and owner-approved; unchanged original integrated as DEV movement-feed Landing evidence |
+| C09 | `c09-sftp-bronze-lineage.png` | Batch D reviewed and owner-approved; unchanged original integrated as visible DEV parsed rows with lineage |
 | C10 | `c10-no-new-data-skipped.png` | **Pending composite** from S2 CX group |
 | C11 | `c11-sql-server-incremental.png` | Batch C composite created from all three S3 originals and integrated with explicit run-type/correlation limitations |
-| C12 | `c12-sftp-new-file-incremental.png` | **Pending composite** from S4 CX group |
+| C12 | `c12-sftp-new-file-incremental.png` | Batch D composite created from all four S4 originals and integrated with explicit run-type/correlation limitations |
 | C13 | `c13-incremental-backfill.png` | **Pending composite** from S5 CX group |
 | C14 | `c14-ambiguous-run-scope.png` | Direct file present; visual review pending |
 | C15 | `c15-operations-report.png` | Direct file present; visual review pending |
@@ -172,7 +172,7 @@ docs/assets/
 | Candidate | Intended filename | Snapshot status |
 |---|---|---|
 | O01 | `o01-end-to-end-trace.png` | Pending additional correlation and Bronze lineage evidence; not integrated or permanently skipped |
-| O02 | `o02-file-vs-row-count.png` | Pending composite from Binary Copy and Notebook parse screenshots |
+| O02 | `o02-file-vs-row-count.png` | Batch D cropped comparison created and integrated under Transfer consistency; files versus parsed rows; no independent Bronze recount or verified end-to-end correlation |
 | O03 | `o03-full-append-history.png` | **SKIP / dropped by user** |
 | O04 | `o04-copy-performance-details.png` | **SKIP / dropped by user** |
 | O05 | `o05-source-scoped-run.png` | Pending composite from 3 source-scope screenshots |
@@ -184,7 +184,7 @@ docs/assets/
 - **S1 — orchestration and routing:** S1 CX names capture config pagination, master details, Dispatcher, Object Controller DATABASE/FILE, routers, SFTP incremental adapter, SQL Server FULL adapter. Supports C04/C07 as **several direct images**, not blindly one enormous composite.
 - **S2 — no-new-data incremental:** audit `SKIPPED`, no Bronze append, checkpoint **unchanged**. Supports C10 composite. `cx-s2-watermark-before.png` and `cx-s2-watermark-after.png` have the **exact same Git Blob SHA**. This is compatible with expected unchanged state and **not evidence of failure**; however, byte-identical files do not independently establish that two separate screenshots were taken. Preserve both and be accurate in captions.
 - **S3 — SQL Server audit/checkpoint comparison:** four SUCCESS audit rows have LOW/HIGH values consistent with the displayed before/after checkpoints for configs 1, 4, 5, and 6. All four checkpoints advance to `2026-10-24T01:08:00.941Z`. C11 preserves all three screenshots at native resolution. Run type is not visible and audit Run IDs are truncated; this does not independently verify exact execution correlation or a fully correlated REGULAR INCREMENTAL run.
-- **S4 — SFTP new-file incremental:** success audit + new-file Bronze lineage + Watermark Before/After. Supports C12. Confirm actual remote last-modified bounds before writing a strong caption.
+- **S4 — SFTP audit/lineage/checkpoint comparison:** C12 preserves all four originals at native resolution. The DEV audit reports SUCCESS with six processed rows; six visible Bronze rows share the after-state Batch ID. The checkpoint advances from `2026-10-23T12:31:47.787Z` to `2026-10-24T02:04:02.238Z`. Run type and remote Last Modified values are not visible; some Run IDs are truncated. Exact execution correlation and a fully correlated REGULAR INCREMENTAL run are not independently established. C08/C09 are a different DEV execution example.
 - **S5 — explicit historical BACKFILL:** audit BACKFILL and checkpoint **unchanged** even if successful append. Supports C13. `cx-s5-watermark-before.png` and `cx-s5-watermark-after.png` are exact same Git Blob. Expected invariant; same caveat about separate captures. Do **not** assert S5 advances the operational watermark.
 - **S8 — performance setup:** PX B1/B2/B3 config screenshots plus P02–P04 recorded results. Do not infer B1/B2/B3's precise configuration solely from filenames; inspect actual configuration and measured metrics before P05.
 
@@ -192,7 +192,7 @@ docs/assets/
 
 1. Screenshot from an actual completed execution or persisted real state; capture master/object Run IDs and Batch IDs where needed.
 2. Crop irrelevant UI without changing or inventing outcomes; any composite must use **real** source screenshots and be explicitly labeled a **Composite**.
-3. Don't expose credentials, tokens, connection strings, personal IDs, or confidential business data. **Batch A, the six selected Batch B captures, and all five Batch C source screenshots have been visually checked. Batch C retains visible operational identifiers only within original evidence pixels; no credentials, physical connection/workspace/item IDs, or personal information were found. New composite labels and manifest metadata add no environment-specific identifiers. Other assets still require publication-specific privacy review; do not infer acceptance from contact-sheet inclusion.**
+3. Don't expose credentials, tokens, connection strings, personal IDs, or confidential business data. **Batch A, the six selected Batch B captures, and all five Batch C source screenshots have been visually checked. Batch C retains visible operational identifiers only within original evidence pixels; no credentials, physical connection/workspace/item IDs, or personal information were found. New composite labels and manifest metadata add no environment-specific identifiers. Batch D selected sources were also checked. C08 retains operational Batch/Run IDs and DEV resource names only within the owner-approved unchanged original; C09/C12 retain original lineage pixels. No credentials or confidential client data were found. O02 derived crops exclude operational/environment identifiers. New labels and public manifests contain no environment-specific GUIDs. Other assets still require publication-specific privacy review; do not infer acceptance from contact-sheet inclusion.**
 4. Caption tells **what an artifact proves** (e.g. final audit and checkpoint non-advancement), not just what UI it shows.
 5. `evidence-log.csv` is optional **local/private working metadata**, useful for IDs and provenance; don't backfill unavailable IDs by guessing, and don't commit environment GUIDs unnecessarily.
 6. If screenshot A and B support the same claim, use the clearer one. A guide need not include every image in the archive.
@@ -262,9 +262,19 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 - Supported claim: four DEV SUCCESS audit rows contain processing bounds consistent with the displayed before/after checkpoint values, and those checkpoint values advanced. REGULAR and fully correlated execution remain unverified from these captures. These are four object audit rows, not a single-run trace.
 - Rebuild with `scripts/evidence/build_c11_composite.py` using Python and `Pillow==11.3.0`; the bundled font avoids workstation-font dependencies. The adjacent `.manifest.json` records ordered original paths, source/output SHA-256 hashes, native panel rectangles, dimensions, supported claim, and limitations without copying operational IDs into metadata.
 - Validation covers PNG integrity, exact panel-pixel preservation, unchanged original Git blobs, reproducible output, visual readability/privacy, approved Markdown placements/captions and relative links, preserved explanations/Mermaid, inventory scope, and final Git diff review. Only the five Batch C source entries are updated; the derived C11 row is added separately. Other evidence states remain unchanged.
-- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate SQL Server ingestion evidence`. Batch C merge into `main` remains pending owner review. O01 remains pending additional evidence. Wait for owner direction before Batch D or other work.
+- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate SQL Server ingestion evidence`. Batch C was subsequently merged into `main` at `9cb42e3`. O01 remains pending additional evidence. Batch D progress is recorded below.
 
-### Phase A — Filename-first curation (next task)
+### Batch D completed — 2026-10-25 (Asia/Bangkok)
+
+- Integrated four owner-approved original PNGs with full-size links in `docs/guides/sftp-file-ingestion.md`: C07 FILE Router detail 1 under run scope; C07 SFTP INCREMENTAL Adapter 2 and C08 under Step B; C09 under terminal audit verification. Existing explanations and both Mermaid diagrams are preserved. Successful activities are not equated with terminal audit SUCCESS; C08 is a Landing result view, not independent Binary/byte-equality proof.
+- Created C12 `docs/assets/screenshots/composites/c12-sftp-new-file-incremental.png` (1450x804) from four complete native S4 images, ordered Watermark Before, SUCCESS Audit Record, Bronze Source-File Lineage, Watermark After. Integrated under terminal audit verification with the limited S4 claim above. The guide explicitly distinguishes C08/C09 from C12 as different DEV execution examples.
+- C12 visibly states: "Run type is not visible; some run identifiers are truncated. Exact execution correlation is not independently verified." No missing identifiers, values, timestamps, or remote Last Modified observations were invented.
+- Created O02 `docs/assets/screenshots/composites/o02-file-vs-row-count.png` (1362x726) and integrated under `Transfer consistency` in `docs/architecture/file-ingestion-design.md`. Two panels retain genuine native Copy details and separated Notebook activity/Output/metric crops. Operational/environment identifiers and intervening metadata are omitted from the derived presentation; both originals remain unchanged. Binary Copy reports 1/1 files and the Notebook reports 6/6 rows. Both row metrics reuse the same parsed DataFrame count, not an independent Bronze recount; exact end-to-end correlation is not independently verified.
+- Rebuild both with Python and `Pillow==11.3.0` using `scripts/evidence/build_sftp_composites.py`. Adjacent `.manifest.json` files record original paths, SHA-256 hashes, original/output dimensions, crop/destination rectangles, supported claims, and limitations without transcribing operational identifiers into metadata. C12 uses complete screenshots; O02 uses explicitly separated UI crops. Neither resizes or retouches evidence pixels.
+- Validation covers PNG integrity, exact native source/crop pixels, unchanged original Git blobs, reproducible PNGs/manifests, visual readability/privacy, relative image and full-size links, approved placements/captions, preserved explanations/Mermaid, inventory scope, and complete Git diff. Only ten processed Batch D source rows are updated; C12/O02 derived rows are added. Unselected CX-S1 and other evidence states remain unchanged.
+- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate SFTP ingestion evidence`. Owner review/merge of this batch remains pending. O01 still requires additional correlation evidence; Batch E and later work require separate authorization.
+
+### Phase A — Filename-first curation (remaining batches)
 
 - Start from `EVIDENCE_INVENTORY.csv` and current GitHub tree, **not** from visual inspection of 58 images at once.
 - Evaluate one group at a time, likely **S1**, then S2→S5, performance S8, optional O01/O02/O05, and final direct C/P.
@@ -274,7 +284,7 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 
 ### Phase B — Composite production and measured comparison
 
-- C11 is complete with the qualified audit/checkpoint claim above. Build C10/C12/C13 and O01/O02/O05 selectively from real constituent screenshots. Composite labeling must be explicit. Preserve traceability to original images and evidence IDs; do not cosmetically alter pass/fail/results or invent before/after timestamps.
+- C11/C12 and cropped O02 are complete with the qualified claims above. Build C10/C13 and O01/O05 selectively from real constituent screenshots. Composite labeling must be explicit. Preserve traceability to original images and evidence IDs; do not cosmetically alter pass/fail/results or invent before/after timestamps.
 - Build P05 from **real, comparable completed benchmark outputs**; if insufficient, report limitation and skip comparison instead of manufacturing numbers.
 - D01/D02 do not need further conceptual changes.
 
@@ -333,6 +343,6 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 
 - **Checked against GitHub repository on 2026-10-24:** branch head/commit, actual asset paths/counts, README and key technical guides, D01/D02 existence, monitoring and performance guardrails, current environment runbook.
 - **User-provided decisions:** exact C/P/O target filenames and `SKIP`/`COMPOSITE`/`multiple screenshots` notes; D01/D02 visual preferences; request for minimum-effort filename-first batch curation; temporary public-repository handoff strategy.
-- **Not established by this handoff:** visual content or privacy review of each PNG, completed review of all 26 candidates, availability of original Run IDs or Test SHA for every scenario, exact S3 execution correlation/run type, values for final P05 comparison, existence of planned C10/C12/C13/P05/O01/O02/O05 composites, UAT/PROD deployment success, full Activator alert delivery.
+- **Not established by this handoff:** visual content or privacy review of each PNG, completed review of all 26 candidates, availability of original Run IDs or Test SHA for every scenario, exact S3 execution correlation/run type, values for final P05 comparison, exact S4 execution correlation/run type or remote Last Modified values, independent O02 Bronze recount/end-to-end correlation, existence of planned C10/C13/P05/O01/O05 composites, UAT/PROD deployment success, full Activator alert delivery.
 
-**Next action when continuing:** Review the completed Batch C changes on `docs/evidence-curation`; do not merge into `main` without owner direction. Batches A/B are merged through `d3f9b17`. Keep C11's run-type/correlation limitations explicit; O01 remains pending additional evidence. Wait for authorization before Batch D (including FILE Router/SFTP Adapter evidence). No redesign or mass visual scan.
+**Next action when continuing:** Review completed Batch D on `docs/evidence-curation`, including both composite previews; do not merge into `main` without owner direction. Batches A/B/C are merged through `9cb42e3`. Keep C11/C12 run-type/correlation limitations and O02 shared-count semantics explicit; O01 remains pending additional evidence. Wait for authorization before Batch E or later work. No redesign or mass visual scan.
