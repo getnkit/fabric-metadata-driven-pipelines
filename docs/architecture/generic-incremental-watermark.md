@@ -6,7 +6,7 @@ boundaries, no-new-data behavior, and guarded finalization. See the
 
 ## Decision
 
-All incremental ingestion patterns share one persistent checkpoint table:
+The implemented DATABASE and FILE incremental paths share one persistent checkpoint table:
 
 ```text
 control.pipeline_watermarks
@@ -22,34 +22,25 @@ last_successful_pipeline_run_id
 watermark_updated_at
 ```
 
-`last_watermark_value` is stored as STRING so the state model can represent
-different checkpoint mechanisms without creating pattern-specific state tables.
+`last_watermark_value` is stored as a string (`NVARCHAR(1000)`), allowing each
+adapter to interpret its checkpoint without a pattern-specific state table.
 
 Examples:
 
-```text
-DATABASE  updated_at          -> 2026-09-27T10:30:00.000
-FILE      last_modified_time  -> 2026-09-27T10:30:00.000
-API       sync_token          -> opaque provider token
-API       updated_at          -> 2026-09-27T10:30:00.000Z
-STREAM    source_sequence     -> 123456789
-CDF       commit_version      -> 981
-```
-
-The physical adapter owns interpretation of the STRING checkpoint.
+| Pattern | `watermark_field` | Example checkpoint |
+| --- | --- | --- |
+| DATABASE | `updated_at` | `2026-09-27T10:30:00.000` |
+| FILE | `last_modified_time` | `2026-09-27T10:30:00.000Z` |
 
 ## Watermark-state lookup contract
 
-For the implemented SQL Server and SFTP INCREMENTAL adapters, the initial
+For the SQL Server and SFTP `INCREMENTAL` adapters, the initial
 `lkp_current_watermark` filters **both** `ingestion_config_id` and
 `watermark_field` in SQL. The `if_state_found` gate therefore checks whether
-a checkpoint exists for that exact requested pair; no separate
-`if_watermark_field_match` activity is needed. A missing checkpoint **or a
-mismatched field** now follows the same `STATE_NOT_FOUND` failure branch, whose
-message includes the requested config ID and watermark field. This intentionally
-replaces the previous dedicated `WATERMARK_FIELD_MISMATCH` audit code.
+a checkpoint exists for that exact pair. A missing checkpoint **or a mismatched field**
+follows `STATE_NOT_FOUND`, with the requested config ID and watermark field in the message.
 
-The SFTP INCREMENTAL adapter checks `if_supported_watermark_field` **before**
+The SFTP `INCREMENTAL` adapter checks `if_supported_watermark_field` **before**
 `lkp_current_watermark` to reject unsupported field types with
 `UNSUPPORTED_FILE_WATERMARK` even when no matching state row exists. For the
 supported `last_modified_time` field, the lookup then checks for the exact
@@ -67,12 +58,7 @@ processing_lower_bound
 processing_upper_bound
 ```
 
-Both are STRING.
-
-No parallel `watermark_lower_value` / `watermark_upper_value` parameters are
-used. There is also no `processing_boundary_type` in the current personal
-project; `ingestion_pattern` plus `watermark_field` already provides enough
-context for the implemented adapters.
+Both are strings. `ingestion_pattern` and `watermark_field` provide the adapter context.
 
 Examples:
 
@@ -84,8 +70,8 @@ processing_upper_bound   = 2026-09-27T11:00:00.000
 
 FILE
 watermark_field          = last_modified_time
-processing_lower_bound   = 2026-09-27T10:00:00.000
-processing_upper_bound   = 2026-09-27T11:00:00.000
+processing_lower_bound   = 2026-09-27T10:00:00.000Z
+processing_upper_bound   = 2026-09-27T11:00:00.000Z
 ```
 
 For DATABASE timestamp-watermark ingestion, boundary semantics are:
@@ -101,9 +87,9 @@ BACKFILL:
   upper <= lower -> invalid boundary -> FAILED
 ```
 
-For FILE Last Modified ingestion, both REGULAR and BACKFILL require `upper > lower`. A scan with zero matching
-files finishes `SKIPPED` with zero rows and **no operational watermark advance**, for both REGULAR and BACKFILL. For
-DATABASE, a REGULAR `HIGH = LOW` scan also finalizes as `SKIPPED` without invoking the Loader or advancing state.
+For FILE Last Modified ingestion, both `REGULAR` and `BACKFILL` require `upper > lower`. A scan with zero matching
+files finishes `SKIPPED` with zero rows and **no operational watermark advance**, for either run type. For
+DATABASE, a `REGULAR` `HIGH = LOW` scan also finalizes as `SKIPPED` without invoking the Loader or advancing state.
 The triggers differ, but both patterns share the same no-new-data audit convention. A DATABASE `HIGH > LOW` run that
 subsequently copies zero rows is a separate scenario and is not reclassified by this branch.
 
@@ -120,8 +106,8 @@ subsequently copies zero rows is a separate scenario and is not reclassified by 
   Last Modified filtering uses Microsoft's UTC `yyyy-MM-ddTHH:mm:ss.fffZ`
   form for both bounds. The legacy no-`Z` checkpoint is interpreted as UTC
   solely for this SFTP source contract and formatted with `Z` for Copy.
-  A new REGULAR upper bound comes from canonical `p_start_time` (with `Z`)
-  and advances the checkpoint in that form only after successful REGULAR ingestion with matching files.
+  A `REGULAR` upper bound comes from canonical `p_start_time` (with `Z`)
+  and advances the checkpoint in that form only after successful `REGULAR` ingestion with matching files.
   The old committed lower-bound string is not rewritten prior to the optimistic
   watermark compare; no historical watermark rewrite is required.
 
@@ -129,10 +115,10 @@ subsequently copies zero rows is a separate scenario and is not reclassified by 
 
 For SQL Server incremental ingestion, the adapter preserves LOW/HIGH checkpoint values
 from the control state and source Lookup without rounding or timestamp reformatting.
-The shared `control.pipeline_watermarks.last_watermark_value` remains a STRING
+The shared `control.pipeline_watermarks.last_watermark_value` remains a string
 (`NVARCHAR(1000)`) for exact optimistic-watermark comparison.
 
-Both AUTO and TUNED Copy branches use `CONVERT(datetime2(7), '<boundary>', 126)`
+Both `AUTO` and `TUNED` Copy branches use `CONVERT(datetime2(7), '<boundary>', 126)`
 in the **source SQL predicate**. SQL Server accepts timestamp strings with fewer
 than seven fractional digits; `datetime2(7)` also preserves up to seven digits
 from a higher-precision source. Do not use `formatDateTime(..., '...fff')`
@@ -140,61 +126,47 @@ on the boundary immediately before the SQL predicate: it would discard
 fractional precision beyond milliseconds. This conversion is for source-side
 filtering, not for storage of the checkpoint in the control SQL database.
 
-Requested BACKFILL bounds must be SQL Server-parseable timestamps. ISO 8601
+Requested `BACKFILL` bounds must be SQL Server-parseable timestamps. ISO 8601
 without an offset is appropriate for a timezone-naive SQL Server value, but
 do not assume Fabric will preserve the **text representation** byte-for-byte
 when transporting it. Source time-zone semantics must be specified separately.
 The SFTP connector's Last Modified filter semantics and operational audit
 timestamp precision are separate and unchanged.
 
-### DEV runtime smoke test — 2026-10-12
+### DEV runtime smoke test (2026-10-12)
 
-**Result: PASS for SQL Server REGULAR / AUTO watermark correctness, with
-representation and Bronze precision limitations.** Tested with SQL Server
-2022 on EC2, an isolated source `DATETIME2(7)` table
-`poc.watermark_precision_test` and ingestion config ID **11**
-(`PRECISION_POC`, Lakehouse target `crm.watermark_precision_test`).
+The SQL Server 2022 on EC2 test exercised `REGULAR`/`AUTO` with isolated
+`DATETIME2(7)` source `poc.watermark_precision_test`, config ID `11`
+(`PRECISION_POC`) and Bronze target `crm.watermark_precision_test`.
+It passed watermark-window selection and finalization after resolving a checkpoint representation mismatch:
 
-- Source boundary rows: ID 1 at `.1234567` (exclusive LOW), ID 2 at
+- **Window selection:** ID 1 at `.1234567` (exclusive LOW), ID 2 at
   `.1234568`, ID 3 at `.1234569`, ID 4 at `.1240001` (inclusive HIGH).
-  Source reader returned the intended IDs **2, 3, 4**, with **3/3**
-  read/copied rows.
-- The initial checkpoint was stored as
-  `2026-10-08T10:00:00.1234567` (without `Z`). The initial Copy wrote 3
-  rows, but the finalizer received LOW/HIGH with a trailing `Z` and
-  correctly raised `WATERMARK_CONFLICT` because the string checkpoint
-  did not equal the serialized LOW. Audit recorded `FAILED /
-  WATERMARK_CONFLICT`; operational watermark did not advance.
-- The failed execution's Bronze rows were absent after recovery
-  (remaining count **0**). For this **isolated test config only**, the
-  checkpoint was updated with the trailing `Z` using a guarded UPDATE
-  (one row affected) before a new top-level REGULAR run.
-- The rerun finished `SUCCESS`, with processing LOW
+  The source reader selected IDs **2, 3, 4**, with **3/3** read/copied rows.
+- **Representation mismatch:** the initial checkpoint was
+  `2026-10-08T10:00:00.1234567` without `Z`, but serialized LOW/HIGH carried `Z`.
+  Copy wrote 3 rows; finalization recorded `FAILED / WATERMARK_CONFLICT` without
+  advancing state because the stored string did not match LOW. Recovery left **0** rows for that execution.
+- **Isolated rerun:** a guarded `UPDATE` added `Z` to this test checkpoint only
+  (one row affected). A new top-level `REGULAR` run finished `SUCCESS`, with LOW
   `2026-10-08T10:00:00.1234567Z`, HIGH
-  `2026-10-08T10:00:00.1240001Z`, Audit **3/3**, and committed
-  `last_watermark_value = 2026-10-08T10:00:00.1240001Z`. All **seven**
-  fractional digits survived through the recorded bounds and checkpoint.
-- The Bronze Lakehouse timestamp stored only **six** fractional digits:
+  `2026-10-08T10:00:00.1240001Z`, audit **3/3**, and `last_watermark_value` committed to HIGH.
+  All **seven** fractional digits survived in the bounds and checkpoint.
+- **Bronze precision:** timestamps stored only **six** fractional digits:
   IDs 2 and 3 each appeared as `.123456`; ID 4 as `.124000`.
-  All three distinct rows survived, but **full DATETIME2(7) timestamp
-  fidelity in Bronze is NOT supported by this observed representation**.
-  Preserve a separate high-precision textual/numeric column only if
-  downstream requirements actually need all seven digits.
+  All three rows survived, but this did **not** preserve full `DATETIME2(7)` timestamp fidelity.
+  Downstream use of all seven digits would require a separate high-precision textual or numeric column.
 
-**Acceptance boundary:** This establishes runtime watermark-window
-correctness and successful finalization for the observed **REGULAR/AUTO**
-path when initial checkpoint string representation matches Fabric's
-serialized boundary. It does **not** establish runtime success for
-TUNED, BACKFILL, No-New-Data, Oracle, Snowflake or other adapters;
-and it does not claim 7-digit Bronze timestamps or arbitrary timezone
-normalization. The `Z` observation describes Fabric's serialized value
-in this environment; it must not be assumed to prove the original SQL
-Server `DATETIME2` column has UTC/timezone semantics.
+**Acceptance boundary:** this validates only the observed SQL Server `REGULAR`/`AUTO` path
+with matching checkpoint and serialized LOW strings. `TUNED`, `BACKFILL`, no-new-data paths
+and other adapters were not validated by this test. It does not establish seven-digit Bronze
+timestamps or arbitrary timezone normalization. A serialized `Z` does not prove that the source
+SQL Server `DATETIME2` column represents UTC.
 
 **Operational caution:** Optimistic concurrency deliberately compares the
-checkpoint and LOW as strings. Preserve exact representation, not just
-datetime value equality; do not bulk-rewrite production checkpoints or
-disable the guarded compare to bypass a `WATERMARK_CONFLICT`.
+checkpoint and LOW as strings. The isolated one-config adjustment above is not a checkpoint migration.
+Preserve exact representation, not just datetime equality; do not bulk-rewrite production
+checkpoints or disable the guarded compare to bypass `WATERMARK_CONFLICT`.
 
 ## FILE incremental choice
 
@@ -210,21 +182,15 @@ The SFTP adapter uses the connector's Last Modified window:
 modifiedDatetimeStart <= LastModified < modifiedDatetimeEnd
 ```
 
-SFTP Last Modified values are UTC by source contract. Both Copy filter
-bounds are formatted as `yyyy-MM-ddTHH:mm:ss.fffZ`, matching the Fabric SFTP
-connector reference. Existing stored watermark strings without `Z` are
-read unchanged and formatted as UTC solely at the SFTP Copy boundary; the
-REGULAR upper bound from canonical `p_start_time` already carries `Z` and
-is persisted as the next committed watermark. The optimistic comparison
-retains the exact original stored LOW value, including its old representation.
-BACKFILL LOW/HIGH must represent UTC instants (with `Z` preferred); explicit
-non-UTC offsets must first be converted to UTC, not relabeled by formatting.
-This change does not apply to SQL Server `DATETIME2` source watermarks.
+Both Copy bounds follow the UTC formatting and legacy-checkpoint rules in
+[Timestamp ownership and timezone contract](#timestamp-ownership-and-timezone-contract).
+`BACKFILL` LOW/HIGH must represent UTC instants (`Z` preferred); convert non-UTC offsets to UTC before
+formatting them. These FILE rules do not change SQL Server `DATETIME2` source-watermark semantics.
 
 Operationally, the lower boundary is the previously committed watermark and the
 upper boundary is captured at the start of the current ingestion run. After a
-successful REGULAR ingestion with matching files and a completed Bronze write, the watermark advances to that upper
-boundary. When no files match, the status is `SKIPPED` and the checkpoint stays at the previous LOW.
+successful `REGULAR` ingestion with matching files and a completed Bronze write, guarded finalization advances
+the watermark to that upper boundary. When no files match, the status is `SKIPPED` and the checkpoint stays at LOW.
 
 The source filename remains a file identity/evidence field, not the incremental
 checkpoint.
@@ -254,15 +220,13 @@ insert atomic inside the control SQL database.
 
 A no-data FILE scan finishes as `SKIPPED` with zero rows and never advances its Last Modified
 checkpoint. Audit processing LOW/HIGH still describe the attempted scan. A later
-REGULAR run repeats that original LOW-to-new-HIGH range, allowing late-arriving
+`REGULAR` run repeats that original LOW-to-new-HIGH range, allowing late-arriving
 files to be discovered before any subsequent successful nonempty advance. This
 is not a complete late-arrival guarantee once a later nonempty run advances state.
 
-The DEV captures below show SKIPPED audit outcomes alongside separate Bronze and checkpoint context.
-
 [![Composite of DEV SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
 
-*C10 — DEV composite: customers and inventory_movement audits report SKIPPED with zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
+*C10: DEV composite showing `customers` and `inventory_movement` audits with `SKIPPED` and zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
 
 The Bronze query/filter is not visible, so its zero count does not independently prove no append. The watermark source files are byte-identical, not independent before/after observations. Run type is not visible, some Run IDs are truncated, and exact execution linkage is unverified.
 
@@ -279,12 +243,11 @@ BACKFILL
 ```
 
 Fabric Retry/Rerun is an execution-recovery mechanism, not a framework run type.
-A failed REGULAR ingestion can be recovered by starting another top-level REGULAR
+A failed `REGULAR` ingestion can be recovered by starting another top-level `REGULAR`
 execution; the committed watermark remains the source of truth for the next
 forward window.
 
-BACKFILL may overlap a historical interval that was processed successfully before.
+`BACKFILL` may overlap a historical interval that was processed successfully before.
 The framework does not delete or replace a previously successful Bronze batch when
 that happens. Bronze remains append-oriented and each execution is distinguished by
-its batch/run lineage. A future replace/reprocess mode should be added only if a
-real downstream requirement needs replacement or deduplication semantics.
+its batch/run lineage.

@@ -34,19 +34,19 @@ flowchart TD
 
 The supporting Notebooks are:
 
-- `nb_load_file_landing_to_bronze` — parse landed delimited-text files
+- `nb_load_file_landing_to_bronze`: parse landed delimited-text files
   and append Delta rows with ingestion metadata;
-- `nb_cleanup_bronze_batch_rows` — targeted compensation for failed
+- `nb_cleanup_bronze_batch_rows`: targeted compensation for failed
   writes using the **(`_batch_id`, `_pipeline_run_id`)** pair;
-- `nb_cleanup_landing_batch_files` — targeted removal of the failed
+- `nb_cleanup_landing_batch_files`: targeted removal of the failed
   execution's Landing leaf directory.
 
 The graph is intentionally not fully flattened. The incremental SQL adapter
 owns watermark/no-new-data decisions; the separate loader keeps the nested
-AUTO/TUNED Copy execution branch compatible with current Fabric Pipeline
+`AUTO`/`TUNED` Copy execution branch compatible with Fabric Pipeline
 structure. Dashed edges indicate recovery invoked after a **failed success-finalization
 activity**, not necessarily a confirmed watermark conflict. Only the implemented
-SQL Server and SFTP INCREMENTAL paths invoke this recovery pipeline; FULL loads
+SQL Server and SFTP `INCREMENTAL` paths invoke this recovery pipeline; `FULL` loads
 do not use it.
 
 ### Pipeline roles and connector boundary
@@ -63,12 +63,12 @@ The `pl_ingest_<scope>_<role>` names reflect distinct responsibilities in the im
 | Adapter | Executes source-specific extraction, boundary handling, and physical loading |
 | Loader / Recovery | Optional boundaries for nested Copy execution or uncertain incremental finalization |
 
-The **framework** owns REGULAR/BACKFILL intent, watermark/no-new-data semantics, Bronze append, audit/finalization,
+The **framework** owns `REGULAR`/`BACKFILL` intent, watermark/no-new-data semantics, Bronze append, audit/finalization,
 and optimistic checkpoint protection. A **connector adapter** owns its connection, source SQL/predicates and
 identifier quoting, boundary capture, type compatibility, and native Copy settings. An adapter must not silently
 redefine the framework's state or finalization semantics.
 
-The implemented DATABASE connector is SQL Server (FULL and INCREMENTAL); the FILE connector is SFTP. A future Oracle
+The implemented DATABASE connector is SQL Server (`FULL` and `INCREMENTAL`); the FILE connector is SFTP. A future Oracle
 or PostgreSQL connector belongs behind the thin DATABASE router, but deeper shared orchestration should be extracted
 only after a second implementation proves the common contract. Transfer verification and Copy options must be
 validated for each actual connector and execution mode; do not assume one vendor's behavior is universal.
@@ -94,7 +94,7 @@ The main Control/Audit and data components are:
 | Component | Responsibility |
 | --- | --- |
 | `control.connection_settings` | Logical connection references resolved to Fabric source/target Connections |
-| `control.ingestion_config` | One configuration per source object; ingestion pattern, FULL/INCREMENTAL, source/target metadata, optional Copy settings |
+| `control.ingestion_config` | One configuration per source object; ingestion pattern, `FULL`/`INCREMENTAL`, source/target metadata, optional Copy settings |
 | `control.pipeline_watermarks` | Durable checkpoint per incremental config, shared by DATABASE and FILE adapters |
 | `audit.ingestion_log` | One **terminal** object outcome per child Pipeline Run ID, including counts, bounds and error context |
 | `control.usp_validate_run_requests` | Validate explicit request structure and avoid ambiguous dispatch inputs |
@@ -118,8 +118,8 @@ flowchart LR
   L --> N["Notebook<br/>Parse &amp; Append to Delta"] --> B
 ```
 
-**DATABASE:** current SQL Server 2022 connector uses query-mode Copy for
-both FULL and INCREMENTAL. Optional `copy_options` selects
+**DATABASE:** the SQL Server 2022 connector uses query-mode Copy for
+both `FULL` and `INCREMENTAL`. Optional `copy_options` selects
 `NONE | DYNAMIC_RANGE`, and optionally a positive `parallel_copies`
 override backed by tests. `_ingestion_timestamp` is typed via the source
 query as `DATETIME2(3)` before Bronze append. The SQL Source is a separate
@@ -127,7 +127,7 @@ SQL Server; the Control Plane is a **Fabric SQL Database**.
 
 **FILE:** SFTP is copied in Binary to a scoped Landing directory first.
 A Notebook then reads delimited text, appends technical metadata and writes
-Delta. The current parser implements **DELIMITED_TEXT** only; Parquet/JSON
+Delta. The parser implements `DELIMITED_TEXT` only; `PARQUET`/`JSON`
 are not active readers. FILE incremental uses the *remote last modified*
 timestamp, not the CSV payload date.
 
@@ -135,16 +135,16 @@ timestamp, not the CSV payload date.
 
 | Execution | Implemented behavior | Operational watermark |
 | --- | --- | --- |
-| REGULAR + FULL | Read the configured current source scope and append a new Bronze batch | None for FULL |
-| REGULAR + INCREMENTAL | Read the saved LOW-to-HIGH window using SQL Server source bounds or the SFTP run-start boundary | Advance only after guarded successful finalization |
-| BACKFILL + FULL | Reread the current full scope, append new batch | None for FULL |
-| BACKFILL + INCREMENTAL | Read explicitly supplied historical LOW/HIGH, append new batch | **Never advance** |
+| `REGULAR` + `FULL` | Read the configured current source scope and append a new Bronze batch | None for `FULL` |
+| `REGULAR` + `INCREMENTAL` | Read the saved LOW-to-HIGH window using SQL Server source bounds or the SFTP run-start boundary | Advance only after guarded successful finalization |
+| `BACKFILL` + `FULL` | Reread the current full scope, append new batch | None for `FULL` |
+| `BACKFILL` + `INCREMENTAL` | Read explicitly supplied historical LOW/HIGH, append new batch | **Never advance** |
 
-- **DATABASE no new data:** a REGULAR timestamp window with HIGH = LOW is
-  SKIPPED without invoking the loader and without checkpoint movement.
+- **DATABASE no new data:** a `REGULAR` timestamp window with `HIGH = LOW` is
+  `SKIPPED` without invoking the loader and without checkpoint movement.
 - **FILE no new data:** a valid window that matches no remote files is
-  SKIPPED without Bronze write or checkpoint movement.
-- **BACKFILL FULL** is not a point-in-time historical snapshot.
+  `SKIPPED` without Bronze write or checkpoint movement.
+- `BACKFILL` + `FULL` is not a point-in-time historical snapshot.
 - **Successful batch appends are immutable** by ingestion logic. Replay of an
   overlapping scope appends a distinct batch; this framework does not claim
   end-to-end exactly-once business-record semantics.
@@ -160,7 +160,7 @@ finalization. This is the point of the compensating-cleanup design.
    execution's failed rows. Landing cleanup uses a correspondingly narrow
    execution folder.
 3. The SQL finalizer stores terminal object audit and applies guarded
-   checkpoint advancement under the rules for REGULAR/INCREMENTAL.
+   checkpoint advancement under the rules for `REGULAR`/`INCREMENTAL`.
 4. If advancement conflicts with newer state, the incremental recovery path
    inspects the durable finalize outcome and compensates only where safely
    established; ambiguous outcomes require explicit operator review.
@@ -172,7 +172,7 @@ Physical Bronze may contain rows from failed, cancelled, or unconfirmed executio
 Downstream consumers must use confirmed `SUCCESS` object-execution audits to identify committed ingestion data,
 matching Bronze `(_batch_id, _pipeline_run_id)` to audit `(batch_id, pipeline_run_id)`.
 A Batch ID alone is insufficient because multiple object executions can share it.
-This repository does **not** implement that downstream SUCCESS consumption gate; see
+This repository does **not** implement that downstream `SUCCESS` consumption gate; see
 [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md#limits-and-production-follow-through).
 
 ### What happens when something goes wrong?
@@ -189,7 +189,7 @@ itself prove that the SQL transaction failed.
 | The finalizer outcome cannot be read or confirmed | Preserve the affected data for operator reconciliation rather than performing blind cleanup. | Deleting a possibly committed batch could make state and data disagree. |
 
 The finalization-recovery branches above apply to the implemented **incremental**
-SQL Server and SFTP paths; do not assume the same recovery contract for FULL
+SQL Server and SFTP paths; do not assume the same recovery contract for `FULL`
 loads or every possible failure. See [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md)
 for the actual activity branches, audit codes, and verification steps.
 
@@ -200,9 +200,9 @@ for the actual activity branches, audit codes, and verification steps.
 | One config table + JSON source/copy options | Consistent metadata with connector-specific extensibility | Schema evolution and vendor-neutral parsing for every future connector |
 | Thin DATABASE/FILE router + adapters | Keep business-level state policy separate from physical connector implementation | Out-of-the-box Oracle/PostgreSQL/API connectors |
 | Fabric Copy for SQL, Notebook for files | Use native movement engine; Spark only when parsing/Delta operations add value | General Spark transformation or Silver/Gold framework |
-| AUTO/TUNED split | AUTO must omit `parallelCopies`; explicit zero was observed differently in a DEV PoC | Guaranteed optimum performance on arbitrary sources |
+| `AUTO`/`TUNED` split | `AUTO` must omit `parallelCopies`; a DEV test observed different parallelism with explicit zero | Guaranteed optimum performance on arbitrary sources |
 | Append-only successful batches | Preserve ingestion execution lineage, support intentional historical backfill | Global deduplication or a full snapshot versioning system |
-| Source-status Power BI report | Simple audit-backed operational visibility without another ingestion pipeline | Live RUNNING view, failure before object audit, verified alert inbox delivery |
+| Source-status Power BI report | Simple audit-backed operational visibility without another ingestion pipeline | Live `RUNNING` view, failure before object audit, verified alert inbox delivery |
 
 ## Scaling and extension considerations
 
@@ -242,8 +242,3 @@ revisited only when workload requirements justify the additional complexity.
   [retry/backfill](../operations/retry-rerun-backfill.md),
   [watermarks](../architecture/generic-incremental-watermark.md),
   and [Bronze compensation](../operations/bronze-compensating-cleanup.md).
-
-**Potential extensions where requirements justify them:** integrate a
-second relational connector behind the existing DATABASE router, broaden
-file-format support, or improve execution-level observability and data
-quality. These are explicitly *future options*, not current features.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document records Fabric Data Factory limits that constrain the current orchestration design. Treat these as
+This document records Fabric Data Factory limits that constrain the orchestration design. Treat these as
 inputs to sizing and validation, not as guarantees that the framework has been load-tested at each limit.
 
 Limits change over time. Recheck the Microsoft Fabric Data Factory limitations page before materially increasing scale.
@@ -19,7 +19,7 @@ Official references:
 | Area | Current documented limit / constraint | Framework handling |
 |---|---|---|
 | Lookup rows | 5,000 rows | ALL ACTIVE metadata enumeration is paged by `pl_ingest_config_paginator`. Default page size is 1,000 and requests are rejected above 5,000. |
-| Lookup output | 4 MB | Each config page returns only the fields required to form normalized REGULAR run requests. Other active lookups are single-config or scalar queries. |
+| Lookup output | 4 MB | Each config page returns only the fields required to form normalized `REGULAR` run requests. Other active lookups are single-config or scalar queries. |
 | Activities per pipeline | 120 including inner container activities | Keep connector/routing responsibilities separated into bounded child pipelines and review pipeline size when extending the framework. |
 | Pipeline parameters | 50 | Current pipelines remain well below the limit; keep parameter contracts bounded when extending adapters. |
 | ForEach items | 100,000 | The bounded Dispatcher receives at most one metadata page at a time; page size defaults to 1,000 and is capped at 5,000. |
@@ -33,16 +33,8 @@ Official references:
 
 ## Lookup pagination design
 
-The original single-lookup pattern was:
-
-```text
-lkp_active_configs
-  -> fe_ingestion_configs
-```
-
-That pattern silently truncates once Lookup returns more than 5,000 rows.
-
-The bounded pagination pattern is:
+A single Lookup returns at most 5,000 rows, so it cannot enumerate a larger active-config scope.
+The framework pages metadata through a dedicated paginator and dispatches one bounded page at a time:
 
 ```text
 pl_ingest_orchestrator
@@ -69,10 +61,10 @@ configs (whether a source is specified or not), it fails `NO_ACTIVE_CONFIGS`
 before `fe_config_pages`, with no object-level ingestion audit record. The master rejects mixed explicit requests and
 nonblank source scope with `AMBIGUOUS_RUN_SCOPE` before fan-out.
 
-The paginator emits the minimal REGULAR request shape (`config_id`, `run_type` ) for each active configuration.
+The paginator emits the minimal `REGULAR` request shape (`config_id`, `run_type`) for each active configuration.
 Optional LOW/HIGH fields are supplied only when a caller's execution semantics require them; the Dispatcher
-normalizes missing optional bounds to empty strings before invoking the Controller. This keeps the Dispatcher
-mode-agnostic and removes unsupported nested control containers.
+normalizes missing optional bounds to empty strings before invoking the Controller. This keeps dispatch
+independent of execution intent and avoids unsupported nested control containers.
 
 Default:
 
@@ -106,19 +98,18 @@ With `concurrency = 1`, one master run is active at a time and its Dispatcher
 can schedule up to eight object controllers concurrently within a page.
 A DEV Run All comparison on 2026-10-11 observed master durations of 9m29s
 at `batchCount = 3` versus 4m44s at `batchCount = 8` (50.1% less time).
-Each run produced eight object audit records: 2 SUCCESS, 6 SKIPPED, with
+Each run produced eight object audit records: 2 `SUCCESS`, 6 `SKIPPED`, with
 32 source rows and 32 target rows. This is a light-workload orchestration
 observation, **not** a heavy-throughput or capacity-cost benchmark.
 Production sizing still requires checking Fabric capacity usage, source load,
-throttling/errors, and equivalent non-SKIPPED workloads.
+throttling/errors, and equivalent workloads that do not primarily report `SKIPPED`.
 
 ### Get Metadata
 
-The active ingestion framework no longer depends on Get Metadata for recursive SFTP discovery. The SFTP Copy connector performs recursive discovery natively.
+The SFTP Copy connector performs recursive discovery natively; the active ingestion path does not enumerate folders with Get Metadata.
 
-The equivalent Azure Data Factory orchestration documentation caps returned Get Metadata payload at 4 MB. The
-retained legacy pipeline may still contain Get Metadata, but it is intentionally excluded from active architecture
-refactoring and is not used for scalable source-tree enumeration.
+The Azure Data Factory reference caps returned Get Metadata payload at 4 MB. This is another reason to keep
+source-tree discovery in the connector rather than passing folder listings through pipeline activities.
 
 ### Copy
 
