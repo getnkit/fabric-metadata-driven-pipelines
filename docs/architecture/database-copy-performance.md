@@ -260,6 +260,23 @@ PARTITIONED_DYNAMIC       (query, DYNAMIC_RANGE on event_date)
 
 No benchmark data needs to be regenerated solely for this change.
 
+The following DEV configuration snapshots show config 10 as active and config 9 as inactive.
+The `requested_parallel_copies` column is a scenario-selector input repeated across output rows, not an observed
+runtime parallelism measurement. These snapshots demonstrate metadata configuration, not completed execution
+results or independently verified configuration-to-run linkage.
+
+[![DEV B1 benchmark metadata with NONE and no parallel override](../assets/screenshots/performance/source-config/px-s8-b1-config.png)](../assets/screenshots/performance/source-config/px-s8-b1-config.png)
+
+*P01-B1 — DEV metadata enables config 10 for copy_source_partitioned with partition_option NONE and no parallel_copies override. requested_parallel_copies is NULL; config 9 is inactive. This is a configuration snapshot, not execution evidence.*
+
+[![DEV B2 benchmark metadata with DYNAMIC_RANGE on event_date and no override](../assets/screenshots/performance/source-config/px-s8-b2-config.png)](../assets/screenshots/performance/source-config/px-s8-b2-config.png)
+
+*P01-B2 — DEV metadata configures copy_source_partitioned with DYNAMIC_RANGE on event_date and no parallel_copies override. The checked-in routing interprets the omitted override as service-managed AUTO.*
+
+[![DEV B3 benchmark metadata with DYNAMIC_RANGE on event_date and explicit override 4](../assets/screenshots/performance/source-config/px-s8-b3-config.png)](../assets/screenshots/performance/source-config/px-s8-b3-config.png)
+
+*P01-B3 — DEV metadata configures DYNAMIC_RANGE on event_date with an explicit parallel_copies override of 4. This is a requested setting; observed runtime parallelism must be read separately from Copy results.*
+
 ## Observed AUTO vs explicit zero (DEV PoC, 2026-10-12)
 
 A separate temporary Copy Activity tested the same **10,000,000-row**
@@ -300,6 +317,43 @@ Recommended sequence:
 Do not infer the number from row count alone. Row width, source indexes, skew,
 database compute, network capacity, sink throughput, concurrent workloads, and
 the selected partition column all affect the useful parallelism.
+
+### Completed DEV Copy observations — 2026-10-24
+
+These completed Copy observations are separate from the historical 2026-10-12 explicit-zero versus omitted-AUTO
+PoC above. The visible activity names identify AUTO or TUNED branches; the checked-in AUTO branch omits
+`parallelCopies`, while TUNED supplies a positive explicit override. A successful Copy activity does not
+independently prove terminal SQL audit `SUCCESS`.
+
+[![Completed DEV AUTO Copy reporting one used parallel copy](../assets/screenshots/performance/p02-query-none.png)](../assets/screenshots/performance/p02-query-none.png)
+
+*P02 — The DEV copy_source_to_bronze_auto activity reports Succeeded, 10,000,000 rows read/written, Total duration 00:05:16, throughput 40.753 MB/s, and one used parallel copy. Partition settings are not shown in this result capture.*
+
+[![Completed DEV AUTO Copy reporting four used parallel copies](../assets/screenshots/performance/p03-query-dynamic-range-auto.png)](../assets/screenshots/performance/p03-query-dynamic-range-auto.png)
+
+*P03 — The DEV copy_source_to_bronze_auto activity reports Succeeded, 10,000,000 rows read/written, Total duration 00:04:33, throughput 47.011 MB/s, and four used parallel copies. This completed observation is separate from the 2026-10-12 PoC.*
+
+[![Completed DEV TUNED Copy reporting four used parallel copies](../assets/screenshots/performance/p04-query-dynamic-range-tuned.png)](../assets/screenshots/performance/p04-query-dynamic-range-tuned.png)
+
+*P04 — The DEV copy_source_to_bronze_tuned activity reports Succeeded, 10,000,000 rows read/written, Total duration 00:02:34, throughput 85.388 MB/s, and four used parallel copies. The capture does not independently establish the cause of the duration difference.*
+
+All three Copy captures report `Succeeded`, **10,000,000 rows read and written**, and **12.552 GB data read**.
+The descriptive table retains the Copy details **Total duration** and the activity-list **Duration** as separate
+observations; neither is substituted for the other. Times are recorded as displayed, without assuming a timezone.
+
+| Capture | Copy branch | Used parallel copies | Copy Total duration | Activity duration | Throughput | Data written / files |
+| --- | --- | ---: | --- | --- | ---: | --- |
+| P02 | AUTO | 1 | 00:05:16 | 5m 25s | 40.753 MB/s | 565.69 MB / 5 |
+| P03 | AUTO | 4 | 00:04:33 | 4m 43s | 47.011 MB/s | 571.46 MB / 8 |
+| P04 | TUNED | 4 | 00:02:34 | 2m 43s | 85.388 MB/s | 571.46 MB / 8 |
+
+*P05 — Descriptive summary of three completed DEV Copy captures. Values are reported per capture; configuration-to-run linkage, resource conditions, and target pre-run state are not independently established. No controlled speedup or general tuning recommendation is inferred.*
+
+The configuration snapshots are not independently linked to these executions, and result filenames do not prove
+resolved partition settings. P03 and P04 both report four used parallel copies; their duration difference does not
+independently establish an explicit-override performance benefit. DIUs, Fabric capacity, EC2 resource utilization,
+Copy inputs, cache state, and repeated-trial conditions are not established by these captures. The reviewed set
+does not provide a completed comparable result for the unpartitioned source layout.
 
 ## Extension boundary
 
