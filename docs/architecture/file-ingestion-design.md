@@ -256,7 +256,7 @@ FILE-specific state table.
 The initial checkpoint is:
 
 ```text
-1900-01-01T00:00:00.000
+1900-01-01T00:00:00Z
 ```
 
 For each REGULAR run, the adapter uses:

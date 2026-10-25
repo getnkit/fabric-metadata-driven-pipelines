@@ -24,7 +24,7 @@
       - Existing sample config rows are upserted (review before re-running).
       - Existing pipeline_watermarks records are NEVER updated/reset.
       - Only missing DATABASE/FILE incremental state rows are initialized
-        at 1900-01-01T00:00:00.000; unimplemented API is not auto-seeded.
+        at 1900-01-01T00:00:00Z; unimplemented API is not auto-seeded.
       - Metadata Watermark Field changes are NOT silently reconciled to
         persisted checkpoint fields; the adapter intentionally fails mismatch.
 */
