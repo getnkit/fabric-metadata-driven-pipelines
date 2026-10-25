@@ -4,6 +4,9 @@ Reproduce from the repository root:
     python -m pip install Pillow==11.3.0
     python scripts/evidence/build_sftp_composites.py
 
+Rebuild only O02:
+    python -c "from scripts.evidence.build_sftp_composites import build_o02; build_o02()"
+
 O02 uses separated UI crops to omit operational/environment identifiers.
 Crop boxes are (left, top, right, bottom); destination rectangles are (x, y, w, h).
 """
@@ -122,14 +125,25 @@ def build_o02():
     sources = [paste_source(canvas, source_dir / "cx-o02-binary-copy.png",
                             [((1073, 18, 1720, 422), (20, 164))])]
     label(canvas, (695, 164), "Selected activity", 18)
-    label(canvas, (695, 244), "Output panel", 18)
-    label(canvas, (695, 370), "Wrapped output (selected lines)", 18)
+    label(canvas, (695, 302), "Parsed row metrics (original line wrap)", 18)
+    ImageDraw.Draw(canvas).rectangle((695, 334, 1015, 392), fill="white")
+    # Clip surrounding metadata from each line of the serialized metrics object.
+    # Both strips use the SAME source-to-canvas translation: no token reflow,
+    # joining of labels/values, or reconstruction of source UI text.
+    metric_boxes = [(1288, 725, 1564, 741), (1262, 744, 1278, 758)]
+    metric_crops = [(box, (box[0] - 553, box[1] - 381)) for box in metric_boxes]
     sources.append(paste_source(canvas, source_dir / "cx-o02-notebook-parse.png", [
         ((90, 835, 545, 867), (695, 196)),
-        ((1255, 554, 1510, 625), (695, 276)),
-        ((1260, 725, 1646, 758), (695, 402)),
+        ((1255, 562, 1340, 588), (695, 252)),
+        *metric_crops,
     ]))
-    label(canvas, (695, 484), "Separate crops; intervening metadata omitted.", 18)
+    sources[-1]["crop_method"] = (
+        "Serialized metrics object clipped line by line, retaining original relative "
+        "positions and wrapping. Surrounding output metadata omitted; no token reflow "
+        "or text reconstruction. Activity and Output heading are separate context crops."
+    )
+    label(canvas, (695, 420), "Native pixel excerpt; original line positions.", 18)
+    label(canvas, (695, 448), "Surrounding output metadata omitted.", 18)
     ImageDraw.Draw(canvas).rectangle((20, 594, 1342, 704), fill="#E6E9EC")
     label(canvas, (32, 608), "Both Notebook row metrics reuse the same parsed DataFrame count.", 18)
     label(canvas, (32, 638), "They are not an independent Bronze recount.", 18)

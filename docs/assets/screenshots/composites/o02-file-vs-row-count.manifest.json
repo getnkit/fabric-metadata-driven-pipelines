@@ -7,7 +7,7 @@
     1362,
     726
   ],
-  "output_sha256": "d6f70663a444ddbea90d95b01edd9f4de21af911bef55e1f647b3e46f9beef27",
+  "output_sha256": "a214807c50fa87351047453e7159acf07e805f49cd29fb65a82ba3aedc6471f6",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
   "presentation": "Composite of DEV evidence; native pixels; no resizing or retouching.",
@@ -67,32 +67,47 @@
         {
           "crop_box": [
             1255,
-            554,
-            1510,
-            625
+            562,
+            1340,
+            588
           ],
           "rectangle": [
             695,
-            276,
-            255,
-            71
+            252,
+            85,
+            26
           ]
         },
         {
           "crop_box": [
-            1260,
+            1288,
             725,
-            1646,
+            1564,
+            741
+          ],
+          "rectangle": [
+            735,
+            344,
+            276,
+            16
+          ]
+        },
+        {
+          "crop_box": [
+            1262,
+            744,
+            1278,
             758
           ],
           "rectangle": [
-            695,
-            402,
-            386,
-            33
+            709,
+            363,
+            16,
+            14
           ]
         }
-      ]
+      ],
+      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops."
     }
   ]
 }
