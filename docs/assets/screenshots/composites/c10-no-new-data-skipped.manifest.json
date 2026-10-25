@@ -6,13 +6,14 @@
   "output": "docs/assets/screenshots/composites/c10-no-new-data-skipped.png",
   "output_dimensions": [
     1453,
-    664
+    452
   ],
-  "output_sha256": "0c8cc02f41cdd69e6a43355ba1050ecae0495cd8c7a74461bb1f254b05c7cdbc",
+  "output_sha256": "3807fb142331c4dff08d55679da29268dac85b38927f0eae520f2493713d6236",
   "generator": "scripts/evidence/build_incremental_composites.py",
   "pillow_version": "11.3.0",
   "title": "No New Data - SKIPPED Audit and Checkpoint Context",
-  "subtitle": "C10 \u00b7 DEV evidence composite",
+  "subtitle": null,
+  "on_image_notes": [],
   "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
   "supported_claim": "DEV customers and inventory_movement audits report SKIPPED with zero source/target rows. A separate Bronze result lists bronze_rows = 0 with no visible query scope. The watermark source files are byte-identical.",
   "limitations": [
@@ -42,14 +43,14 @@
         {
           "rectangle": [
             20,
-            158,
+            108,
             1409,
             76
           ]
         }
       ],
       "heading": "SKIPPED audit records",
-      "heading_y": 124
+      "heading_y": 80
     },
     {
       "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-no-bronze-append.png",
@@ -63,14 +64,14 @@
         {
           "rectangle": [
             20,
-            296,
+            232,
             1413,
             76
           ]
         }
       ],
-      "heading": "Bronze count result - query scope not shown",
-      "heading_y": 262
+      "heading": "Bronze count (query scope not shown)",
+      "heading_y": 204
     },
     {
       "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-before.png",
@@ -84,14 +85,14 @@
         {
           "rectangle": [
             20,
-            434,
+            356,
             1409,
             76
           ]
         }
       ],
-      "heading": "Watermark state - duplicate source files shown once",
-      "heading_y": 400
+      "heading": "Watermark state (identical captures shown once)",
+      "heading_y": 328
     },
     {
       "path": "docs/assets/screenshots/supporting/s2-no-new-data/cx-s2-watermark-after.png",

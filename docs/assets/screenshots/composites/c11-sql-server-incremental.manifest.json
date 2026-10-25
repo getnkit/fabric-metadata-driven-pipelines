@@ -6,13 +6,14 @@
   "output": "docs/assets/screenshots/composites/c11-sql-server-incremental.png",
   "output_dimensions": [
     1449,
-    758
+    596
   ],
-  "output_sha256": "684e8915812349eaab8d4d2c5efa1afbd572a90980ef2989bff33e22f4d44044",
+  "output_sha256": "aa935c677ff9fa4967087a8527727708afbc88057f5404fdf01cd9fc9ca21562",
   "generator": "scripts/evidence/build_c11_composite.py",
   "pillow_version": "11.3.0",
   "title": "SQL Server Incremental - Audit and Watermark Evidence",
-  "subtitle": "C11 \u00b7 DEV evidence composite",
+  "subtitle": null,
+  "on_image_notes": [],
   "limitation": "Run type is not visible; exact execution correlation is not independently verified.",
   "supported_claim": "Four DEV SUCCESS audit rows contain processing bounds consistent with the displayed before/after checkpoint values, and those checkpoint values advanced.",
   "sources": [
@@ -23,11 +24,11 @@
         1409,
         124
       ],
-      "label": "Earlier checkpoint capture",
-      "heading_y": 124,
+      "label": "Earlier checkpoint values",
+      "heading_y": 80,
       "rectangle": [
         20,
-        158,
+        108,
         1409,
         124
       ]
@@ -40,10 +41,10 @@
         124
       ],
       "label": "SUCCESS audit records",
-      "heading_y": 310,
+      "heading_y": 252,
       "rectangle": [
         20,
-        344,
+        280,
         1409,
         124
       ]
@@ -55,11 +56,11 @@
         1409,
         124
       ],
-      "label": "Later checkpoint capture",
-      "heading_y": 496,
+      "label": "Later checkpoint values",
+      "heading_y": 424,
       "rectangle": [
         20,
-        530,
+        452,
         1409,
         124
       ]

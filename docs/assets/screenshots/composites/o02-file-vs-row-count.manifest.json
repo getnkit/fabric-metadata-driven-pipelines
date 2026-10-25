@@ -6,13 +6,16 @@
   "output": "docs/assets/screenshots/composites/o02-file-vs-row-count.png",
   "output_dimensions": [
     1362,
-    680
+    576
   ],
-  "output_sha256": "10c8f4b1a3362d722717fdca1a21be8d7fffe3e153a8229cf9e8314e8beab7d6",
+  "output_sha256": "d97644184ddaa76d7b2cd89200b9679fe359e55e0aad3e8548dd6fcfd440be67",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
   "title": "SFTP Ingestion - Files Transferred vs Rows Parsed",
-  "subtitle": "O02 \u00b7 DEV evidence composite \u00b7 selected UI excerpts",
+  "subtitle": null,
+  "on_image_notes": [
+    "Both Notebook row metrics reuse one parsed DataFrame count."
+  ],
   "presentation": "DEV evidence composite; genuine UI crops; metrics enlarged 2x with NEAREST; no retouching or token reflow.",
   "supported_claim": "Binary Copy reports one file read and one written; the Notebook reports six source rows and six target rows. These are different measurement units.",
   "limitations": [
@@ -41,12 +44,14 @@
           "resampling": "none",
           "rectangle": [
             20,
-            164,
+            108,
             647,
             404
           ]
         }
-      ]
+      ],
+      "heading": "Binary Copy file counts",
+      "heading_y": 80
     },
     {
       "path": "docs/assets/screenshots/supporting/optional/o02-file-row-count/cx-o02-notebook-parse.png",
@@ -67,7 +72,7 @@
           "resampling": "none",
           "rectangle": [
             695,
-            196,
+            108,
             455,
             32
           ]
@@ -83,7 +88,7 @@
           "resampling": "none",
           "rectangle": [
             695,
-            252,
+            164,
             85,
             26
           ]
@@ -99,7 +104,7 @@
           "resampling": "NEAREST",
           "rectangle": [
             747,
-            350,
+            230,
             552,
             32
           ]
@@ -115,13 +120,15 @@
           "resampling": "NEAREST",
           "rectangle": [
             695,
-            388,
+            268,
             32,
             28
           ]
         }
       ],
-      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping under a shared 2x NEAREST transform. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops."
+      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping under a shared 2x NEAREST transform. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops.",
+      "heading": "Notebook row counts",
+      "heading_y": 80
     }
   ]
 }

@@ -98,7 +98,9 @@ The DEV audit below keeps both dimensions visible alongside a checkpoint-state c
 
 [![Composite of a DEV BACKFILL INCREMENTAL SUCCESS audit and a single watermark state panel](../assets/screenshots/composites/c13-incremental-backfill.png)](../assets/screenshots/composites/c13-incremental-backfill.png)
 
-*C13 — The DEV customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2. Both watermark source files display 2026-10-24T01:08:00.941Z and are byte-identical; they do not independently establish before/after state. Audit bounds and Batch ID are truncated, limiting exact window and execution correlation.*
+*C13 — DEV composite: the customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2, alongside one watermark-state panel.*
+
+The watermark source files are byte-identical and do not establish independent before/after observations. Audit LOW/HIGH and Batch ID are truncated. The captures do not independently establish checkpoint non-advancement, a Bronze append, or exact execution linkage; they do not establish exactly-once business semantics.
 
 ## Retry policy by side effect
 

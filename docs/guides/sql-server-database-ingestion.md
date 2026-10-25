@@ -172,7 +172,9 @@ The DEV captures below compare audit processing bounds with persisted checkpoint
 
 [![Composite of DEV SQL audit and checkpoint screenshots](../assets/screenshots/composites/c11-sql-server-incremental.png)](../assets/screenshots/composites/c11-sql-server-incremental.png)
 
-*C11 — Four DEV SUCCESS audits show processing bounds matching the displayed before/after checkpoints, which advance to 2026-10-24T01:08:00.941Z. Run type is not shown and audit Run IDs are truncated; exact execution correlation is not independently verified.*
+*C11 — DEV composite: four SUCCESS audit rows have processing bounds consistent with the displayed earlier and later checkpoints, which advance to 2026-10-24T01:08:00.941Z.*
+
+Run type is not visible and audit Run IDs are truncated; exact execution linkage is unverified.
 
 ## 5. Copy settings come from metadata
 

@@ -6,13 +6,14 @@
   "output": "docs/assets/screenshots/composites/c13-incremental-backfill.png",
   "output_dimensions": [
     1453,
-    508
+    280
   ],
-  "output_sha256": "6995236c81cdde8c4c5827b3b1e61c03c96f2aceb483e5450bf1431c4900dc11",
+  "output_sha256": "8dc1ec7bd82c00314e90a4d9e60d01a735cc08d3f94bdcbdf2b8be96d7d8ad4a",
   "generator": "scripts/evidence/build_incremental_composites.py",
   "pillow_version": "11.3.0",
   "title": "BACKFILL - Audit and Checkpoint Evidence",
-  "subtitle": "C13 \u00b7 DEV evidence composite",
+  "subtitle": null,
+  "on_image_notes": [],
   "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
   "supported_claim": "The DEV customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2. Both watermark source files display 2026-10-24T01:08:00.941Z and are byte-identical.",
   "limitations": [
@@ -43,14 +44,14 @@
         {
           "rectangle": [
             20,
-            158,
+            108,
             1413,
             52
           ]
         }
       ],
-      "heading": "BACKFILL / INCREMENTAL - SUCCESS audit",
-      "heading_y": 124
+      "heading": "BACKFILL / INCREMENTAL audit",
+      "heading_y": 80
     },
     {
       "path": "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-before.png",
@@ -64,14 +65,14 @@
         {
           "rectangle": [
             20,
-            272,
+            208,
             1409,
             52
           ]
         }
       ],
-      "heading": "Watermark state - duplicate source files shown once",
-      "heading_y": 238
+      "heading": "Watermark state (identical captures shown once)",
+      "heading_y": 180
     },
     {
       "path": "docs/assets/screenshots/supporting/s5-backfill/cx-s5-watermark-after.png",

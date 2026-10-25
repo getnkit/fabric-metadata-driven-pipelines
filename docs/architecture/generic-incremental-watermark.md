@@ -262,7 +262,9 @@ The DEV captures below show SKIPPED audit outcomes alongside separate Bronze and
 
 [![Composite of DEV SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
 
-*C10 — DEV customers and inventory_movement audits report SKIPPED with zero source/target rows. A separate Bronze result lists bronze_rows = 0, but its query scope is not shown. The watermark files named before/after are byte-identical, not independently verified state observations. Run type and exact execution correlation are not established by these captures.*
+*C10 — DEV composite: customers and inventory_movement audits report SKIPPED with zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
+
+The Bronze query/filter is not visible, so its zero count does not independently prove no append. The watermark source files are byte-identical, not independent before/after observations. Run type is not visible, some Run IDs are truncated, and exact execution linkage is unverified.
 
 ## Run types and recovery
 

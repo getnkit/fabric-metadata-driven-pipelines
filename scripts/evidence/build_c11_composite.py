@@ -18,12 +18,11 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = Path("docs/assets/screenshots/supporting/s3-sql-incremental")
 OUTPUT = Path("docs/assets/screenshots/composites/c11-sql-server-incremental.png")
 PANELS = [
-    ("Earlier checkpoint capture", SOURCE / "cx-s3-watermark-before.png"),
+    ("Earlier checkpoint values", SOURCE / "cx-s3-watermark-before.png"),
     ("SUCCESS audit records", SOURCE / "cx-s3-audit-success.png"),
-    ("Later checkpoint capture", SOURCE / "cx-s3-watermark-after.png"),
+    ("Later checkpoint values", SOURCE / "cx-s3-watermark-after.png"),
 ]
 TITLE = "SQL Server Incremental - Audit and Watermark Evidence"
-SUBTITLE = "C11 · DEV evidence composite"
 LIMITATION = (
     "Run type is not visible; exact execution correlation is not independently verified."
 )
@@ -42,9 +41,9 @@ def main():
                 raise ValueError(f"Unexpected transparency in {path}")
             images.append(image.convert("RGB"))
 
-    margin, heading_height, gap = 20, 34, 28
+    margin, heading_height, gap = 20, 28, 20
     width = max(image.width for image in images) + 2 * margin
-    cursor = 124
+    cursor = 80
     sources = []
     for (label, path), image in zip(PANELS, images):
         sources.append({
@@ -57,22 +56,20 @@ def main():
         })
         cursor += heading_height + image.height + gap
 
-    canvas = Image.new("RGB", (width, cursor + 76), "#F4F5F6")
+    canvas = Image.new("RGB", (width, cursor), "#F4F5F6")
     draw = ImageDraw.Draw(canvas)
 
     def text(position, value, size, color="#263238"):
         font = ImageFont.load_default(size=size)
-        if draw.textbbox(position, value, font=font)[2] > width - margin:
-            raise ValueError("Label exceeds canvas width")
+        bounds = draw.textbbox(position, value, font=font)
+        if bounds[2] > width - margin or bounds[3] > canvas.height - 16:
+            raise ValueError("Label exceeds canvas bounds")
         draw.text(position, value, font=font, fill=color)
 
     text((margin, 22), TITLE, 30)
-    text((margin, 70), SUBTITLE, 19, "#53616B")
     for source, image in zip(sources, images):
-        text((margin, source["heading_y"]), source["label"], 23)
+        text((margin, source["heading_y"]), source["label"], 20)
         canvas.paste(image, tuple(source["rectangle"][:2]))
-    draw.line((margin, cursor, width - margin, cursor), fill="#CDD5DD")
-    text((margin, cursor + 16), LIMITATION, 18, "#53616B")
 
     output = ROOT / OUTPUT
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -88,7 +85,8 @@ def main():
         "generator": Path(__file__).relative_to(ROOT).as_posix(),
         "pillow_version": pillow_version,
         "title": TITLE,
-        "subtitle": SUBTITLE,
+        "subtitle": None,
+        "on_image_notes": [],
         "limitation": LIMITATION,
         "supported_claim": CLAIM,
         "sources": sources,

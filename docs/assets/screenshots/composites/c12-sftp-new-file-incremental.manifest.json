@@ -6,13 +6,14 @@
   "output": "docs/assets/screenshots/composites/c12-sftp-new-file-incremental.png",
   "output_dimensions": [
     1450,
-    804
+    600
   ],
-  "output_sha256": "45728cb0bb0d450fbeecd66c3a103d80e9d226e68bce98432ddfe0724c0800aa",
+  "output_sha256": "586b3db521b694f12ca1a723cfec19176b620e2d15796723dd60e29a1f9c2a40",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
   "title": "SFTP Incremental - Bronze Lineage and Checkpoint Context",
-  "subtitle": "C12 \u00b7 DEV evidence composite",
+  "subtitle": null,
+  "on_image_notes": [],
   "presentation": "DEV evidence composite; complete native panels; no cropping, resizing or retouching.",
   "supported_claim": "The DEV movement audit reports SUCCESS and six processed rows. Six visible Bronze rows share the after-state Batch ID. The checkpoint advances from 2026-10-23T12:31:47.787Z to 2026-10-24T02:04:02.238Z.",
   "limitations": [
@@ -40,12 +41,14 @@
           "resampling": "none",
           "rectangle": [
             20,
-            158,
+            108,
             1409,
             52
           ]
         }
-      ]
+      ],
+      "heading": "Earlier checkpoint values",
+      "heading_y": 80
     },
     {
       "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-audit-success.png",
@@ -66,12 +69,14 @@
           "resampling": "none",
           "rectangle": [
             20,
-            272,
+            208,
             1409,
             52
           ]
         }
-      ]
+      ],
+      "heading": "SUCCESS audit record",
+      "heading_y": 180
     },
     {
       "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-bronze-new-file-lineage.png",
@@ -92,12 +97,14 @@
           "resampling": "none",
           "rectangle": [
             20,
-            386,
+            308,
             1410,
             172
           ]
         }
-      ]
+      ],
+      "heading": "Bronze source-file lineage",
+      "heading_y": 280
     },
     {
       "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-watermark-after.png",
@@ -118,12 +125,14 @@
           "resampling": "none",
           "rectangle": [
             20,
-            620,
+            528,
             1409,
             52
           ]
         }
-      ]
+      ],
+      "heading": "Later checkpoint values",
+      "heading_y": 500
     }
   ]
 }

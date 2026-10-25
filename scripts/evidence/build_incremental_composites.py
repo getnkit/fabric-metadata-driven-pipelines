@@ -24,11 +24,10 @@ SPECS = [
         "directory": "s2-no-new-data",
         "output": "c10-no-new-data-skipped.png",
         "title": "No New Data - SKIPPED Audit and Checkpoint Context",
-        "subtitle": "C10 · DEV evidence composite",
         "panels": [
             ("SKIPPED audit records", "cx-s2-skipped-audit.png"),
-            ("Bronze count result - query scope not shown", "cx-s2-no-bronze-append.png"),
-            ("Watermark state - duplicate source files shown once", "cx-s2-watermark-before.png"),
+            ("Bronze count (query scope not shown)", "cx-s2-no-bronze-append.png"),
+            ("Watermark state (identical captures shown once)", "cx-s2-watermark-before.png"),
         ],
         "duplicate": "cx-s2-watermark-after.png",
         "supported_claim": (
@@ -47,10 +46,9 @@ SPECS = [
         "directory": "s5-backfill",
         "output": "c13-incremental-backfill.png",
         "title": "BACKFILL - Audit and Checkpoint Evidence",
-        "subtitle": "C13 · DEV evidence composite",
         "panels": [
-            ("BACKFILL / INCREMENTAL - SUCCESS audit", "cx-s5-audit-backfill.png"),
-            ("Watermark state - duplicate source files shown once", "cx-s5-watermark-before.png"),
+            ("BACKFILL / INCREMENTAL audit", "cx-s5-audit-backfill.png"),
+            ("Watermark state (identical captures shown once)", "cx-s5-watermark-before.png"),
         ],
         "duplicate": "cx-s5-watermark-after.png",
         "supported_claim": (
@@ -94,15 +92,15 @@ def build(spec):
     sources[-1]["duplicate_of"] = original.as_posix()
     sources[-1]["omission_reason"] = "Byte-identical watermark displayed once; not a separate observation."
 
-    width, cursor = max(image.width for image in images.values()) + 40, 124
+    width, cursor = max(image.width for image in images.values()) + 40, 80
     for (heading, filename), source in zip(spec["panels"], sources):
         image = images[filename]
         source["heading"] = heading
         source["heading_y"] = cursor
-        source["placements"] = [{"rectangle": [20, cursor + 34, image.width, image.height]}]
-        cursor += 34 + image.height + 28
+        source["placements"] = [{"rectangle": [20, cursor + 28, image.width, image.height]}]
+        cursor += 28 + image.height + 20
 
-    canvas = Image.new("RGB", (width, cursor + 36 + 30 * len(spec["limitations"])), "#F4F5F6")
+    canvas = Image.new("RGB", (width, cursor), "#F4F5F6")
     draw = ImageDraw.Draw(canvas)
 
     def text(xy, value, size, color="#263238"):
@@ -114,13 +112,9 @@ def build(spec):
 
     title = spec["title"]
     text((20, 22), title, 30)
-    text((20, 70), spec["subtitle"], 19, "#53616B")
     for (_, filename), source in zip(spec["panels"], sources):
-        text((20, source["heading_y"]), source["heading"], 23)
+        text((20, source["heading_y"]), source["heading"], 20)
         canvas.paste(images[filename], tuple(source["placements"][0]["rectangle"][:2]))
-    draw.line((20, cursor, width - 20, cursor), fill="#CDD5DD")
-    for index, limitation in enumerate(spec["limitations"]):
-        text((20, cursor + 14 + index * 30), limitation, 18, "#53616B")
 
     output = BASE / "composites" / spec["output"]
     (ROOT / output).parent.mkdir(parents=True, exist_ok=True)
@@ -136,7 +130,8 @@ def build(spec):
         "generator": Path(__file__).relative_to(ROOT).as_posix(),
         "pillow_version": pillow_version,
         "title": title,
-        "subtitle": spec["subtitle"],
+        "subtitle": None,
+        "on_image_notes": [],
         "presentation": "Complete native screenshot panels; no cropping, resizing, retouching, or timeline arrows.",
         "supported_claim": spec["supported_claim"],
         "limitations": spec["limitations"],
