@@ -1,0 +1,55 @@
+{
+  "candidate": "C11",
+  "asset_role": "derived_composite",
+  "publication_decision": "owner_approved_with_evidence_limitations",
+  "output": "docs/assets/screenshots/composites/c11-sql-server-incremental.png",
+  "output_dimensions": [
+    1449,
+    758
+  ],
+  "output_sha256": "c8c0e2430967b4564e325f7df29df634a92a88d9a3958a42bbeebdf2262df7a4",
+  "generator": "scripts/evidence/build_c11_composite.py",
+  "pillow_version": "11.3.0",
+  "title": "C11 | Composite of DEV evidence",
+  "subtitle": "Audit and checkpoint comparison - not a single-run execution trace.",
+  "limitation": "Run type is not visible; exact execution correlation is not independently verified.",
+  "supported_claim": "Four DEV SUCCESS audit rows contain processing bounds consistent with the displayed before/after checkpoint values, and those checkpoint values advanced.",
+  "sources": [
+    {
+      "path": "docs/assets/screenshots/supporting/s3-sql-incremental/cx-s3-watermark-before.png",
+      "sha256": "0d5dfefcb8c6d064e3273671b070cc59a33531fec6e2971652b0b032b02a4d12",
+      "label": "1. Watermark Before",
+      "heading_y": 124,
+      "rectangle": [
+        20,
+        158,
+        1409,
+        124
+      ]
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s3-sql-incremental/cx-s3-audit-success.png",
+      "sha256": "3ad2f743bc655954e11f08ccab595466a2196f7a727ea38dd3f013de1eec284f",
+      "label": "2. SUCCESS Audit Records",
+      "heading_y": 310,
+      "rectangle": [
+        20,
+        344,
+        1409,
+        124
+      ]
+    },
+    {
+      "path": "docs/assets/screenshots/supporting/s3-sql-incremental/cx-s3-watermark-after.png",
+      "sha256": "1802e620a71db7e2345d57baf9d2d0c418f4e9f0fd5169a5570214eb3031b423",
+      "label": "3. Watermark After",
+      "heading_y": 496,
+      "rectangle": [
+        20,
+        530,
+        1409,
+        124
+      ]
+    }
+  ]
+}

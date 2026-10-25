@@ -86,6 +86,10 @@ Files Landing step**. The native Copy activity writes directly to the configured
 A later successful FULL run appends another batch. It does not truncate or replace a previously successful Bronze
 batch, so downstream consumers need to account for execution lineage when working with full snapshots.
 
+[![DEV SQL Server FULL Copy execution details](../assets/screenshots/core/c05-sql-server-copy-execution.png)](../assets/screenshots/core/c05-sql-server-copy-execution.png)
+
+*C05 — This DEV FULL Adapter AUTO Copy reports Succeeded, with 20 rows read from SQL Server and 20 rows written to Lakehouse. Copy success alone does not establish the terminal object audit outcome.*
+
 ## 4. INCREMENTAL: determine the processing window
 
 The `crm.customers` configuration has `load_strategy = INCREMENTAL` and `watermark_field = updated_at`.
@@ -163,6 +167,10 @@ A historical BACKFILL processes the explicitly requested range and **does not** 
 watermark. It appends a distinct Bronze batch, preserving the existing successful batches.
 
 Read [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md) and [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for the full contract.
+
+[![Composite of DEV SQL audit and checkpoint screenshots](../assets/screenshots/composites/c11-sql-server-incremental.png)](../assets/screenshots/composites/c11-sql-server-incremental.png)
+
+*C11 — Composite: four DEV SUCCESS audits show processing bounds matching the displayed before/after checkpoints, which advance to 2026-10-24T01:08:00.941Z. Run type is not shown and audit Run IDs are truncated; exact execution correlation is not independently verified.*
 
 ## 5. Copy settings come from metadata
 
@@ -296,6 +304,10 @@ ORDER BY c.source_schema, c.source_object;
 
 Match the Fabric object Run ID, SQL audit row, and Bronze `_pipeline_run_id` when checking a specific execution. A
 green Copy activity alone does not establish the final audit or checkpoint outcome.
+
+[![DEV Bronze category rows with ingestion lineage fields](../assets/screenshots/core/c06-sql-bronze-lineage.png)](../assets/screenshots/core/c06-sql-bronze-lineage.png)
+
+*C06 — Visible DEV category rows carry shared batch, object-execution, and ingestion-timestamp metadata. This Bronze sample does not establish the table's total row count or independently correlate it with the C05 Copy activity.*
 
 ## 7. Failure and recovery boundaries
 
