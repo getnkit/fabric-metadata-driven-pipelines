@@ -258,8 +258,20 @@ Benchmark is **optional DEV-only**; standard installs need no additional IDs or 
 
 ## Release note
 
-The SQL Database Project may include Fabric-exported, workspace-specific
-security principals and schema owners. **Do not blindly deploy these
-identities across environments**; review SQL Project security and
-permissions during provisioning. Do not change schema ownership or database users as part of a Control Plane reseed.
+The current SQL Database Project includes a Fabric-exported, environment-specific
+principal/SID and schema-owner references. **Do not blindly deploy these identities
+across environments.** A separately prepared portable-baseline candidate uses
+`AUTHORIZATION [dbo]` for newly provisioned control/audit schemas and separates
+environment user provisioning from the project. This Round 2A candidate is
+**UNVERIFIED**, not canonical or approved for deployment; SQL Project Build and
+deployment-plan review are required before canonical ownership changes.
+Its create-if-absent bootstrap does not change existing owners.
+Before applying a changed project to existing DEV, inspect the deployment plan,
+owners and permissions; source-model user omission may have deployment effects.
+A Control Plane reseed does not authorize schema ownership transfer, user removal
+or permission changes.
 
+The optional Activator definition currently tracks DEV source bindings, a recipient
+and an enabled rule setting. Use a validated disabled-first setup in a new workspace;
+the Round 2A empty-recipient candidate is **UNVERIFIED** for Fabric import. Configure and verify
+the destination before explicitly enabling the rule and testing recipient delivery.

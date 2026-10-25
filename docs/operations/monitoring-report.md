@@ -100,9 +100,17 @@ action (such as email or Teams), rather than embedding a notification activity i
 all-active runs use the same master pipeline item, but a FAILED run means a failure within **that run's scope**, not
 every configured source system.
 
-Scheduling and the recipient/channel are environment-specific and not provisioned in Git. To accept an alerting
-setup, verify the master FAILED event, a FAILED object audit *when an object/config was resolved*, and **actual
-recipient receipt**. A master failure before object resolution may create no object audit.
+The currently tracked DEV Activator definition includes physical event-source bindings,
+an email recipient, and rule settings with `shouldRun = true`. These are
+environment-specific configuration, not proof of successful deployment or delivery.
+For a new environment, review and rebind source references, configure the intended
+recipient privately, and validate the rule configuration with notifications disabled.
+Inspect the actual enabled/disabled state before explicitly enabling notifications.
+The Round 2A empty-recipient candidate is **UNVERIFIED** for Fabric import and is
+not approved for canonical implementation or deployment.
+To accept an alerting setup, verify the master FAILED event, a FAILED object audit
+*when an object/config was resolved*, and **actual recipient receipt**. A master
+failure before object resolution may create no object audit.
 
 **Observed in DEV (2026-10-04):** two master FAILED events were detected, and Activator rule/action activity was
 observed. **Delivery to the intended recipient inbox was not independently verified.** This proves event

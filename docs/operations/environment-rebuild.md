@@ -104,15 +104,32 @@ Before creating Fabric connections, verify source SQL read-only access, row coun
    - `sm_ingestion_operations.SemanticModel` and
      `rpt_ingestion_operations.Report`
    - `act_ingestion_monitoring.Reflex` only if implementing optional alerts.
+     The tracked DEV definition contains source bindings, a recipient, and an
+     enabled rule setting. Do not import it blindly. Validate a disabled definition
+     in an isolated workspace first. The Round 2A disabled empty-recipient
+     candidate is **UNVERIFIED**, not approved for canonical use or deployment.
+     Review and rebind source references, configure the intended recipient
+     privately, and validate rule configuration and the actual enabled/disabled
+     state before explicitly enabling notifications. Verify recipient delivery.
 3. Verify item *names and types*, record the **new** workspace/SQL DB/Lakehouse
    IDs in the worksheet and check ownership/permissions.
 4. Review
    `fabric/sqldb_ingestion_control.SQLDatabase/Security/` before deployment:
    it contains a **prior-workspace Microsoft Entra principal and SID**.
-   Do not blindly apply that security object in a new tenant. Prefer the
-   fresh SQL bootstrap in section E for schema creation and provision
-   permissions appropriate to the new environment. Resolve any Git SQL
-   Database Project deployment/security conflict before continuing.
+   Do not blindly apply that security object in a new tenant. The separately
+   prepared portable-baseline candidate uses `AUTHORIZATION [dbo]` for newly
+   created control/audit schemas and excludes the prior environment's user/SID.
+   This Round 2A candidate is **UNVERIFIED**, not canonical or approved for
+   deployment. A SQL Project Build has not been run because compatible tooling
+   was unavailable, and Fabric deployment validation remains outstanding.
+   Its bootstrap creates missing schemas only;
+   the current bootstrap does not explicitly select an owner. Provision users
+   and permissions separately for the destination environment. For an existing
+   DEV database, review owners, permissions and the target-specific deployment
+   plan before any update. Require SQL Project Build and deployment-plan review
+   before canonical ownership changes. Fresh provisioning does not authorize
+   automatic ownership transfer, user removal or permission changes in existing
+   DEV. Resolve Git SQL deployment/security conflicts first.
 
 **Important reference semantics:** same-workspace Invoke Pipeline and
 Notebook targets in `pipeline-content.json` use logical item IDs matching
