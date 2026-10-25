@@ -4,7 +4,7 @@
 > **Purpose:** Preserve the implementation boundary, prior design decisions, evidence inventory, documentation strategy, and next actionable work when continuing in a new ChatGPT conversation.  
 > **Scope:** Personal GitHub portfolio only, separate from client delivery work.  
 > **Storage:** Temporary public `.project-handoff/` folder. Do not publish credentials or private environment-specific identifiers.  
-> **Status at handoff:** Framework and D01/D02 diagrams are complete for the current portfolio scope; 58 screenshots and 2 SVG diagrams have been committed and grouped on GitHub. **Batch A (C01, C02, D01) is reviewed, owner-approved, and integrated in `docs/guides/control-plane.md` on `docs/evidence-curation`; remaining evidence batches, composite authoring, and final portfolio QA are pending.**
+> **Status at handoff:** Framework and D01/D02 diagrams are complete for the current portfolio scope; 58 screenshots and 2 SVG diagrams have been committed and grouped on GitHub. **Batch A (C01, C02, D01) is merged into `main` at `30470a6`. Batch B (C03 and five CX-S1 images under C04) is owner-approved and integrated in `docs/guides/pipeline-orchestration.md` on `docs/evidence-curation`; its merge, remaining evidence batches, composite authoring, and final portfolio QA are pending.**
 
 ## 0. How to use this handoff
 
@@ -139,8 +139,8 @@ docs/assets/
 |---|---|---|
 | C01 | `c01-control-metadata.png` | Batch A reviewed and owner-approved; integrated in Control Plane guide |
 | C02 | `c02-logical-connections.png` | Batch A reviewed and owner-approved; integrated in Control Plane guide |
-| C03 | `c03-master-orchestration.png` | Direct file present; visual review pending |
-| C04 | `c04-object-routing.png` | **No single C04 file**; user chose **multiple separate captures** (S1 CX group) |
+| C03 | `c03-master-orchestration.png` | Batch B reviewed and owner-approved; integrated in Pipeline Orchestration guide |
+| C04 | `c04-object-routing.png` | **No single C04 file**; five original CX-S1 images integrated under Pagination, Dispatcher, Controller Routing, and Database Routing; unselected inventory entries unchanged |
 | C05 | `c05-sql-server-copy-execution.png` | Direct file present; visual review pending |
 | C06 | `c06-sql-bronze-lineage.png` | Direct file present; visual review pending |
 | C07 | `c07-sftp-ingestion-flow.png` | **No single C07 file**; user chose **multiple separate captures** (S1 CX group) |
@@ -168,7 +168,7 @@ docs/assets/
 
 | Candidate | Intended filename | Snapshot status |
 |---|---|---|
-| O01 | `o01-end-to-end-trace.png` | Pending composite from `cx-o01-audit.png` and potentially other real execution images |
+| O01 | `o01-end-to-end-trace.png` | Pending additional correlation and Bronze lineage evidence; not integrated or permanently skipped |
 | O02 | `o02-file-vs-row-count.png` | Pending composite from Binary Copy and Notebook parse screenshots |
 | O03 | `o03-full-append-history.png` | **SKIP / dropped by user** |
 | O04 | `o04-copy-performance-details.png` | **SKIP / dropped by user** |
@@ -189,7 +189,7 @@ docs/assets/
 
 1. Screenshot from an actual completed execution or persisted real state; capture master/object Run IDs and Batch IDs where needed.
 2. Crop irrelevant UI without changing or inventing outcomes; any composite must use **real** source screenshots and be explicitly labeled a **Composite**.
-3. Don't expose credentials, tokens, connection strings, personal IDs, or confidential business data. **Batch A visual privacy review found no visible sensitive data in C01, C02, or D01; the remaining assets have not been privacy-reviewed in this workflow. Perform a proportional safety scan before prominently publishing/linking other selected images.**
+3. Don't expose credentials, tokens, connection strings, personal IDs, or confidential business data. **Batch A and the six selected Batch B captures have been visually checked with no visible sensitive environment information found. Other assets still require publication-specific privacy review; do not infer acceptance from contact-sheet inclusion.**
 4. Caption tells **what an artifact proves** (e.g. final audit and checkpoint non-advancement), not just what UI it shows.
 5. `evidence-log.csv` is optional **local/private working metadata**, useful for IDs and provenance; don't backfill unavailable IDs by guessing, and don't commit environment GUIDs unnecessarily.
 6. If screenshot A and B support the same claim, use the clearer one. A guide need not include every image in the archive.
@@ -238,8 +238,18 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 - C01 shows selected DEV configuration columns; C02 is explicitly introduced as a DEV configuration-to-connection mapping, not the exact output of the preceding two-column query or proof of connectivity. Neither screenshot proves execution outcomes or universal configuration values.
 - D01 remains the finalized editable SVG. Its selected-field overview and distinction between enforced FKs and the non-FK audit association agree with the SQL Database Project. No PNG/SVG source asset was changed.
 - Validation covers relative figure links, unique placement, Markdown structure, preservation of existing guide text and original asset blobs, CSV scope limited to C01/C02/D01, and final Git diff review.
-- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate control plane evidence and data model`. Merge into `main` remains pending owner review. No other screenshot batch was inspected or integrated.
-- Next proposed batch is Batch B from `SCREENSHOT_IMPLEMENTATION_PLAN.md`; wait for owner direction before starting it. Other handoff files retain their original planning context and were not updated in Batch A.
+- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate control plane evidence and data model`. Batch A was subsequently merged into `main` at `30470a6`. No other screenshot batch was inspected or integrated during Batch A.
+- Batch B was subsequently reviewed and authorized by the owner; its completed progress is recorded below. Other handoff files retain their original planning context and were not updated in Batch A.
+
+### Batch B completed — 2026-10-25 (Asia/Bangkok)
+
+- Integrated six owner-approved original PNGs at five locations in `docs/guides/pipeline-orchestration.md`: C03 plus C04 Pagination, Dispatcher, Controller Routing, and Database Routing. Controller DATABASE/FILE images remain vertically arranged with one shared caption. All six images link to their full-size originals; existing Mermaid and technical explanations are preserved.
+- Selected CX-S1 files: `cx-s1-config-pagination-detail-1.png`, `cx-s1-dispatcher-execution.png`, `cx-s1-object-controller-database.png`, `cx-s1-object-controller-file.png`, and `cx-s1-database-router-detail-1.png`. C04 remains their parent evidence candidate. Inventory changes are limited to these five entries and C03; unselected CX-S1 and O01 rows retain their prior status.
+- The guide describes individual DEV observations without claiming a single correlated execution. Pipeline invocation `Succeeded` is explicitly distinct from object audit `SUCCESS`; the Dispatcher capture demonstrates two invocations starting in the same displayed second, not eight simultaneous object executions. The DATABASE route capture demonstrates `SQL_SERVER|FULL` only.
+- Rechecked all six selected images for sensitive environment information; no credentials, physical connection/workspace/item IDs, or personal information are visible. Original PNGs are unchanged. Temporary contact sheets cover all 22 CX-S1 inputs plus C03 and remain outside the repository; they are review aids, not publication composites.
+- O01 remains pending additional evidence, not permanently skipped. Some master/adapter captures share a Batch ID and adapter Copy input carries the matching controller audit Run ID, but `cx-o01-audit.png` truncates IDs and the reviewed set lacks persisted Bronze lineage results. Do not publish an end-to-end trace until exact audit correlation, child-run linkage, and matching Bronze lineage are established.
+- Validation covers all relative guide links, six unique full-size image links at the approved locations, exact approved captions, one shared Controller caption, preservation of existing content/Mermaid and original asset blobs, inventory scope, and final Git diff review.
+- Implementation branch: `docs/evidence-curation`; commit message: `docs: integrate orchestration execution evidence`. Batch B merge into `main` remains pending owner review. FILE Router and SFTP Adapter details remain for Batch D; SQL Server adapter evidence remains for Batch C. Do not start another batch without owner direction.
 
 ### Phase A — Filename-first curation (next task)
 
@@ -312,4 +322,4 @@ See `docs/architecture/database-copy-performance.md`; DO NOT rely solely on this
 - **User-provided decisions:** exact C/P/O target filenames and `SKIP`/`COMPOSITE`/`multiple screenshots` notes; D01/D02 visual preferences; request for minimum-effort filename-first batch curation; temporary public-repository handoff strategy.
 - **Not established by this handoff:** visual content or privacy review of each PNG, completed review of all 26 candidates, availability of original Run IDs or Test SHA for every scenario, values for final P05 comparison, existence of planned C10–C13/P05/O01/O02/O05 composites, UAT/PROD deployment success, full Activator alert delivery.
 
-**Next action when continuing:** Review the completed Batch A changes on `docs/evidence-curation`; do not merge into `main` without owner direction. Wait for authorization before starting Batch B (Orchestration) from `SCREENSHOT_IMPLEMENTATION_PLAN.md`. Review only its scoped evidence; no redesign or mass visual scan.
+**Next action when continuing:** Review the completed Batch B changes on `docs/evidence-curation`; do not merge into `main` without owner direction. Batch A is already merged at `30470a6`. O01 remains pending additional evidence. Wait for authorization before starting Batch C; reserve FILE Router/SFTP Adapter details for Batch D. No redesign or mass visual scan.

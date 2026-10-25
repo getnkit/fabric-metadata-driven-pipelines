@@ -86,6 +86,13 @@ The explicit request path invokes `control.usp_validate_run_requests` before dis
 obtains active configurations from SQL. In either case, the Dispatcher receives an array of object requests and a
 shared Batch ID.
 
+The DEV screenshots below illustrate individual execution observations, not one correlated end-to-end trace.
+A Pipeline invocation marked `Succeeded` does not by itself establish an object audit status of `SUCCESS`.
+
+[![DEV Orchestrator execution using the Paginator path](../assets/screenshots/core/c03-master-orchestration.png)](../assets/screenshots/core/c03-master-orchestration.png)
+
+*C03 — This successful DEV Orchestrator execution follows the Paginator path; the activity list records the completed Paginator invocation.*
+
 ## 3. Why is there a Paginator?
 
 The Paginator keeps the number of configuration rows returned by each Lookup bounded. This matters as the number of
@@ -104,6 +111,12 @@ request array. The Object Controller performs a separate configuration lookup fo
 
 The current design uses sequential pages and bounded object parallelism inside each page. It does not promise that all active objects start at the same moment.
 
+### C04 — Pagination
+
+[![DEV pagination output and page dispatch activity runs](../assets/screenshots/supporting/s1-orchestration/cx-s1-config-pagination-detail-1.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-config-pagination-detail-1.png)
+
+*C04 — The DEV pagination Lookup reports eight active configurations across four pages; the activity list shows repeated page Lookups and Dispatcher invocations.*
+
 ## 4. The Dispatcher runs object controllers
 
 [`pl_ingest_config_dispatcher`](../../fabric/pl_ingest_config_dispatcher.DataPipeline/pipeline-content.json) contains `fe_run_requests`, a parallel ForEach with `batchCount = 8` in the current DEV baseline. For each item, `inv_ingest_object_controller` forwards:
@@ -116,6 +129,12 @@ The current design uses sequential pages and bounded object parallelism inside e
 Do not confuse object parallelism with the master setting. The master Orchestrator currently has `concurrency = 1`,
 so two master executions are serialized. Within one master run, the Dispatcher can start up to eight object requests
 in parallel.
+
+### C04 — Dispatcher
+
+[![DEV Dispatcher execution with two Object Controller invocations](../assets/screenshots/supporting/s1-orchestration/cx-s1-dispatcher-execution.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-dispatcher-execution.png)
+
+*C04 — This DEV Dispatcher execution shows two Object Controller invocations starting in the same displayed second and completing successfully; it does not demonstrate eight simultaneous requests.*
 
 This is a DEV setting, not a general tuning recommendation. In a small all-active DEV comparison (2026-10-11),
 `batchCount = 3` took **9m29s** versus **4m44s** with `batchCount = 8`. Both runs recorded eight object audits
@@ -139,6 +158,14 @@ An explicitly requested inactive configuration is finalized as `SKIPPED`. An inv
 follows a failure path. The controller only invokes a physical router after the metadata and execution request have
 passed the relevant checks.
 
+### C04 — Controller Routing
+
+[![DEV Object Controller execution invoking the DATABASE Router](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-database.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-database.png)
+
+[![DEV Object Controller execution invoking the FILE Router](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-file.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-object-controller-file.png)
+
+*C04 — Separate DEV object executions show configuration lookup and request checks followed by DATABASE Router invocation (first image) or FILE Router invocation (second image). These are routing examples, not a single-object execution sequence.*
+
 ## 6. The Routers choose the physical adapter
 
 The DATABASE and FILE Routers keep connector-specific behavior out of the Object Controller.
@@ -149,6 +176,12 @@ The DATABASE and FILE Routers keep connector-specific behavior out of the Object
 | `pl_ingest_file_router` | Source connection type and load strategy | `SFTP\|FULL`, `SFTP\|INCREMENTAL` |
 
 The route key joins the uppercased connection type and load strategy with the pipe character (`|`), using `concat` in the Router activities.
+
+### C04 — Database Routing
+
+[![DEV DATABASE route output selecting the SQL Server FULL Adapter](../assets/screenshots/supporting/s1-orchestration/cx-s1-database-router-detail-1.png)](../assets/screenshots/supporting/s1-orchestration/cx-s1-database-router-detail-1.png)
+
+*C04 — The DEV DATABASE Router evaluates SQL_SERVER|FULL and records a successful FULL Adapter invocation; this capture does not demonstrate the INCREMENTAL branch.*
 
 The FILE Router first checks `if_supported_file_format`. At present, the accepted format is `DELIMITED_TEXT`. The
 SQL Server INCREMENTAL adapter adds a separate Loader pipeline for Copy execution and finalization. Each physical
