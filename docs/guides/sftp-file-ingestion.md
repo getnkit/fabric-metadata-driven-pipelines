@@ -190,13 +190,12 @@ flowchart TD
 The supported watermark field is `last_modified_time`. The Lookup matches **both** `ingestion_config_id` and
 `watermark_field`. For `REGULAR`, `set_processing_lower_bound` reads the committed checkpoint and
 `set_processing_upper_bound` takes `p_start_time`. For `BACKFILL`, the corresponding values come from the
-explicitly requested bounds. **Both run types require `HIGH > LOW` ** for FILE ingestion; a missing checkpoint, an
+explicitly requested bounds. **Both run types require `HIGH > LOW`** for FILE ingestion; a missing checkpoint, an
 unsupported field, or an invalid boundary follows a failure-finalization branch.
 
 The diagram shows the initial `sp_finalize_*` activities for rejected requests and omits their dependent `fail_*`
 activities for readability. The exact Activity dependencies are in the
-[SFTP INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sftp_incremental_adapter.DataPipeline/pipeline-content.json)
-.
+[SFTP INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sftp_incremental_adapter.DataPipeline/pipeline-content.json).
 
 ### Step B: discover files, copy to Landing, then decide whether to write Bronze
 

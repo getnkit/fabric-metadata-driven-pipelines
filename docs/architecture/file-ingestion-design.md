@@ -77,7 +77,7 @@ Source connection + source_path
 
 The source-to-Landing step is intentionally Binary so the delivered file is preserved byte-for-byte. Parsing starts only after the raw artifact reaches Landing.
 
-The FILE Router now owns a single `if_supported_file_format` gate before `sw_file_route`, with the Personal
+The FILE Router now owns a single `if_supported_file_format` gate before `sw_file_route`, with the
 `p_file_format` contract (`@equals(toUpper(pipeline().parameters.p_file_format), 'DELIMITED_TEXT')`). Unsupported
 formats are audited and failed once with `UNSUPPORTED_FILE_FORMAT` before invoking SFTP FULL or INCREMENTAL; the
 corresponding format gates and failure finalizers were removed from both SFTP adapters. The gate runs before
@@ -359,33 +359,14 @@ FILE Watermark HIGH is persisted as the exact UTC-with-`Z` Object Run Start;
 source-derived watermark bounds preserve their original precision and timezone
 semantics. Do not append `Z` to a source-native value without a UTC contract.
 
-The current SFTP incremental physical flow is therefore:
+The FILE Router validates `DELIMITED_TEXT` before the SFTP incremental adapter validates watermark state and
+LOW/HIGH boundaries. The adapter then performs recursive Binary Copy into execution-scoped Landing and checks
+`filesRead == filesWritten` before deciding whether to load Bronze. A consistent `0 / 0` finalizes as `SKIPPED`
+without a Bronze write or checkpoint advance. With matching nonzero file counts, the Notebook parses Landing,
+appends Bronze, and proceeds to success finalization.
 
-```text
-pl_ingest_file_router
-  -> if_supported_file_format (supported: DELIMITED_TEXT)
-  -> sw_file_route (SFTP|INCREMENTAL)
-  -> pl_ingest_sftp_incremental_adapter
-      -> if_supported_watermark_field (last_modified_time)
-      -> lkp_current_watermark
-      -> if_state_found
-      -> resolve LOW/HIGH for REGULAR or BACKFILL
-      -> if_valid_processing_boundary
-      -> copy_sftp_to_landing
-       recursive = true
-       wildcard file_name_pattern
-       LOW <= LastModified < HIGH
-       PreserveHierarchy
-  -> if_landing_file_count_consistent
-       filesRead == filesWritten
-  -> if_no_new_data
-       filesRead == 0
-       -> true: sp_finalize_no_new_data_skipped (status=SKIPPED, advance_watermark=false)
-       -> false: nb_load_file_landing_to_bronze
-                    p_file_format
-                    p_source_options
-                 -> sp_finalize_success
-```
+For activity-level details, follow [Step A: state and boundary validation](../guides/sftp-file-ingestion.md#step-a-validate-state-and-establish-the-processing-window)
+and [Step B: Copy, file counts, SKIPPED and Bronze loading](../guides/sftp-file-ingestion.md#step-b-discover-files-copy-to-landing-then-decide-whether-to-write-bronze).
 
 The previous explicit folder-queue / Until / scanner-pipeline design was removed
 because it duplicated recursive traversal already provided by the SFTP Copy
@@ -433,9 +414,7 @@ SFTP
        -> common Bronze write
 ```
 
-The **FILE Router** performs the single framework-level supported-format guard before connector/strategy routing;
-SFTP FULL and INCREMENTAL do not repeat that check. It does not route to a different pipeline branch per file
-format. Reader selection lives inside the reusable notebook so future `PARQUET` or `JSON` support can reuse the same
+Reader selection lives inside the reusable notebook so future `PARQUET` or `JSON` support can reuse the same
 Landing, lineage, Bronze-write, row-count, and recovery behavior. When additional connector adapters support
 different subsets of formats, revisit the Router guard as an explicit route/adapter capability policy rather than
 assuming one global list fits every adapter.

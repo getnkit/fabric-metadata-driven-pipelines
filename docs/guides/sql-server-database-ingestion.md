@@ -122,8 +122,8 @@ from a source Lookup; BACKFILL uses the explicitly requested HIGH. After boundar
 
 The diagram stops at the initial finalize activities on the error branches to remain readable. Their dependent
 `fail_*` activities, along with the exact Fabric dependencies and error handling, remain in the
-[INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sql_server_incremental_adapter.DataPipeline/pipeline-content.json)
-. The diagram is derived from the checked-in definition, **not** an observed DEV run.
+[INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sql_server_incremental_adapter.DataPipeline/pipeline-content.json).
+The diagram is derived from the checked-in definition, **not** an observed DEV run.
 
 For a REGULAR run the upper bound comes from a source query:
 
@@ -306,8 +306,10 @@ WHERE c.source_system = 'ECOMMERCE'
 ORDER BY c.source_schema, c.source_object;
 ```
 
-Match the Fabric object Run ID, SQL audit row, and Bronze `_pipeline_run_id` when checking a specific execution. A
-green Copy activity alone does not establish the final audit or checkpoint outcome.
+In Fabric Monitor, inspect the executed FULL or INCREMENTAL Copy branch and match its object Run ID to the SQL
+audit row and Bronze `_pipeline_run_id`. For incremental runs, compare the stored watermark before and after
+finalization. A green Copy activity alone does not establish the terminal SQL audit or checkpoint outcome. This guide
+documents implementation behavior; observed outcomes depend on DEV source state at execution time.
 
 [![DEV Bronze category rows with ingestion lineage fields](../assets/screenshots/core/c06-sql-bronze-lineage.png)](../assets/screenshots/core/c06-sql-bronze-lineage.png)
 
@@ -324,10 +326,3 @@ The [Bronze Compensating Cleanup runbook](../operations/bronze-compensating-clea
 Mermaid diagrams for both **Bronze write failure** and **post-finalization reconciliation**. Follow those diagrams
 alongside the Pipeline JSON to see why cleanup is conditional on the failure boundary. These behaviors should not be
 simplified into a claim that every rerun is automatically exactly once at business-record level.
-
-### Check the run before drawing conclusions
-
-In Fabric Monitor, inspect the executed FULL or INCREMENTAL Copy branch and match its object Pipeline Run ID to
-`audit.ingestion_log`. For an incremental run, compare the stored watermark before and after finalization. The Copy
-activity's success alone does not confirm the terminal audit or checkpoint update. This guide documents
-implementation behavior; the observed result depends on the DEV source state at execution time.

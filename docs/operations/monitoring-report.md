@@ -150,6 +150,7 @@ detection/action invocation only, not an end-to-end verified notification servic
   relationships.
 - `scripts/monitoring/01_create_monitoring_views.sql` — runnable SQL views.
 - `fabric/sqldb_ingestion_control.SQLDatabase/audit/Views/` — SQL Project views.
+
 For a new workspace, create the three monitoring views, import/sync both
 canonical Fabric artifacts, rebind the model's two DirectQuery partitions to
 the new SQL Database, configure Entra credentials and verify the four KPI

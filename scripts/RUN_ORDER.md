@@ -170,11 +170,9 @@ For independent source-system schedules, invoke the same master with separate
 `p_source_system` values (e.g. `ECOMMERCE` and `LOGISTICS_VENDOR`).
 The master has `concurrency = 1`: independent source-system runs keep distinct
 Batch IDs but execute serially. Dispatcher `batchCount = 8` allows bounded
-parallelism of up to eight object requests within each master run. This DEV
-setting follows a light-workload Run All comparison on 2026-10-11
-(9m29s at 3 versus 4m44s at 8; both eight audit records with 2 SUCCESS,
-6 SKIPPED and 32 source/target rows). It does not establish heavy-load
-throughput or Fabric capacity efficiency. No config-level execution lock
+parallelism of up to eight object requests within each master run. For the
+light-workload DEV observation and its limits, see [the Dispatcher section](../docs/guides/pipeline-orchestration.md#4-the-dispatcher-runs-object-controllers).
+This setting does not establish heavy-load throughput or Fabric capacity efficiency. No config-level execution lock
 is implemented. See [run requests](../docs/operations/run-request-examples.md).
 
 - DATABASE: SQL Server 2022 Developer on EC2 reads directly into Bronze Delta; source-derived
