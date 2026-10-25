@@ -27,6 +27,7 @@ ingestion path, with consistent watermark management and run auditing.
 
 The repository demonstrates end-to-end **batch ingestion** from SQL Server tables and CSV files delivered over SFTP.
 Both paths support FULL and INCREMENTAL loads into **Bronze Delta tables in a Fabric Lakehouse**.
+FULL loads append new Bronze batches without truncating or replacing existing tables.
 
 ## Architecture
 
@@ -73,6 +74,9 @@ You do **not** need a Fabric workspace to review the architecture and code. Choo
 | **Understand how it works in code** | [Technical Learning Path](docs/guides/learning-path.md) — guided SQL Server/SFTP walkthroughs, then deeper references |
 | **Rebuild a working DEV demo** | [Environment Rebuild](docs/operations/environment-rebuild.md) — new-workspace checklist, with the [SQL run order](scripts/RUN_ORDER.md) |
 
+Some checked-in Fabric definitions contain environment-specific DEV references; review and rebind them for a new
+environment as described in [Environment Rebuild](docs/operations/environment-rebuild.md).
+
 The **Technical Learning Path** also links to focused guides on control metadata, routing, incremental processing, Copy tuning, failure recovery, and monitoring.
 
 **Repository layout:** `fabric/` tracks Fabric Pipeline, Notebook, SQL Database, Lakehouse, Variable Library, and
@@ -92,6 +96,9 @@ Once the sources and Fabric items are configured, run `pl_ingest_orchestrator`. 
 p_run_requests = []
 p_source_system = "LOGISTICS_VENDOR"
 ```
+
+`REGULAR` and `BACKFILL` describe execution intent; `FULL` and `INCREMENTAL` are configured load strategies.
+See [Run Request Examples](docs/operations/run-request-examples.md) for explicit requests and historical windows.
 
 The orchestrator selects matching objects and invokes the required child pipelines. After the run, inspect its
 activities in **Fabric Monitor**, then check `audit.ingestion_log` and the **Power BI Operations Report** for

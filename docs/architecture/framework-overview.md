@@ -168,6 +168,13 @@ finalization. This is the point of the compensating-cleanup design.
 This is **compensation + optimistic state control**, not a distributed
 transaction across Delta and SQL.
 
+Physical Bronze may contain rows from failed, cancelled, or unconfirmed executions.
+Downstream consumers must use confirmed `SUCCESS` object-execution audits to identify committed ingestion data,
+matching Bronze `(_batch_id, _pipeline_run_id)` to audit `(batch_id, pipeline_run_id)`.
+A Batch ID alone is insufficient because multiple object executions can share it.
+This repository does **not** implement that downstream SUCCESS consumption gate; see
+[Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md#limits-and-production-follow-through).
+
 ### What happens when something goes wrong?
 
 The most important distinction is whether a failure happened during the Bronze

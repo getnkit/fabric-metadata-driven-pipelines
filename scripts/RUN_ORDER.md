@@ -51,6 +51,16 @@ Only run these steps on an empty/new SQL Database or one already verified
 to match this Baseline. Never run demo seeds against UAT/PROD by default.
 Existing populated environments require a separate reviewed upgrade; these scripts are for fresh installation.
 
+### Monitoring views — Power BI dependency
+
+For the Power BI Operations Report, install the three read-only monitoring views after the core checks:
+
+```text
+scripts/monitoring/01_create_monitoring_views.sql
+```
+
+These are report dependencies, separate from the mandatory Control/Audit bootstrap.
+
 ### Optional DEV reset (destructive)
 
 If reusing the same DEV Control SQL Database for a clean reinstall, stop all ingestion
@@ -258,12 +268,12 @@ Benchmark is **optional DEV-only**; standard installs need no additional IDs or 
 
 The current SQL Database Project includes a Fabric-exported, environment-specific
 principal/SID and schema-owner references. **Do not blindly deploy these identities
-across environments.** A separately prepared portable-baseline candidate uses
-`AUTHORIZATION [dbo]` for newly provisioned control/audit schemas and separates
-environment user provisioning from the project. This Round 2A candidate is
-**UNVERIFIED**, not canonical or approved for deployment; SQL Project Build and
-deployment-plan review are required before canonical ownership changes.
-Its create-if-absent bootstrap does not change existing owners.
+across environments.** A proposed portable baseline would use
+`AUTHORIZATION [dbo]` for newly provisioned control/audit schemas and separate
+environment user provisioning from the project. This alternative is **UNVERIFIED**,
+is not implemented in this repository, and is not approved for deployment.
+SQL Project Build and deployment-plan review are required before canonical ownership changes.
+The current create-if-absent bootstrap does not change existing owners.
 Before applying a changed project to existing DEV, inspect the deployment plan,
 owners and permissions; source-model user omission may have deployment effects.
 A Control Plane reseed does not authorize schema ownership transfer, user removal
@@ -271,5 +281,6 @@ or permission changes.
 
 The optional Activator definition currently tracks DEV source bindings, a recipient
 and an enabled rule setting. Use a validated disabled-first setup in a new workspace;
-the Round 2A empty-recipient candidate is **UNVERIFIED** for Fabric import. Configure and verify
+an empty-recipient alternative remains **UNVERIFIED** for Fabric import and is not
+implemented in this repository or approved for deployment. Configure and verify
 the destination before explicitly enabling the rule and testing recipient delivery.

@@ -105,8 +105,9 @@ Before creating Fabric connections, verify source SQL read-only access, row coun
    - `act_ingestion_monitoring.Reflex` only if implementing optional alerts.
      The tracked DEV definition contains source bindings, a recipient, and an
      enabled rule setting. Do not import it blindly. Validate a disabled definition
-     in an isolated workspace first. The Round 2A disabled empty-recipient
-     candidate is **UNVERIFIED**, not approved for canonical use or deployment.
+     in an isolated workspace first. A disabled, empty-recipient alternative remains
+     **UNVERIFIED** for Fabric import and is not implemented in this repository or
+     approved for deployment.
      Review and rebind source references, configure the intended recipient
      privately, and validate rule configuration and the actual enabled/disabled
      state before explicitly enabling notifications. Verify recipient delivery.
@@ -115,17 +116,16 @@ Before creating Fabric connections, verify source SQL read-only access, row coun
 4. Review
    `fabric/sqldb_ingestion_control.SQLDatabase/Security/` before deployment:
    it contains a **prior-workspace Microsoft Entra principal and SID**.
-   Do not blindly apply that security object in a new tenant. The separately
-   prepared portable-baseline candidate uses `AUTHORIZATION [dbo]` for newly
-   created control/audit schemas and excludes the prior environment's user/SID.
-   This Round 2A candidate is **UNVERIFIED**, not canonical or approved for
-   deployment. A SQL Project Build has not been run because compatible tooling
-   was unavailable, and Fabric deployment validation remains outstanding.
-   Its bootstrap creates missing schemas only;
-   the current bootstrap does not explicitly select an owner. Provision users
-   and permissions separately for the destination environment. For an existing
-   DEV database, review owners, permissions and the target-specific deployment
-   plan before any update. Require SQL Project Build and deployment-plan review
+   Do not blindly apply that security object in a new tenant. A proposed portable
+   baseline would use `AUTHORIZATION [dbo]` for newly created control/audit schemas
+   and keep environment-specific user/SID provisioning separate. This alternative
+   is **UNVERIFIED**, is not implemented in this repository, and is not approved for
+   deployment.
+   The current create-if-absent bootstrap does not explicitly select an owner or
+   change existing owners. Provision users and permissions separately for the
+   destination environment. For an existing DEV database, review owners,
+   permissions and the target-specific deployment plan before any update.
+   Require SQL Project Build, deployment-plan review and Fabric deployment validation
    before canonical ownership changes. Fresh provisioning does not authorize
    automatic ownership transfer, user removal or permission changes in existing
    DEV. Resolve Git SQL deployment/security conflicts first.

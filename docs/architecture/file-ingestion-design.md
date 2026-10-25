@@ -134,9 +134,12 @@ pattern-appropriate framework fallback such as the current SFTP file-count gate.
 
 The current project does not implement Quarantine.
 
-If a file cannot be found, opened, or parsed according to `source_options`, the
-ingestion run fails and records the error in the normal ingestion audit path. A
-file already copied to Landing remains there for inspection/reprocessing.
+Fatal file-access or reader errors fail the ingestion run through the normal audit path.
+The checked-in CSV reader does not set a parsing `mode`, so Spark's default
+[`PERMISSIVE` mode](https://spark.apache.org/docs/latest/sql-data-sources-csv.html#data-source-option)
+applies. Some malformed row-level CSV content may therefore be accepted without failing the run;
+this does not guarantee acceptance of every malformed input. A file already copied to Landing
+remains there for inspection/reprocessing.
 
 When SFTP landing Copy fails or its file counts mismatch, Landing cleanup
 recursively deletes only the validated leaf folder ending in

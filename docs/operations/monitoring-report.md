@@ -106,8 +106,8 @@ environment-specific configuration, not proof of successful deployment or delive
 For a new environment, review and rebind source references, configure the intended
 recipient privately, and validate the rule configuration with notifications disabled.
 Inspect the actual enabled/disabled state before explicitly enabling notifications.
-The Round 2A empty-recipient candidate is **UNVERIFIED** for Fabric import and is
-not approved for canonical implementation or deployment.
+A disabled, empty-recipient alternative remains **UNVERIFIED** for Fabric import
+and is not implemented in this repository or approved for deployment.
 To accept an alerting setup, verify the master FAILED event, a FAILED object audit
 *when an object/config was resolved*, and **actual recipient receipt**. A master
 failure before object resolution may create no object audit.
