@@ -28,8 +28,11 @@ and validating all five active values. See the [Environment Rebuild guide](envir
 inventory and setup order. Do not commit passwords, tokens, or other credentials.
 
 Each of the twelve framework pipelines declares only the Library variables it uses under
-`properties.libraryVariables`. It reads those values locally with `@pipeline().libraryVariables.<name>`.
-The pipelines do not forward runtime connection IDs as pipeline parameters.
+`properties.libraryVariables`. It reads its required framework-runtime bindings locally with
+`@pipeline().libraryVariables.<name>`, rather than receiving them as pipeline parameters.
+
+Source and target connection settings are still passed from the Object Controller to downstream pipelines;
+these JSON settings can contain connector connection IDs in `connectionId`.
 
 The supported **external entry point** remains `pl_ingest_orchestrator`. Its
 `if_required_connections_provided` guard rejects any missing/empty value with

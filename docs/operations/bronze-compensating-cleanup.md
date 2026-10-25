@@ -193,8 +193,8 @@ Pipeline reports a failure.
 
 If the guarded watermark UPDATE affects no row, `control.usp_finalize_ingestion_run` commits an exact-match
 `FAILED / WATERMARK_CONFLICT` audit row before raising the conflict exception. The procedure does **not** advance
-the watermark. This committed audit lets the recovery child automatically compensate this specific outcome;
-a failed Stored Procedure activity alone **does not establish that cleanup is safe**.
+the watermark. After confirming the exact-match committed audit outcome, the recovery child can perform scoped
+cleanup for this watermark conflict. A failed Stored Procedure activity alone **does not establish that cleanup is safe**.
 
 For DATABASE, the existing `nb_cleanup_bronze_batch_rows` removes rows
 matching **both** `_batch_id` and `_pipeline_run_id`. For FILE, that same

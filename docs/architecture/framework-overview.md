@@ -6,8 +6,8 @@ runtime behavior, consult the linked Fabric Pipelines, Notebooks, and SQL defini
 ## What problem does this solve?
 
 As the number of source objects grows, separate table and file pipelines tend to repeat the same ingestion logic.
-Each copy can handle incremental checkpoints, retries, missing source data, audits, source configuration or
-destination naming differently.
+These separate pipelines may handle incremental checkpoints, retries, missing source data, audit logging, source
+configuration, and destination naming differently.
 
 The framework manages these shared decisions through a **metadata-backed Control Plane**. Adapters handle only
 the *physical ingestion steps that depend on the source*.

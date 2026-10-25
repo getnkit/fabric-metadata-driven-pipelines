@@ -98,7 +98,8 @@ Copy activity. The AUTO branch omits the `parallelCopies` property completely.
 
 ## Runtime flow
 
-The SQL Server 2022 Developer on EC2 ingestion path converts Copy metadata into these execution parameters:
+For the SQL Server 2022 Developer instance running on EC2, the ingestion pipeline maps the configured Copy options
+to these execution parameters:
 
 ```text
 p_copy_partition_option
