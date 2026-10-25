@@ -1,4 +1,6 @@
-# Environment Rebuild — Fresh DEV From Git
+<a id="environment-rebuild--fresh-dev-from-git"></a>
+
+# Environment Rebuild: Fresh DEV From Git
 
 **Goal:** Recreate a functional DEV environment for **Metadata-Driven Pipelines in Microsoft Fabric** after losing
 or retiring a workspace. This is a fresh-install runbook, not a backup/restore procedure. It cannot recover
@@ -67,7 +69,7 @@ Do not reuse IDs from the previous DEV workspace even if the names match.
 ## C. Create optional demo source infrastructure
 
 **If rebuilding the demo sources:** provision an adequately sized Ubuntu EC2 host with Docker/Compose and tightly
-scoped security-group access (SSH 22, SQL Server 1433, SFTP 2222 as applicable; no blanket `0.0.0.0/0` ). Follow the
+scoped security-group access (SSH 22, SQL Server 1433, SFTP 2222 as applicable; no blanket `0.0.0.0/0`). Follow the
 [source infrastructure runbook](../../infra/source/README.md) for fresh-host setup, the named
 `fabric_sqlserver_data` volume, SFTP host key, private `.env`, Compose commands and fixture uploads. Use new
 secrets; do not commit them.
@@ -186,7 +188,7 @@ allowlist, SFTP credentials and new SFTP server fingerprint as appropriate.
 ### F1. Configure the **five String** Variable Library values
 
 Open `vl_ingestion_connections` in the **new workspace**, select the
-**active** value set (normally Default), and replace *all* old workspace
+**active** value set (normally `Default`), and replace *all* old workspace
 values with the worksheet values:
 
 | Variable | Set to |
@@ -200,8 +202,8 @@ values with the worksheet values:
 The committed Library currently includes **old DEV GUIDs as defaults**.
 Treat them as **stale in a new workspace**. Never attempt a run before
 replacing/validating all five. A newly imported Library initially uses
-its **Default** value set; the active-set selection is workspace state,
-whereas Default values are stored in Git. After rebinding, review the
+its **`Default`** value set; the active-set selection is workspace state,
+whereas `Default` values are stored in Git. After rebinding, review the
 Source control diff and do not Commit new environment GUIDs to `main`.
 Check each pipeline's Library variables bindings rather than hardcoding
 individual pipeline parameters. See
@@ -212,8 +214,8 @@ individual pipeline parameters. See
 Use the canonical [architecture graph](../architecture/framework-overview.md#orchestration-and-routing) rather than
 maintaining another copy of the hierarchy here. The restored workspace should contain **12 pipelines and 3
 notebooks**. Inspect **every** Invoke Pipeline and Notebook target in Fabric: names must resolve in the new
-workspace. Specifically confirm that the SQL Server INCREMENTAL adapter invokes its Loader and that incremental
-success-finalization failure (not FULL) can invoke `pl_ingest_incremental_finalize_recovery`.
+workspace. Specifically confirm that the SQL Server `INCREMENTAL` adapter invokes its Loader and that incremental
+success-finalization failure (not `FULL`) can invoke `pl_ingest_incremental_finalize_recovery`.
 
 Verify all three Notebook targets: `nb_load_file_landing_to_bronze`, `nb_cleanup_bronze_batch_rows`, and
 `nb_cleanup_landing_batch_files`. Also check Copy Connections, SQL metadata's Lakehouse workspace/item references,
@@ -223,7 +225,7 @@ or Power BI's SQL source.
 ### F3. Seed fresh DEV logical connection settings
 
 Use a **local execution copy** of `scripts/control/03_seed_connection_settings.sql` and supply all five required,
-non-NULL **new-workspace** source/target Connection and Lakehouse IDs.
+non-`NULL` **new-workspace** source/target Connection and Lakehouse IDs.
 [RUN_ORDER section D](../../scripts/RUN_ORDER.md#d-optional-dev-demo-control-metadata) is the canonical list of seed
 input variable names, logical references, and seed safety rules. Keep the optional benchmark Connection ID `NULL`
 unless testing the benchmark.
@@ -236,7 +238,7 @@ scripts/control/04_seed_ingestion_metadata.sql
 scripts/control/99_verify_control_plane.sql
 ```
 
-Expect six active E-commerce and two active Logistics configs; FULL has no incremental checkpoint. Verify config
+Expect six active E-commerce and two active Logistics configs; `FULL` has no incremental checkpoint. Verify config
 IDs, connections and initial state before starting any pipelines. **Never commit private GUID/password
 substitutions.** Re-running demo seeds into a populated environment does **not** restore historic watermarks/audits;
 review its possible configuration updates first. Optional benchmark installation is documented in
@@ -267,14 +269,14 @@ through Power BI Desktop or an appropriately reviewed TMDL change).
 Ensure both partitions point to the **same new** Control SQL Database;
 configure OAuth/Microsoft Entra credentials and read access in Fabric.
 Commit the reviewed environment-specific change on the appropriate
-branch—otherwise future Git Updates can overwrite manual rebinding.
+branch. Otherwise, future Git Updates can overwrite manual rebinding.
 
 Verify Report `definition.pbir` targets
 `../sm_ingestion_operations.SemanticModel`. Open the deployed
 `rpt_ingestion_operations`, refresh visuals, test Slicer, KPI counts,
 latest-batch summary, and Object Execution History with `End (UTC)`
 descending. The Report is based on **terminal object audits** only:
-no guaranteed master RUNNING state or failures before object audit.
+no guaranteed master `RUNNING` state or failures before object audit.
 
 ## H. Minimum rebuild verification and sign-off
 
@@ -298,7 +300,7 @@ privately and capture screenshots only when useful.
       advancement for nonempty incremental runs.
 - [ ] Run the same scope again: verify incremental no-new-data paths
       report `SKIPPED` without watermark advancement or an unnecessary
-      Bronze append. FULL loads have different repeat semantics.
+      Bronze append. `FULL` loads have different repeat semantics.
 - [ ] Source-scope request `p_source_system = "ECOMMERCE"` works;
       empty active scope fails with `NO_ACTIVE_CONFIGS` as designed.
 - [ ] Validate selected error/cleanup/backfill cases **when releasing the
@@ -330,14 +332,14 @@ checks succeed. A document/Git review alone is **not** a tested recovery.
 
 ## J. Repo navigation
 
-- [Starter Kit baseline](../../scripts/RUN_ORDER.md) — existing detailed
+- [Starter Kit baseline](../../scripts/RUN_ORDER.md): existing detailed
   install semantics and optional benchmark.
-- [Source infrastructure](../../infra/source/README.md) — fresh EC2,
+- [Source infrastructure](../../infra/source/README.md): fresh EC2,
   existing host, SSH/upload/SFTP particulars.
-- [Variable Library](variable-library-environment-binding.md) — exact runtime
+- [Variable Library](variable-library-environment-binding.md): exact runtime
   connection-variable contract.
-- [SQL Control Plane guardrails](../guides/control-plane.md#sql-enforced-guardrails) — enforced constraints and non-destructive install behavior.
-- [Operational monitoring](monitoring-report.md) — report limitations
+- [SQL Control Plane guardrails](../guides/control-plane.md#sql-enforced-guardrails): enforced constraints and non-destructive install behavior.
+- [Operational monitoring](monitoring-report.md): report limitations
   and metrics.
-- [Run request contract](run-request-examples.md) — REGULAR/BACKFILL,
+- [Run request contract](run-request-examples.md): `REGULAR`/`BACKFILL`,
   scoped and explicit requests.

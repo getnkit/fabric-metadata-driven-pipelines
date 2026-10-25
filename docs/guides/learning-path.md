@@ -1,4 +1,6 @@
-# Technical Learning Path — Metadata-Driven Pipelines
+<a id="technical-learning-path--metadata-driven-pipelines"></a>
+
+# Technical Learning Path: Metadata-Driven Pipelines
 
 You can understand the framework without provisioning Fabric. Choose a route below, then follow the numbered
 walkthrough only as far as you need. Each step points to the canonical explanation and, when useful, the checked-in
@@ -17,7 +19,9 @@ Oracle/PostgreSQL/API/CDC/streaming adapters.
 | **Understand production-style safety decisions** | Steps **5–7**: watermark, retry/compensation, audit visibility |
 | **Reproduce the DEV demo** | Step **8**, then follow the operator runbooks (not the design documents) |
 
-## 1 — Understand the architectural problem
+<a id="1--understand-the-architectural-problem"></a>
+
+## 1: Understand the architectural problem
 
 **Read:** [Architecture & Design Decisions](../architecture/framework-overview.md).
 
@@ -28,7 +32,9 @@ are not one distributed transaction.
 
 **Check yourself:** What can happen between a Bronze commit and SQL finalization?
 
-## 2 — Inspect the metadata
+<a id="2--inspect-the-metadata"></a>
+
+## 2: Inspect the metadata
 
 **Read:** [Control Plane](control-plane.md). Inspect the read-only example queries for
 `control.connection_settings`, `control.ingestion_config`, `control.pipeline_watermarks`, and
@@ -41,9 +47,11 @@ creates missing objects for a fresh install; it does not migrate an existing sch
 [ingestion seed](../../scripts/control/04_seed_ingestion_metadata.sql) supply DEV examples: six E-commerce DATABASE
 objects and two Logistics FILE objects.
 
-**Check yourself:** Which configs are FULL versus INCREMENTAL, and why does FULL have no persistent checkpoint?
+**Check yourself:** Which configs are `FULL` versus `INCREMENTAL`, and why does `FULL` have no persistent checkpoint?
 
-## 3 — Trace the request through orchestration
+<a id="3--trace-the-request-through-orchestration"></a>
+
+## 3: Trace the request through orchestration
 
 **Read:** [Pipeline Orchestration](pipeline-orchestration.md) and [Run Request Examples](../operations/run-request-examples.md).
 
@@ -53,10 +61,12 @@ router definitions under `fabric/`. Only the top-level Orchestrator is a support
 
 **Check yourself:** Why do explicit requests and source-scoped all-active requests reach the same Dispatcher?
 
-## 4 — Follow one physical ingestion path
+<a id="4--follow-one-physical-ingestion-path"></a>
 
-**DATABASE:** [SQL Server Guide](sql-server-database-ingestion.md) explains Query-mode Copy for FULL and timestamp
-INCREMENTAL; [Copy Performance](../architecture/database-copy-performance.md) explains supported `NONE` and
+## 4: Follow one physical ingestion path
+
+**DATABASE:** [SQL Server Guide](sql-server-database-ingestion.md) explains query-mode Copy for `FULL` and timestamp
+`INCREMENTAL`; [Copy Performance](../architecture/database-copy-performance.md) explains supported `NONE` and
 `DYNAMIC_RANGE` partition settings and benchmark limits.
 
 **FILE:** [SFTP Guide](sftp-file-ingestion.md) traces Binary Copy into execution-scoped Landing and the
@@ -65,17 +75,21 @@ connector and parsing decisions. Only `DELIMITED_TEXT` is implemented.
 
 **Check yourself:** Why is the SQL Server path direct-to-Bronze while SFTP keeps a raw Landing copy?
 
-## 5 — Reason about incremental state
+<a id="5--reason-about-incremental-state"></a>
+
+## 5: Reason about incremental state
 
 **Read:** [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md) and [Retry/Rerun/Backfill](../operations/retry-rerun-backfill.md).
 
 Inspect [the SQL finalizer procedure](../../fabric/sqldb_ingestion_control.SQLDatabase/control/StoredProcedures/usp_finalize_ingestion_run.sql).
-A normal incremental run derives a LOW/HIGH boundary; an eligible successful REGULAR run may advance the
-checkpoint with optimistic protection. BACKFILL and no-new-data SKIPPED do not advance it.
+A normal incremental run derives a LOW/HIGH boundary; an eligible successful `REGULAR` run may advance the
+checkpoint with optimistic protection. `BACKFILL` and no-new-data `SKIPPED` do not advance it.
 
-**Check yourself:** Predict audit and watermark behavior for DATABASE REGULAR INCREMENTAL with HIGH = LOW, and for an incremental historical BACKFILL.
+**Check yourself:** Predict audit and watermark behavior for DATABASE `REGULAR` `INCREMENTAL` with `HIGH = LOW`, and for an incremental historical `BACKFILL`.
 
-## 6 — Inspect failure compensation and retries
+<a id="6--inspect-failure-compensation-and-retries"></a>
+
+## 6: Inspect failure compensation and retries
 
 **Read:** [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md) and the [retry matrix](../operations/retry-rerun-backfill.md#retry-policy-by-side-effect).
 
@@ -85,7 +99,9 @@ does not prove whether a durable write committed.
 
 **Check yourself:** Why does cleanup match both `_batch_id` and `_pipeline_run_id`, and why is blind cleanup unsafe after a failed success Finalizer?
 
-## 7 — Understand what monitoring proves
+<a id="7--understand-what-monitoring-proves"></a>
+
+## 7: Understand what monitoring proves
 
 **Read:** [Operations Monitoring](../operations/monitoring-report.md) and [SQL monitoring views](../../scripts/monitoring/01_create_monitoring_views.sql).
 
@@ -95,7 +111,9 @@ verified.
 
 **Check yourself:** Would an early master-pipeline failure appear in Power BI Object History?
 
-## 8 — Rebuild or benchmark when needed
+<a id="8--rebuild-or-benchmark-when-needed"></a>
+
+## 8: Rebuild or benchmark when needed
 
 **For operators:** [Environment Rebuild](../operations/environment-rebuild.md) covers new-workspace bindings and
 verification; [SQL Run Order](../../scripts/RUN_ORDER.md) covers the executable Control SQL / demo seed sequence;

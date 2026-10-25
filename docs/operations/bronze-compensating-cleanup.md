@@ -12,13 +12,13 @@ REGULAR  -> append a new Bronze batch
 BACKFILL -> append a new Bronze batch
 ```
 
-A successful Bronze batch is never deleted, truncated, overwritten, or replaced merely because a later REGULAR or
-BACKFILL run processes overlapping source data. Each execution preserves its own `_batch_id` / pipeline-run lineage.
+A successful Bronze batch is never deleted, truncated, overwritten, or replaced merely because a later `REGULAR` or
+`BACKFILL` run processes overlapping source data. Each execution preserves its own `_batch_id` / pipeline-run lineage.
 
 The only ingestion-time deletion allowed by this framework is **compensating cleanup of the current failed batch**
 when a Bronze write may have partially succeeded. That failed batch is not treated as committed Bronze history.
 
-Retention, legal erasure, or other lifecycle-management policies are separate governance/maintenance concerns and are not part of REGULAR/BACKFILL ingestion semantics.
+Retention, legal erasure, or other lifecycle-management policies are separate governance/maintenance concerns and are not part of `REGULAR`/`BACKFILL` ingestion semantics.
 
 ## Why it exists
 
@@ -37,7 +37,7 @@ if two configs write to the same target in one orchestrator batch.
 
 An orchestrator batch may include multiple `ingestion_config_id` values
 that share a Landing base path (and may target the same Bronze table).
-SFTP FULL and INCREMENTAL Landing paths therefore use the leaf scope
+SFTP `FULL` and `INCREMENTAL` Landing paths therefore use the leaf scope
 `ingestion_date=<date>/ingestion_config_id=<id>/batch_id=<id>/pipeline_run_id=<object_run_id>/`.
 Landing cleanup validates these exact trailing segments before recursively
 deleting the failed execution's leaf folder; it cannot delete a sibling
@@ -78,7 +78,7 @@ read/Delta errors are rethrown rather than treated as absence.
 
 ## Automatic trigger contexts
 
-Current active append paths invoke the notebook when a Bronze write activity or
+Active append paths invoke the notebook when a Bronze write activity or
 Bronze-writing notebook fails and may have left partial rows:
 
 ```text
@@ -93,7 +93,7 @@ pre-write control failure and no Bronze cleanup is required.
 
 If cleanup succeeds, the original ingestion failure is finalized with watermark advancement disabled.
 
-If cleanup fails, the run is finalized as FAILED with `BRONZE_CLEANUP_FAILED`, and the pipeline fails explicitly. Do not rerun blindly until the failed batch has been reconciled.
+If cleanup fails, the run is finalized as `FAILED` with `BRONZE_CLEANUP_FAILED`, and the pipeline fails explicitly. Do not rerun blindly until the failed batch has been reconciled.
 
 ### Bronze write failure: compensate the affected execution
 
@@ -112,10 +112,10 @@ flowchart TD
 
 This path is **not** triggered by pre-write metadata or boundary validation failures. Its Cleanup Notebook targets
 the specific Bronze table and the `(_batch_id, _pipeline_run_id)` pair. A successful cleanup leads to a terminal
-**FAILED** audit for the original write failure; cleanup failure is separately surfaced as `BRONZE_CLEANUP_FAILED`.
+**`FAILED`** audit for the original write failure; cleanup failure is separately surfaced as `BRONZE_CLEANUP_FAILED`.
 
 FILE ingestion also has **Landing Copy** and file-count consistency failure branches, with their own Landing cleanup
-activities (for example, `nb_cleanup_landing_copy_failed` ). Do not treat those as the Bronze write-failure branch
+activities (for example, `nb_cleanup_landing_copy_failed`). Do not treat those as the Bronze write-failure branch
 above. See the
 [SQL Server INCREMENTAL Loader](../../fabric/pl_ingest_sql_server_incremental_loader.DataPipeline/pipeline-content.json)
 and [SFTP INCREMENTAL Adapter](../../fabric/pl_ingest_sftp_incremental_adapter.DataPipeline/pipeline-content.json)
@@ -141,7 +141,7 @@ pipeline definitions. Full runtime failure-path coverage has not been performed.
 
 ## Finalization failure recovery (incremental DATABASE and FILE)
 
-The SQL Server INCREMENTAL Loader and SFTP INCREMENTAL Adapter both invoke
+The SQL Server `INCREMENTAL` Loader and SFTP `INCREMENTAL` Adapter both invoke
 `pl_ingest_incremental_finalize_recovery`, but **only when** their
 `sp_finalize_success` activity fails. Successful finalization does not execute a lookup
 or recovery activity.
@@ -172,7 +172,7 @@ flowchart TD
     F -->|Bronze cleanup succeeded| L["nb_cleanup_landing_finalize_conflict"]
 ```
 
-The diagram deliberately stops at the conflict cleanup activities: their **Succeeded/Failed terminal `Fail`
+The diagram deliberately stops at the conflict cleanup activities: their **`Succeeded`/`Failed` terminal `Fail`
 activities** are listed in the
 [recovery pipeline JSON](../../fabric/pl_ingest_incremental_finalize_recovery.DataPipeline/pipeline-content.json).
 In the DATABASE conflict branch, successful Bronze cleanup is followed by `fail_confirmed_watermark_conflict`;
@@ -187,11 +187,11 @@ Pipeline reports a failure.
 | Confirmed audit outcome | Recovery action | Final pipeline status |
 | --- | --- | --- |
 | `SUCCESS` | Keep Bronze and Landing. Finalization committed; do **not** automatically rerun the old execution. | `FAILED / FINALIZE_RESPONSE_FAILED_COMMITTED` (transport ambiguity is still an operational incident) |
-| `FAILED` plus `WATERMARK_CONFLICT` | Remove only the identified failed Bronze rows; for FILE also remove its scoped Landing leaf. Retain the original FAILED audit. | `FAILED / WATERMARK_CONFLICT` |
+| `FAILED` plus `WATERMARK_CONFLICT` | Remove only the identified failed Bronze rows; for FILE also remove its scoped Landing leaf. Retain the original `FAILED` audit. | `FAILED / WATERMARK_CONFLICT` |
 | Absent/other terminal result | Preserve Bronze and Landing for operator reconciliation. | `FAILED / FINALIZE_OUTCOME_UNCONFIRMED` |
 | Audit Lookup itself fails | Preserve data; report lookup failure. | `FAILED / FINALIZE_OUTCOME_LOOKUP_FAILED` |
 
-If the guarded watermark UPDATE affects no row, `control.usp_finalize_ingestion_run` commits an exact-match
+If the guarded watermark `UPDATE` affects no row, `control.usp_finalize_ingestion_run` commits an exact-match
 `FAILED / WATERMARK_CONFLICT` audit row before raising the conflict exception. The procedure does **not** advance
 the watermark. After confirming the exact-match committed audit outcome, the recovery child can perform scoped
 cleanup for this watermark conflict. A failed Stored Procedure activity alone **does not establish that cleanup is safe**.
@@ -204,10 +204,10 @@ execution leaf. Failed cleanup reports `BRONZE_CLEANUP_FAILED` or
 `LANDING_CLEANUP_FAILED`; the original audit remains a durable
 `WATERMARK_CONFLICT` record.
 
-The stored procedure's idempotent early return now requires the same
+The stored procedure's idempotent early return requires the same
 `pipeline_run_id`, `batch_id`, terminal `status`, `run_type`, config ID,
 `error_code`, and processing LOW/HIGH. Retrying the same finalization is
-idempotent; trying to finalize an already-FAILED run as SUCCESS throws
+idempotent; trying to finalize an already-`FAILED` run as `SUCCESS` throws
 `FINALIZE_OUTCOME_MISMATCH` instead of reporting false success.
 
 ### Limits and production follow-through
@@ -217,16 +217,16 @@ idempotent; trying to finalize an already-FAILED run as SUCCESS throws
   returning a response. Preserve data until the outcome is reconciled.
 - Automatic recovery cannot run after cancellation, pipeline process loss, or
   outages before the failure branch. Operations must still scan for orphaned
-  batches (no SUCCESS audit) and reconcile them before reruns.
+  batches (no `SUCCESS` audit) and reconcile them before reruns.
 - Downstream processing must not treat all physical Bronze rows as committed.
-  A consumer/Gold promotion boundary must use only confirmed SUCCESS batches.
+  A consumer/Gold promotion boundary must use only confirmed `SUCCESS` batches.
   This ingestion repository does **not** itself implement that downstream gate.
 - Run exactly one supported top-level `pl_ingest_orchestrator` execution when
   recovering; it reads the latest committed watermark. Never retry an old
   child Loader with stale LOW/HIGH after a true conflict.
-- This automated finalize reconciliation covers SQL Server INCREMENTAL and
-  SFTP INCREMENTAL with a committed conflict audit. Other finalization failures
-  (including no-data SKIPPED, FULL loads, and uncertain errors) are not silently
+- This automated finalize reconciliation covers SQL Server `INCREMENTAL` and
+  SFTP `INCREMENTAL` with a committed conflict audit. Other finalization failures
+  (including no-data `SKIPPED`, `FULL` loads, and uncertain errors) are not silently
   promoted or deleted.
 
 ### Recovery acceptance in DEV
@@ -241,7 +241,7 @@ idempotent; trying to finalize an already-FAILED run as SUCCESS throws
 3. Fail the Audit Lookup or make its record absent; verify no automatic cleanup
    and an explicit unconfirmed outcome.
 4. Force cleanup failure and verify error propagation and retained audit.
-5. Run a normal REGULAR ingestion; verify no recovery Lookup/Notebook executes.
+5. Run a normal `REGULAR` ingestion; verify no recovery Lookup/Notebook executes.
 6. Call the finalize procedure again using the same identity and terminal
    outcome (idempotent), then request a conflicting terminal status for the
    same RunId (must throw `FINALIZE_OUTCOME_MISMATCH`).
@@ -298,5 +298,5 @@ For a failed run that completed automatic cleanup, `batch_rows` must be zero and
 ## Manual fallback
 
 If an operational incident predates the automatic cleanup path, or cleanup itself could not run, reconcile only the
-failed (`_batch_id`, `_pipeline_run_id` ) pair using a Fabric Notebook / Spark Delta operation and verify zero
+failed (`_batch_id`, `_pipeline_run_id`) pair using a Fabric Notebook / Spark Delta operation and verify zero
 remaining rows before rerun.

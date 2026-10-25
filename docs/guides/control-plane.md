@@ -13,7 +13,7 @@ For the execution path that reads this metadata, continue with [Pipeline Orchest
 | --- | --- | --- |
 | `control.connection_settings` | Logical source and target connection references, their types, and JSON connection settings | The Object Controller resolves the source and target |
 | `control.ingestion_config` | Source object, ingestion pattern, load strategy, target, and source-specific options | The Orchestrator selects objects; the Object Controller resolves each configuration |
-| `control.pipeline_watermarks` | Last successfully committed incremental checkpoint for a configuration | The INCREMENTAL adapter reads LOW; successful REGULAR finalization may advance it |
+| `control.pipeline_watermarks` | Last successfully committed incremental checkpoint for a configuration | The `INCREMENTAL` adapter reads LOW; successful `REGULAR` finalization may advance it |
 | `audit.ingestion_log` | One terminal result per object Pipeline Run ID, with counts, boundaries, status, and errors | Operations and troubleshooting after object execution |
 
 These are SQL Control/Audit tables, not Bronze business tables. The sample SQL schema is defined in
@@ -22,7 +22,7 @@ These are SQL Control/Audit tables, not Bronze business tables. The sample SQL s
 
 [![Control and audit data model with enforced foreign keys and a logical audit association](../assets/diagrams/d01-control-audit-er.svg)](../assets/diagrams/d01-control-audit-er.svg)
 
-*D01 — Selected fields and relationships across the four Control/Audit tables. Solid lines indicate enforced foreign keys; the dashed audit association is not FK-enforced.*
+*D01: Selected fields and relationships across the four Control/Audit tables. Solid lines indicate enforced foreign keys; the dashed audit association is not FK-enforced.*
 
 ### SQL-enforced guardrails
 
@@ -32,13 +32,13 @@ truth. Key enforced constraints complement, rather than replace, pipeline valida
 | SQL object | Invariant |
 | --- | --- |
 | `control.connection_settings` | Supported connection types, nonblank reference, JSON object-root settings |
-| `control.ingestion_config` | Nonblank core metadata; DATABASE requires `source_schema`, FILE requires `source_path`, `landing_path` and non-NULL `file_format`; INCREMENTAL requires `watermark_field`; optional JSON envelopes have object roots |
+| `control.ingestion_config` | Nonblank core metadata; `DATABASE` requires `source_schema`, `FILE` requires `source_path`, `landing_path` and non-`NULL` `file_format`; `INCREMENTAL` requires `watermark_field`; optional JSON envelopes have object roots |
 | `control.pipeline_watermarks` | One checkpoint per `ingestion_config_id`, no automatic reset, optimistic advancement through finalization |
 | `audit.ingestion_log` | One terminal outcome per object Run ID, valid status/run type, nonnegative counts/duration, nonblank identity |
-| `control.usp_validate_run_requests` | Reject malformed/NULL explicit request envelopes, invalid types and duplicates |
+| `control.usp_validate_run_requests` | Reject malformed/`NULL` explicit request envelopes, invalid types and duplicates |
 | `control.usp_finalize_ingestion_run` | Transactional audit and guarded watermark update; reject inconsistent repeated terminal outcomes |
 
-SQL CHECK constraints permit some future FILE format labels, but **only DELIMITED_TEXT** has an implemented File
+SQL CHECK constraints permit some future FILE format labels, but **only `DELIMITED_TEXT`** has an implemented File
 Router/reader. The non-destructive `scripts/control/01_create_control_schema.sql` bootstrap is **CREATE-IF-ABSENT**,
 not a schema migration. `scripts/control/99_verify_control_plane.sql` verifies keys, enabled/trusted CHECK/FK
 constraints, indexes, the view and two procedures; this is **not** a full column-by-column semantic schema diff. See
@@ -48,8 +48,8 @@ installation, optional DEV seeds, and release checks.
 ## 2. How a configuration identifies one source object
 
 A **source object** is one logical ingestion unit, not necessarily one physical file. For the implemented DATABASE
-pattern, `source_schema` and `source_object` identify a SQL Server table. For FILE, `source_object` is a non-NULL
-stable feed name (for example, `inventory_movement` ), while `source_path` and `source_options.file_name_pattern`
+pattern, `source_schema` and `source_object` identify a SQL Server table. For FILE, `source_object` is a non-`NULL`
+stable feed name (for example, `inventory_movement`), while `source_path` and `source_options.file_name_pattern`
 select eligible SFTP files. One FILE configuration can process multiple matching files in a run, with **one
 configuration-level watermark** rather than separate per-file checkpoints. This is the framework's logical naming
 contract, not a universal requirement imposed by Fabric.
@@ -86,7 +86,7 @@ object-specific behavior comes from the configuration and the selected adapter.
 
 [![DEV ingestion configuration for six database objects and two file feeds](../assets/screenshots/core/c01-control-metadata.png)](../assets/screenshots/core/c01-control-metadata.png)
 
-*C01 — Selected DEV configuration columns show six DATABASE objects and two FILE feeds, with their FULL/INCREMENTAL strategies, watermark fields, targets, and active flags.*
+*C01: Selected DEV configuration columns show six DATABASE objects and two FILE feeds, with their `FULL`/`INCREMENTAL` strategies, watermark fields, targets, and active flags.*
 
 A configuration row also carries two logical connection references. The framework uses these references instead of
 putting a physical Fabric Connection ID directly into every source object's pipeline parameters.
@@ -111,7 +111,7 @@ DEV example of the configuration-to-connection mapping:
 
 [![Source objects mapped to logical source and target connection references and types](../assets/screenshots/core/c02-logical-connections.png)](../assets/screenshots/core/c02-logical-connections.png)
 
-*C02 — Configuration-to-connection mapping shows SQL_SERVER and SFTP sources reusing logical references and a shared LAKEHOUSE target; physical connection settings are not displayed.*
+*C02: Configuration-to-connection mapping shows `SQL_SERVER` and `SFTP` sources reusing logical references and a shared `LAKEHOUSE` target; physical connection settings are not displayed.*
 
 Fabric Pipeline activities use a separate set of runtime bindings, stored in `vl_ingestion_connections`, for
 Control SQL, Invoke Pipeline, and Notebook execution. Those Library values are **not** the same as the per-source
@@ -125,12 +125,12 @@ Control SQL, Invoke Pipeline, and Notebook execution. Those Library values are *
 | Field | SQL Server example | SFTP example |
 | --- | --- | --- |
 | `ingestion_pattern` | `DATABASE` | `FILE` |
-| `source_schema` | SQL schema such as `crm` | NULL |
+| `source_schema` | SQL schema such as `crm` | `NULL` |
 | `source_object` | Physical table name, such as `customers` | Logical feed name, such as `inventory_movement` |
-| `source_path` | NULL (source table is resolved through schema/object and connection) | Remote SFTP folder |
-| `file_format` | NULL | `DELIMITED_TEXT` |
-| `source_options` | NULL in current DATABASE seed | JSON parsing and file-selection options |
-| `landing_path` | NULL | Lakehouse Files-relative `landing/...` path |
+| `source_path` | `NULL` (source table is resolved through schema/object and connection) | Remote SFTP folder |
+| `file_format` | `NULL` | `DELIMITED_TEXT` |
+| `source_options` | `NULL` in current DATABASE seed | JSON parsing and file-selection options |
+| `landing_path` | `NULL` | Lakehouse Files-relative `landing/...` path |
 | `load_strategy` | `FULL` or `INCREMENTAL` | `FULL` or `INCREMENTAL` |
 | `watermark_field` | `updated_at` when incremental | `last_modified_time` when incremental |
 
@@ -160,7 +160,7 @@ See [Database Copy Performance](../architecture/database-copy-performance.md) fo
 
 ## 4. Which objects need watermark state?
 
-FULL configurations do not maintain an incremental checkpoint. The two implemented INCREMENTAL patterns, DATABASE and FILE, share `control.pipeline_watermarks`.
+`FULL` configurations do not maintain an incremental checkpoint. The two implemented `INCREMENTAL` patterns, DATABASE and FILE, share `control.pipeline_watermarks`.
 
 Use the read-only query below to inspect which DEV configurations have stored state:
 
@@ -182,14 +182,14 @@ WHERE c.source_system IN ('ECOMMERCE', 'LOGISTICS_VENDOR')
 ORDER BY c.source_system, c.ingestion_config_id;
 ```
 
-The LEFT JOIN is deliberate: a FULL row can legitimately have no checkpoint. An INCREMENTAL row with missing or
+The `LEFT JOIN` is deliberate: a `FULL` row can legitimately have no checkpoint. An `INCREMENTAL` row with missing or
 mismatched state is different. Its adapter checks for the expected configuration ID and watermark field and follows
 a failure path if the state is unavailable.
 
 For regular incremental execution, the stored value supplies LOW. The adapter determines HIGH according to its
 source contract. For SQL Server, HIGH comes from the source query; for SFTP, the upper limit is the run start time.
-A successful eligible REGULAR run may advance the checkpoint after the Bronze write succeeds and finalization
-commits. BACKFILL never advances it. A no-new-data SKIPPED run does not advance it either.
+A successful eligible `REGULAR` run may advance the checkpoint after the Bronze write succeeds and finalization
+commits. `BACKFILL` never advances it. A no-new-data `SKIPPED` run does not advance it either.
 
 The state comparison and transaction rules are explained in
 [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md) and implemented in
@@ -240,7 +240,7 @@ You can inspect the exact Lookup and Switch definitions in:
 - [DEV ingestion configuration seed](../../scripts/control/04_seed_ingestion_metadata.sql)
 
 The seed scripts are for creating or preparing a DEV example, **not** read-only verification scripts. In particular,
-re-running the ingestion metadata seed may update existing demo configuration rows. Use the SELECT statements above
+re-running the ingestion metadata seed may update existing demo configuration rows. Use the `SELECT` statements above
 when you only want to study the current environment.
 
 **Next:** [Pipeline Orchestration](pipeline-orchestration.md) shows how the master selects these configuration rows

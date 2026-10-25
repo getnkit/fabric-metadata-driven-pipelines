@@ -35,7 +35,7 @@ p_run_requests = []
 p_source_system = "ECOMMERCE"
 ```
 
-This selects only active ECOMMERCE configs (seeded IDs 1–6). Another independent
+This selects only active `ECOMMERCE` configs (seeded IDs 1–6). Another independent
 run with `p_source_system = "LOGISTICS_VENDOR"` selects active IDs 7–8.
 Both runs receive different master Run IDs and generated Batch IDs. Two
 schedules may invoke this same pipeline with different parameters; at the
@@ -56,9 +56,9 @@ The three supported parameter combinations are:
 
 | `p_source_system` | `p_run_requests` | Behavior |
 | --- | --- | --- |
-| `""` | `[]` | All active configs as REGULAR |
-| Nonblank source system | `[]` | Only active configs for that source system as REGULAR |
-| `""` | Nonempty array | Explicit config requests (REGULAR or BACKFILL) |
+| `""` | `[]` | All active configs as `REGULAR` |
+| Nonblank source system | `[]` | Only active configs for that source system as `REGULAR` |
+| `""` | Nonempty array | Explicit config requests (`REGULAR` or `BACKFILL`) |
 
 A nonblank `p_source_system` combined with a nonempty `p_run_requests` is
 rejected at the master with `AMBIGUOUS_RUN_SCOPE`, before any child ingestion
@@ -67,7 +67,7 @@ scope. Existing duplicate-request validation remains unchanged for explicit mode
 
 [![DEV orchestrator rejecting ambiguous run scope with AMBIGUOUS_RUN_SCOPE](../assets/screenshots/core/c14-ambiguous-run-scope.png)](../assets/screenshots/core/c14-ambiguous-run-scope.png)
 
-*C14 — The DEV orchestrator reports AMBIGUOUS_RUN_SCOPE at fail_ambiguous_run_scope. The error requires choosing either p_source_system or explicit p_run_requests; the checked-in dependency chain places this validation before child dispatch.*
+*C14: The DEV orchestrator reports `AMBIGUOUS_RUN_SCOPE` at `fail_ambiguous_run_scope`. The error requires choosing either `p_source_system` or explicit `p_run_requests`; the checked-in dependency chain places this validation before child dispatch.*
 
 ### Execution and concurrency boundaries
 
@@ -81,7 +81,7 @@ concurrency and config-level execution locks remain out of scope.
 
 Do not increase master concurrency without assessing overlapping config
 execution: a global master cap is not a per-source lock. Overlaps can append
-duplicate FULL Bronze batches or trigger optimistic Watermark conflicts.
+duplicate `FULL` Bronze batches or trigger optimistic Watermark conflicts.
 Explicit internal-pipeline invocation is not a supported execution entry point.
 
 ## Run an explicit subset
@@ -111,8 +111,8 @@ Example:
 ]
 ```
 
-In the seeded metadata, config 5 is INCREMENTAL and config 3 is FULL. Their
-BACKFILL requests therefore have different scope shapes.
+In the seeded metadata, config 5 is `INCREMENTAL` and config 3 is `FULL`. Their
+`BACKFILL` requests therefore have different scope shapes.
 
 ## Request contract
 
@@ -126,16 +126,16 @@ BACKFILL requests therefore have different scope shapes.
 Rules:
 
 - `load_strategy` is read from the ingestion config; callers do not override it.
-- REGULAR + FULL: omit LOW/HIGH; if supplied, they must be empty.
-- REGULAR + INCREMENTAL: omit LOW/HIGH; the pipeline derives its normal operational range from state.
-- BACKFILL + FULL: omit LOW/HIGH; V1 rereads the full currently available source scope.
-- BACKFILL + INCREMENTAL: both LOW and HIGH are required and must be non-empty.
+- `REGULAR` + `FULL`: omit LOW/HIGH; if supplied, they must be empty.
+- `REGULAR` + `INCREMENTAL`: omit LOW/HIGH; the pipeline derives its normal operational range from state.
+- `BACKFILL` + `FULL`: omit LOW/HIGH; V1 rereads the full currently available source scope.
+- `BACKFILL` + `INCREMENTAL`: both LOW and HIGH are required and must be non-empty.
 - Missing optional bounds are normalized to empty strings by the Dispatcher before the request reaches the Controller.
-- BACKFILL never advances an INCREMENTAL config's operational watermark/checkpoint.
-- Every successful REGULAR/BACKFILL execution appends a new Bronze batch.
+- `BACKFILL` never advances an `INCREMENTAL` config's operational watermark/checkpoint.
+- Every successful `REGULAR`/`BACKFILL` execution appends a new Bronze batch.
 - An explicitly requested inactive configuration is recorded as `SKIPPED`; it does not move data or advance processing state.
 - Malformed envelope fields are rejected before Dispatcher fan-out: `config_id` must be a positive integer,
-  `run_type` must be REGULAR/BACKFILL, and any supplied LOW/HIGH value must be a string or null.
+  `run_type` must be `REGULAR`/`BACKFILL`, and any supplied LOW/HIGH value must be a string or `null`.
 - Config-specific LOW/HIGH requirements are validated by the Object Controller after the ingestion configuration is resolved.
 - A given `config_id` may appear at most once in one `p_run_requests` array; duplicates are rejected before Dispatcher fan-out.
 - Source-system filtering is used only in the All Active paginator path; explicit requests never inherit or override the source-system filter.

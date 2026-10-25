@@ -1,4 +1,6 @@
-# Ingestion Operations — Monitoring Report
+<a id="ingestion-operations--monitoring-report"></a>
+
+# Ingestion Operations: Monitoring Report
 
 ## Purpose and limits
 
@@ -10,7 +12,7 @@ and verified visually/operationally in DEV (2026-10-13).
 The report reads **terminal object-level ingestion audit** from the Fabric SQL
 Database. It does **not** create a separate master-run audit, Eventhouse,
 real-time refresh engine or scheduled report pipeline. It cannot show
-RUNNING work, master failures before object audit, or unpersisted audit
+`RUNNING` work, master failures before object audit, or unpersisted audit
 outcomes; use Fabric Monitor for those cases. A "latest" audited batch may
 be partially complete while other objects are still running.
 
@@ -22,8 +24,8 @@ Execute `scripts/monitoring/01_create_monitoring_views.sql` against
 
 | SQL view | Grain / purpose |
 | --- | --- |
-| `audit.v_monitor_source_batch` | One row per **source_system + batch_id**, summarizing terminal object outcomes and timing |
-| `audit.v_monitor_latest_source` | **One latest audited batch per source_system**, selected from the batch view |
+| `audit.v_monitor_source_batch` | One row per **`source_system` + `batch_id`**, summarizing terminal object outcomes and timing |
+| `audit.v_monitor_latest_source` | **One latest audited batch per `source_system`**, selected from the batch view |
 | `audit.v_monitor_object_history` | One row per finalized object execution, including status, counts, error and Run ID |
 
 These definitions do not alter Control/Watermark state or original audit rows.
@@ -31,10 +33,10 @@ Source Status is a **derived object outcome**; it is **not** a master
 pipeline run state. Status precedence is
 `FAILED > CANCELLED > WARN > SUCCESS > SKIPPED`.
 The visual success/failed/skipped counts cover these three statuses only;
-WARN/CANCELLED can still affect the summarized Source Status without having
+`WARN`/`CANCELLED` can still affect the summarized Source Status without having
 separate chart series.
 
-"Latest" means the source's batch with the latest **audited object end_time**.
+"Latest" means the source's batch with the latest **audited object `end_time`**.
 Different source systems can display different Batch IDs; a previous
 successful batch is not proof that the next scheduled run succeeded.
 
@@ -55,7 +57,7 @@ refresh latency.
   `Latest Activity (UTC)`, `Successful Objects`,
   `Failed Objects`, `Skipped Objects`.
 - `Failed Sources` counts sources whose **latest audited batch status**
-  is FAILED, not the number of failed object executions.
+  is `FAILED`, not the number of failed object executions.
   `Objects` sums counts from each source's latest audited batch.
 - The native `Latest Activity (UTC)` measure remains DateTime and is
   formatted without a text-conversion helper. Visual-level
@@ -81,7 +83,7 @@ The page uses 16:9 layout. The visuals are:
 
 [![DEV ingestion operations report overview](../assets/screenshots/core/c15-operations-report.png)](../assets/screenshots/core/c15-operations-report.png)
 
-*C15 — The DEV report shows two source systems, two terminal object audit records across their latest audited batches, and zero failed sources. Both latest source summaries are SUCCESS; history also shows earlier SUCCESS/SKIPPED outcomes and REGULAR/BACKFILL run types. These are persisted object audits, not live master-pipeline states.*
+*C15: The DEV report shows two source systems, two terminal object audit records across their latest audited batches, and zero failed sources. Both latest source summaries are `SUCCESS`; history also shows earlier `SUCCESS`/`SKIPPED` outcomes and `REGULAR`/`BACKFILL` run types. These are persisted object audits, not live master-pipeline states.*
 
 The summary Table and Chart sort `source_system` ascending;
 Object History sorts `end_time` descending. All displayed timestamps
@@ -90,14 +92,14 @@ No visual must depend on the names of the two demo sources.
 
 [![DEV operations report filtered to LOGISTICS_VENDOR](../assets/screenshots/core/c16-operations-filter.png)](../assets/screenshots/core/c16-operations-filter.png)
 
-*C16 — With LOGISTICS_VENDOR selected, the DEV report shows one source, one object audit record in its latest audited batch, and zero failed sources. Four historical executions remain visible, including an earlier SKIPPED outcome. Filtering is by source system and does not restrict history to the latest Batch ID.*
+*C16: With `LOGISTICS_VENDOR` selected, the DEV report shows one source, one object audit record in its latest audited batch, and zero failed sources. Four historical executions remain visible, including an earlier `SKIPPED` outcome. Filtering is by source system and does not restrict history to the latest Batch ID.*
 
 ## Pipeline failure notifications (Activator DEV experiment)
 
 Failure notifications are **separate from the Power BI audit report**. The optional Fabric Activator approach
-watches Fabric pipeline job events for **`pl_ingest_orchestrator` = Failed**, then invokes an operator notification
+watches Fabric pipeline job events for **`pl_ingest_orchestrator` = `Failed`**, then invokes an operator notification
 action (such as email or Teams), rather than embedding a notification activity in each child. Source-scoped and
-all-active runs use the same master pipeline item, but a FAILED run means a failure within **that run's scope**, not
+all-active runs use the same master pipeline item, but a `FAILED` run means a failure within **that run's scope**, not
 every configured source system.
 
 The currently tracked DEV Activator definition includes physical event-source bindings,
@@ -108,11 +110,11 @@ recipient privately, and validate the rule configuration with notifications disa
 Inspect the actual enabled/disabled state before explicitly enabling notifications.
 A disabled, empty-recipient alternative remains **UNVERIFIED** for Fabric import
 and is not implemented in this repository or approved for deployment.
-To accept an alerting setup, verify the master FAILED event, a FAILED object audit
+To accept an alerting setup, verify the master `FAILED` event, a `FAILED` object audit
 *when an object/config was resolved*, and **actual recipient receipt**. A master
 failure before object resolution may create no object audit.
 
-**Observed in DEV (2026-10-04):** two master FAILED events were detected, and Activator rule/action activity was
+**Observed in DEV (2026-10-04):** two master `FAILED` events were detected, and Activator rule/action activity was
 observed. **Delivery to the intended recipient inbox was not independently verified.** This proves event
 detection/action invocation only, not an end-to-end verified notification service.
 
@@ -120,8 +122,8 @@ detection/action invocation only, not an end-to-end verified notification servic
 
 - DEV screenshot/visual evidence showed **2** Source Systems, **8** Objects,
   **0** Failed Sources across the latest observed batches:
-  ECOMMERCE had 6 Objects (1 SUCCESS, 5 SKIPPED);
-  LOGISTICS_VENDOR had 2 (1 SUCCESS, 1 SKIPPED).
+  `ECOMMERCE` had 6 Objects (1 `SUCCESS`, 5 `SKIPPED`);
+  `LOGISTICS_VENDOR` had 2 (1 `SUCCESS`, 1 `SKIPPED`).
 - C15 represents a different, later DEV observation: **2** Source Systems,
   **2** Objects and **0** Failed Sources, with one terminal object audit
   record in each source's latest audited batch. The `Objects` measure sums
@@ -145,11 +147,11 @@ detection/action invocation only, not an end-to-end verified notification servic
 
 ### Source of truth
 
-- `fabric/rpt_ingestion_operations.Report/` — PBIR visual/layout definition.
-- `fabric/sm_ingestion_operations.SemanticModel/` — DAX, M partitions and
+- `fabric/rpt_ingestion_operations.Report/`: PBIR visual/layout definition.
+- `fabric/sm_ingestion_operations.SemanticModel/`: DAX, M partitions and
   relationships.
-- `scripts/monitoring/01_create_monitoring_views.sql` — runnable SQL views.
-- `fabric/sqldb_ingestion_control.SQLDatabase/audit/Views/` — SQL Project views.
+- `scripts/monitoring/01_create_monitoring_views.sql`: runnable SQL views.
+- `fabric/sqldb_ingestion_control.SQLDatabase/audit/Views/`: SQL Project views.
 
 For a new workspace, create the three monitoring views, import/sync both
 canonical Fabric artifacts, rebind the model's two DirectQuery partitions to

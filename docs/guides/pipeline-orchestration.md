@@ -50,7 +50,7 @@ Only active configurations from `ECOMMERCE` are selected. You can use `LOGISTICS
 Pass this array as `p_run_requests` and leave `p_source_system` empty. The ID is an example from the standard fresh
 DEV seed; query `control.ingestion_config` for the actual ID before running.
 
-For an INCREMENTAL historical BACKFILL, an explicit request also needs `lower_bound` and `upper_bound`. See
+For an `INCREMENTAL` historical `BACKFILL`, an explicit request also needs `lower_bound` and `upper_bound`. See
 [Run Request Examples](../operations/run-request-examples.md) for the exact request shapes and boundaries.
 
 A nonempty request array combined with a nonblank `p_source_system` fails with `AMBIGUOUS_RUN_SCOPE`. The framework does not silently pick one of those two scopes.
@@ -91,7 +91,7 @@ A Pipeline invocation marked `Succeeded` does not by itself establish an object 
 
 [![DEV Orchestrator execution using the Paginator path](../assets/screenshots/core/c03-master-orchestration.png)](../assets/screenshots/core/c03-master-orchestration.png)
 
-*C03 — This successful DEV Orchestrator execution follows the Paginator path; the activity list records the completed Paginator invocation.*
+*C03: This successful DEV Orchestrator execution follows the Paginator path; the activity list records the completed Paginator invocation.*
 
 ## 3. Why is there a Paginator?
 
@@ -111,11 +111,13 @@ request array. The Object Controller performs a separate configuration lookup fo
 
 The current design uses sequential pages and bounded object parallelism inside each page. It does not promise that all active objects start at the same moment.
 
-### C04 — Pagination
+<a id="c04--pagination"></a>
+
+### C04: Pagination
 
 [![DEV pagination output and page dispatch activity runs](../assets/screenshots/core/c04-01-pagination.png)](../assets/screenshots/core/c04-01-pagination.png)
 
-*C04 — The DEV pagination Lookup reports eight active configurations across four pages; the activity list shows repeated page Lookups and Dispatcher invocations.*
+*C04: The DEV pagination Lookup reports eight active configurations across four pages; the activity list shows repeated page Lookups and Dispatcher invocations.*
 
 ## 4. The Dispatcher runs object controllers
 
@@ -130,15 +132,17 @@ Do not confuse object parallelism with the master setting. The master Orchestrat
 so two master executions are serialized. Within one master run, the Dispatcher can start up to eight object requests
 in parallel.
 
-### C04 — Dispatcher
+<a id="c04--dispatcher"></a>
+
+### C04: Dispatcher
 
 [![DEV Dispatcher execution with two Object Controller invocations](../assets/screenshots/core/c04-02-dispatcher.png)](../assets/screenshots/core/c04-02-dispatcher.png)
 
-*C04 — This DEV Dispatcher execution shows two Object Controller invocations starting in the same displayed second and completing successfully; it does not demonstrate eight simultaneous requests.*
+*C04: This DEV Dispatcher execution shows two Object Controller invocations starting in the same displayed second and completing successfully; it does not demonstrate eight simultaneous requests.*
 
 This is a DEV setting, not a general tuning recommendation. In a small all-active DEV comparison (2026-10-11),
 `batchCount = 3` took **9m29s** versus **4m44s** with `batchCount = 8`. Both runs recorded eight object audits
-(2 SUCCESS, 6 SKIPPED) and 32 source/target rows. This observation does **not** establish general scaling or cost savings.
+(2 `SUCCESS`, 6 `SKIPPED`) and 32 source/target rows. This observation does **not** establish general scaling or cost savings.
 
 ## 5. The Object Controller looks up and validates configuration
 
@@ -158,13 +162,15 @@ An explicitly requested inactive configuration is finalized as `SKIPPED`. An inv
 follows a failure path. The controller only invokes a physical router after the metadata and execution request have
 passed the relevant checks.
 
-### C04 — Controller Routing
+<a id="c04--controller-routing"></a>
+
+### C04: Controller Routing
 
 [![DEV Object Controller execution invoking the DATABASE Router](../assets/screenshots/core/c04-03-database-controller.png)](../assets/screenshots/core/c04-03-database-controller.png)
 
 [![DEV Object Controller execution invoking the FILE Router](../assets/screenshots/core/c04-04-file-controller.png)](../assets/screenshots/core/c04-04-file-controller.png)
 
-*C04 — Separate DEV object executions show configuration lookup and request checks followed by DATABASE Router invocation (first image) or FILE Router invocation (second image). These are routing examples, not a single-object execution sequence.*
+*C04: Separate DEV object executions show configuration lookup and request checks followed by DATABASE Router invocation (first image) or FILE Router invocation (second image). These are routing examples, not a single-object execution sequence.*
 
 ## 6. The Routers choose the physical adapter
 
@@ -177,14 +183,16 @@ The DATABASE and FILE Routers keep connector-specific behavior out of the Object
 
 The route key joins the uppercased connection type and load strategy with the pipe character (`|`), using `concat` in the Router activities.
 
-### C04 — Database Routing
+<a id="c04--database-routing"></a>
+
+### C04: Database Routing
 
 [![DEV DATABASE route output selecting the SQL Server FULL Adapter](../assets/screenshots/core/c04-05-database-router.png)](../assets/screenshots/core/c04-05-database-router.png)
 
-*C04 — The DEV DATABASE Router evaluates SQL_SERVER|FULL and records a successful FULL Adapter invocation; this capture does not demonstrate the INCREMENTAL branch.*
+*C04: The DEV DATABASE Router evaluates `SQL_SERVER|FULL` and records a successful `FULL` Adapter invocation; this capture does not demonstrate the `INCREMENTAL` branch.*
 
 The FILE Router first checks `if_supported_file_format`. At present, the accepted format is `DELIMITED_TEXT`. The
-SQL Server INCREMENTAL adapter adds a separate Loader pipeline for Copy execution and finalization. Each physical
+SQL Server `INCREMENTAL` adapter adds a separate Loader pipeline for Copy execution and finalization. Each physical
 adapter is responsible for source-specific extraction, processing boundaries, and failure handling.
 
 See [SQL Server Database Ingestion](sql-server-database-ingestion.md),
@@ -223,8 +231,8 @@ WHERE source_system = 'LOGISTICS_VENDOR'
 ORDER BY ingestion_log_id DESC;
 ```
 
-The expected result depends on the remote files and current checkpoint. A FULL snapshot may append a new batch while
-the unchanged INCREMENTAL movement feed finishes `SKIPPED`. You cannot infer the audit status from the parameter
+The expected result depends on the remote files and current checkpoint. A `FULL` snapshot may append a new batch while
+the unchanged `INCREMENTAL` movement feed finishes `SKIPPED`. You cannot infer the audit status from the parameter
 values alone.
 
 Use the shared Batch ID to connect the object outcomes, and the object Pipeline Run ID to inspect a specific
@@ -239,9 +247,9 @@ what happened in a particular execution.
 
 - [Control Plane](control-plane.md): the configuration and state each object reads.
 - [SFTP File Ingestion](sftp-file-ingestion.md): Binary Copy to Landing, Notebook parsing, Bronze append and audit.
-- [SQL Server Database Ingestion](sql-server-database-ingestion.md): a guided FULL and INCREMENTAL Copy example.
+- [SQL Server Database Ingestion](sql-server-database-ingestion.md): a guided `FULL` and `INCREMENTAL` Copy example.
 - [Connector Responsibilities](../architecture/framework-overview.md#pipeline-roles-and-connector-boundary): framework versus SQL Server adapter ownership.
-- [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md): processing boundaries, SKIPPED, and state changes.
+- [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md): processing boundaries, `SKIPPED`, and state changes.
 - [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md): execution intent versus data-loading strategy.
 
 Only `pl_ingest_orchestrator` is a supported external execution entry point. The child pipelines in this guide are implementation components, not independent run targets.

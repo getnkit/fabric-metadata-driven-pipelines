@@ -22,7 +22,7 @@ load_strategy = FULL | INCREMENTAL   # persistent dataset/config metadata
 run_type      = REGULAR | BACKFILL   # per-execution intent
 ```
 
-A BACKFILL does not change the configured `load_strategy`.
+A `BACKFILL` does not change the configured `load_strategy`.
 
 ## REGULAR
 
@@ -57,16 +57,16 @@ BACKFILL + INCREMENTAL
   -> append a new Bronze batch
 ```
 
-A FULL BACKFILL may physically read the same source rows as a REGULAR FULL run. The difference is execution intent
-and lineage: the BACKFILL run is performed to repopulate/recover data and is audited as BACKFILL.
+A `FULL` `BACKFILL` may physically read the same source rows as a `REGULAR` `FULL` run. The difference is execution intent
+and lineage: the `BACKFILL` run is performed to repopulate/recover data and is audited as `BACKFILL`.
 
-The current V1 FULL BACKFILL does not select a historical point-in-time snapshot. If a future source requires a
+The current V1 `FULL` `BACKFILL` does not select a historical point-in-time snapshot. If a future source requires a
 historical full snapshot, add an explicit source-appropriate selector such as `data_date`, snapshot ID, source
 version, or timestamp rather than overloading LOW/HIGH.
 
 ## Bronze invariant
 
-Bronze is append-only for every successful REGULAR or BACKFILL execution.
+Bronze is append-only for every successful `REGULAR` or `BACKFILL` execution.
 
 A later run never deletes, truncates, overwrites, or replaces a previously successful Bronze batch merely because
 the source scope overlaps. Each execution preserves its own `_batch_id` and pipeline-run lineage.
@@ -92,13 +92,13 @@ BACKFILL + INCREMENTAL
 ```
 
 Processing-boundary fields are populated only when relevant to the selected scope. In the current V1 contract,
-BACKFILL + INCREMENTAL records requested LOW/HIGH while BACKFILL + FULL does not.
+`BACKFILL` + `INCREMENTAL` records requested LOW/HIGH while `BACKFILL` + `FULL` does not.
 
 The DEV audit below keeps both dimensions visible alongside a checkpoint-state capture.
 
 [![Composite of a DEV BACKFILL INCREMENTAL SUCCESS audit and a single watermark state panel](../assets/screenshots/composites/c13-incremental-backfill.png)](../assets/screenshots/composites/c13-incremental-backfill.png)
 
-*C13 — DEV composite: the customers audit records run_type BACKFILL, load_strategy INCREMENTAL, SUCCESS, and source/target counts of 2/2, alongside one watermark-state panel.*
+*C13: DEV composite. The `customers` audit records `run_type` `BACKFILL`, `load_strategy` `INCREMENTAL`, `SUCCESS`, and source/target counts of 2/2, alongside one watermark-state panel.*
 
 The watermark source files are byte-identical and do not establish independent before/after observations. Audit LOW/HIGH and Batch ID are truncated. The captures do not independently establish checkpoint non-advancement, a Bronze append, or exact execution linkage; they do not establish exactly-once business semantics.
 
@@ -111,7 +111,7 @@ Choose retries by **side effects and idempotency**, not activity type alone. A C
 | Read-only Lookup | 2 | Safe to repeat on transient read/connection errors |
 | Validation stored procedure | 0 | Invalid requests or configurations are deterministic |
 | Audit-only finalizer (most branches, `advance_watermark = false`) | 2 | Idempotent by object `pipeline_run_id` when the terminal outcome matches |
-| SFTP INCREMENTAL `sp_finalize_no_new_data_skipped` | 0 | Checked-in exception: this branch is audit-only, but its activity policy currently disables retry |
+| SFTP `INCREMENTAL` `sp_finalize_no_new_data_skipped` | 0 | Checked-in exception: this branch is audit-only, but its activity policy currently disables retry |
 | State-mutating finalizer (may advance watermark) | 0 | Do not blind-retry an uncertain state mutation |
 | Idempotent cleanup Notebook | 1 | Narrow cleanup is repeatable, though Notebook startup is expensive |
 | Copy directly to Bronze/durable target | 0 | A prior attempt may have written data; reconcile/compensate first |
@@ -123,7 +123,7 @@ general audit-only retry policy and the SQL Server no-new-data finalizer (`retry
 current implementation, **not** a decision that these branches must differ; review the discrepancy separately before
 changing runtime behavior.
 
-The **SFTP Copy exception** is safe because Binary Copy with PreserveHierarchy writes to an execution-scoped Landing
+The **SFTP Copy exception** is safe because Binary Copy with `PreserveHierarchy` writes to an execution-scoped Landing
 path, and exhausted attempts trigger cleanup of the failed Landing batch. It is not a general recommendation to
 retry Copy into Bronze.
 
@@ -137,6 +137,6 @@ rather than deleting Bronze or repeating the state write blindly.
 The supported operational entry point remains `pl_ingest_orchestrator`. Direct manual execution/retry of
 dispatcher, controller, router, adapter, or loader pipelines is not part of the supported contract.
 
-For deterministic recovery from a failed REGULAR run, prefer a new top-level REGULAR execution unless the operator intentionally needs BACKFILL semantics.
+For deterministic recovery from a failed `REGULAR` run, prefer a new top-level `REGULAR` execution unless the operator intentionally needs `BACKFILL` semantics.
 
 Do not add a framework `REPROCESS` type until a concrete requirement needs a distinct data-replacement policy.

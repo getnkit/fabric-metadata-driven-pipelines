@@ -1,4 +1,6 @@
-# Fabric Variable Library — Runtime Connection Management
+<a id="fabric-variable-library--runtime-connection-management"></a>
+
+# Fabric Variable Library: Runtime Connection Management
 
 This runbook shows which environment-specific Fabric IDs must be configured or verified per workspace after deployment.
 These bindings are distinct from logical source and target connection metadata stored in Control SQL.
@@ -8,7 +10,7 @@ These bindings are distinct from logical source and target connection metadata s
 The framework uses one Fabric Variable Library:
 `vl_ingestion_connections` (same workspace as `pl_ingest_orchestrator`).
 
-It exposes **five String variables** holding environment-specific GUIDs:
+It exposes **five `String` variables** holding environment-specific GUIDs:
 
 | Variable | Consumer | Value required per environment |
 | --- | --- | --- |
@@ -44,7 +46,7 @@ own active Library bindings to execute.
 
 [![Environment binding architecture in Microsoft Fabric](../assets/diagrams/d02-environment-binding.svg)](../assets/diagrams/d02-environment-binding.svg)
 
-*D02 — Conceptual environment binding for reusable Git-tracked ingestion definitions. Configure or verify five Variable Library String IDs, source/target metadata in control.connection_settings, and permissions/credentials per workspace. Same-workspace Pipeline and Notebook item references use logical IDs; verify dependency remapping after sync. DEV is implemented; UAT and PROD are design only. The diagram does not establish automatic environment rebinding or successful runtime validation.*
+*D02: Conceptual environment binding for reusable Git-tracked ingestion definitions. Configure or verify five Variable Library `String` IDs, source/target metadata in `control.connection_settings`, and permissions/credentials per workspace. Same-workspace Pipeline and Notebook item references use logical IDs; verify dependency remapping after sync. DEV is implemented; UAT and PROD are design only. The diagram does not establish automatic environment rebinding or successful runtime validation.*
 
 ## What is and is not parameterized
 
@@ -103,7 +105,7 @@ This section describes a deployment design. Successful UAT/PROD deployments
 and runtime validation have not been independently established.
 
 Deploy/sync the same Pipeline and Variable Library definitions to each
-environment, then set **that workspace's** five Library String values and
+environment, then set **that workspace's** five Library `String` values and
 its `control.connection_settings` rows to that environment's connections.
 A Fabric Variable Library may use separate value sets, but only one is active
 per workspace; a deployment does not automatically select the correct set.
@@ -111,7 +113,7 @@ Re-check the active value set, permissions, SQL Database item ID, Invoke
 targets, and Notebook item references **after** deployment.
 
 Do not use the preview `Connection reference` variable type as a substitute
-for the five String GUID variables without independently validating support
+for the five `String` GUID variables without independently validating support
 for all of these Data Pipeline consumers.
 
 ## Acceptance / release gate
@@ -122,8 +124,8 @@ for all of these Data Pipeline consumers.
 - [ ] Invoke Pipeline connects to the intended child.
 - [ ] Notebook activity validates and executes with its dynamic Connection;
       verify Notebook permissions separately from target Lakehouse permission.
-- [ ] DATABASE FULL + INCREMENTAL, FILE FULL + INCREMENTAL, and explicit +
-      all-active requests exercise their existing SUCCESS/FAILED/SKIPPED paths.
+- [ ] DATABASE `FULL` + `INCREMENTAL`, FILE `FULL` + `INCREMENTAL`, and explicit +
+      all-active requests exercise their existing `SUCCESS`/`FAILED`/`SKIPPED` paths.
 - [ ] SQL Audit / Watermark semantics and Copy metadata connections remain unchanged.
 - [ ] UAT/PROD deployment has correct active Library values and item rebinding.
 

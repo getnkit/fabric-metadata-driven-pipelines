@@ -1,7 +1,7 @@
 # SFTP File Ingestion Guide
 
 Follow the `LOGISTICS_VENDOR` example from control metadata through Fabric pipelines, Lakehouse Files Landing,
-Bronze Delta, and terminal SQL audit. The FULL snapshot and INCREMENTAL movement feed share the same orchestration
+Bronze Delta, and terminal SQL audit. The `FULL` snapshot and `INCREMENTAL` movement feed share the same orchestration
 framework.
 
 To understand source configuration and the master pipeline, start with [Control Plane](control-plane.md) and
@@ -14,7 +14,7 @@ complete the [environment rebuild guide](../operations/environment-rebuild.md) f
 By the end, you should be able to explain:
 
 - How an ingestion configuration identifies a source, target, and loading strategy.
-- How the same orchestrator dispatches a FULL file snapshot and an INCREMENTAL file feed.
+- How the same orchestrator dispatches a `FULL` file snapshot and an `INCREMENTAL` file feed.
 - Why SFTP files are copied to Lakehouse Files before the Notebook writes Bronze Delta.
 - Where to inspect a run's terminal status, record counts, and watermark.
 
@@ -26,8 +26,8 @@ The DEV metadata seed defines two active objects for the `LOGISTICS_VENDOR` sour
 
 | Source object | Source file selection | Load strategy | Bronze target |
 | --- | --- | --- | --- |
-| `inventory_snapshot` | `inventory_snapshot.csv` | FULL | `fulfillment.inventory_snapshots` |
-| `inventory_movement` | `inventory_movement_*.csv` | INCREMENTAL | `fulfillment.inventory_movements` |
+| `inventory_snapshot` | `inventory_snapshot.csv` | `FULL` | `fulfillment.inventory_snapshots` |
+| `inventory_movement` | `inventory_movement_*.csv` | `INCREMENTAL` | `fulfillment.inventory_movements` |
 
 The snapshot represents current inventory. The movement files represent separate change events delivered over time.
 Both are delimited text, but their processing boundaries differ. Each configuration identifies a **logical feed**,
@@ -106,9 +106,9 @@ to choose the path.
 
 [![DEV FILE Router selecting the SFTP INCREMENTAL adapter](../assets/screenshots/core/c07-01-file-router.png)](../assets/screenshots/core/c07-01-file-router.png)
 
-*C07 — The DEV FILE Router evaluates SFTP|INCREMENTAL after its file-format check and records a successful incremental-adapter invocation. This capture does not demonstrate FULL execution.*
+*C07: The DEV FILE Router evaluates `SFTP|INCREMENTAL` after its file-format check and records a successful incremental-adapter invocation. This capture does not demonstrate `FULL` execution.*
 
-Read the [request contract](../operations/run-request-examples.md) for explicit `config_id` requests and BACKFILL
+Read the [request contract](../operations/run-request-examples.md) for explicit `config_id` requests and `BACKFILL`
 examples. A nonempty `p_run_requests` together with a nonblank `p_source_system` is deliberately rejected as
 `AMBIGUOUS_RUN_SCOPE`.
 
@@ -138,7 +138,7 @@ path segments.
 
 The copy stage is Binary because source preservation and CSV parsing are separate responsibilities. The Notebook performs parsing only after the raw file has arrived in Landing.
 
-The FULL snapshot does not have a persistent watermark. Repeating a successful FULL run appends a new Bronze batch;
+The `FULL` snapshot does not have a persistent watermark. Repeating a successful `FULL` run appends a new Bronze batch;
 it does not replace the previous successful batch. See
 [FILE ingestion design](../architecture/file-ingestion-design.md) for the file count check and cleanup behavior.
 
@@ -215,7 +215,7 @@ flowchart TD
 ```
 
 `copy_sftp_to_landing` uses the configured `source_path` and trimmed `source_options.file_name_pattern` (for
-example, `inventory_movement_*.csv` ) with recursive SFTP traversal. The source settings use `modifiedDatetimeStart`
+example, `inventory_movement_*.csv`) with recursive SFTP traversal. The source settings use `modifiedDatetimeStart`
 and `modifiedDatetimeEnd` formatted as UTC `yyyy-MM-ddTHH:mm:ss.fffZ`. The documented SFTP selection window is:
 
 ```text
@@ -229,14 +229,14 @@ reports new files.
 
 [![DEV movement-feed file in its execution-scoped Landing directory](../assets/screenshots/core/c08-sftp-landing.png)](../assets/screenshots/core/c08-sftp-landing.png)
 
-*C08 — A DEV movement-feed file is visible in an execution-scoped Landing directory with preserved year/month folders. This is a Landing result view, not independent proof of Binary transfer or byte-for-byte equality.*
+*C08: A DEV movement-feed file is visible in an execution-scoped Landing directory with preserved year/month folders. This is a Landing result view, not independent proof of Binary transfer or byte-for-byte equality.*
 
-**File-count consistency is checked before SKIPPED:** `if_landing_file_count_consistent` requires
+**File-count consistency is checked before `SKIPPED`:** `if_landing_file_count_consistent` requires
 `filesRead = filesWritten`. A consistent `0 / 0` proceeds to `if_no_new_data`, which finalizes `SKIPPED` with zero
-counts, skips the Bronze Notebook, and sets `advance_watermark = false`. This applies to both REGULAR and BACKFILL.
+counts, skips the Bronze Notebook, and sets `advance_watermark = false`. This applies to both `REGULAR` and `BACKFILL`.
 
 With `filesRead > 0`, a successful Bronze Notebook leads to `sp_finalize_success`. Only `REGULAR` requests can
-advance the watermark during successful finalization; BACKFILL leaves the operational checkpoint unchanged. A failed
+advance the watermark during successful finalization; `BACKFILL` leaves the operational checkpoint unchanged. A failed
 Landing Copy or file-count mismatch triggers **Landing cleanup**; a failed Bronze Notebook triggers **Bronze
 cleanup**; and a failed success-finalization activity invokes the shared recovery pipeline instead of deleting
 Bronze blindly. The failure branches' additional Finalize and Fail activities are deliberately not expanded in this
@@ -248,9 +248,9 @@ a new DEV execution or a measured file scan. They do not imply support for JSON/
 
 [![DEV SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
 
-*C07 — This DEV adapter activity list records successful Landing Copy, file-count validation, Bronze Notebook, and finalization activities. Activity success alone does not independently establish the terminal SQL audit outcome.*
+*C07: This DEV adapter activity list records successful Landing Copy, file-count validation, Bronze Notebook, and finalization activities. Activity success alone does not independently establish the terminal SQL audit outcome.*
 
-Unlike the SQL Server INCREMENTAL adapter, which can skip a REGULAR `HIGH = LOW` window before the Loader, SFTP
+Unlike the SQL Server `INCREMENTAL` adapter, which can skip a `REGULAR` `HIGH = LOW` window before the Loader, SFTP
 determines whether new data exists **after** its Binary Copy completes and the file counts are checked. See
 [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md) for the comparison and timestamp
 rules. Do not infer file ingestion from the payload's business event date.
@@ -289,13 +289,13 @@ not an independent second Bronze recount.
 
 [![DEV parsed Bronze movement rows with technical lineage](../assets/screenshots/core/c09-sftp-bronze-lineage.png)](../assets/screenshots/core/c09-sftp-bronze-lineage.png)
 
-*C09 — Visible DEV movement rows contain parsed business columns, batch/run lineage, source-file lineage, and ingestion metadata. Truncated identifiers limit exact cross-image correlation; the sample does not establish the table's total row count.*
+*C09: Visible DEV movement rows contain parsed business columns, batch/run lineage, source-file lineage, and ingestion metadata. Truncated identifiers limit exact cross-image correlation; the sample does not establish the table's total row count.*
 
 C08/C09 and C12 show different DEV execution examples. They are not one continuous execution trace.
 
 [![Composite of DEV SFTP audit, Bronze lineage, and before/after checkpoint evidence](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)
 
-*C12 — DEV composite: a SUCCESS movement audit reports six processed rows; six visible Bronze rows share the later checkpoint's Batch ID. The displayed checkpoint advances from 2026-10-23T12:31:47.787Z to 2026-10-24T02:04:02.238Z.*
+*C12: DEV composite. A `SUCCESS` movement audit reports six processed rows; six visible Bronze rows share the later checkpoint's Batch ID. The displayed checkpoint advances from `2026-10-23T12:31:47.787Z` to `2026-10-24T02:04:02.238Z`.*
 
 Run type and remote file Last Modified values are not visible. Some run identifiers are truncated, and exact execution linkage is unverified.
 
@@ -319,7 +319,7 @@ Study [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md
 - Why do the snapshot and movement feed use the same Object Controller but different SFTP adapters?
 - Which timestamp determines whether a movement file is new?
 - What would be incorrect about advancing the watermark before Bronze has committed?
-- Why does an append-only successful BACKFILL not guarantee that a downstream business table contains no duplicate business keys?
+- Why does an append-only successful `BACKFILL` not guarantee that a downstream business table contains no duplicate business keys?
 
 The next step is to follow the [complete technical learning path](learning-path.md), which covers SQL Server Copy, optimistic finalization, recovery, and monitoring in more detail.
 
