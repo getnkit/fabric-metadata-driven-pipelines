@@ -1,6 +1,6 @@
 # Fabric Variable Library — Runtime Connection Management
 
-This runbook shows which environment-specific Fabric IDs must be rebound after deploying Git-tracked definitions.
+This runbook shows which environment-specific Fabric IDs must be configured or verified per workspace after deployment.
 These bindings are distinct from logical source and target connection metadata stored in Control SQL.
 
 ## Scope and decision
@@ -34,9 +34,15 @@ pipeline parameter forwarding for runtime connection IDs.
 
 The supported **external entry point** remains `pl_ingest_orchestrator`. Its
 `if_required_connections_provided` guard rejects any missing/empty value with
-`MISSING_RUNTIME_BINDING` before object dispatch. A direct child pipeline run
+`MISSING_RUNTIME_BINDING` before object dispatch. This guard only detects
+missing/empty Variable Library values; it does not validate GUID correctness,
+permissions, connectivity, or target item references. A direct child pipeline run
 is outside the supported operational flow; the child nevertheless needs its
 own active Library bindings to execute.
+
+[![Environment binding architecture in Microsoft Fabric](../assets/diagrams/d02-environment-binding.svg)](../assets/diagrams/d02-environment-binding.svg)
+
+*D02 — Conceptual environment binding for reusable Git-tracked ingestion definitions. Configure or verify five Variable Library String IDs, source/target metadata in control.connection_settings, and permissions/credentials per workspace. Same-workspace Pipeline and Notebook item references use logical IDs; verify dependency remapping after sync. DEV is implemented; UAT and PROD are design only. The diagram does not establish automatic environment rebinding or successful runtime validation.*
 
 ## What is and is not parameterized
 
@@ -90,6 +96,9 @@ own active Library bindings to execute.
    connection ID parameters. Avoid direct child runs.
 
 ## UAT / PROD deployment
+
+This section describes a deployment design. Successful UAT/PROD deployments
+and runtime validation have not been independently established.
 
 Deploy/sync the same Pipeline and Variable Library definitions to each
 environment, then set **that workspace's** five Library String values and
