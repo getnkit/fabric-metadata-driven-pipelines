@@ -108,7 +108,7 @@ write; it is not an independent target reconciliation.
 
 *O02: DEV comparison of Binary Copy file counts (1 read, 1 written) and Notebook row counts (6 source, 6 target).*
 
-The figure uses separate UI crops. The Notebook metrics excerpt is enlarged 2x with original line wrapping and no reconstructed text. Exact end-to-end execution linkage is unverified.
+The figure uses separate native-scale UI crops, preserving the Notebook metrics' original line wrapping without reconstructing text. Exact end-to-end execution linkage is unverified.
 
 Transfer verification is connector-specific. Native Data Consistency Verification requires support for the actual
 Copy pair and execution mode; otherwise a suitable fallback such as the SFTP file-count gate is needed.
