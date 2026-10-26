@@ -94,11 +94,9 @@ BACKFILL + INCREMENTAL
 Processing-boundary fields are populated only when relevant to the selected scope. In the current V1 contract,
 `BACKFILL` + `INCREMENTAL` records requested LOW/HIGH while `BACKFILL` + `FULL` does not.
 
-The DEV audit below keeps both dimensions visible alongside a checkpoint-state capture.
+[![Composite of a BACKFILL INCREMENTAL SUCCESS audit and a single watermark state panel](../assets/screenshots/composites/c13-incremental-backfill.png)](../assets/screenshots/composites/c13-incremental-backfill.png)
 
-[![Composite of a DEV BACKFILL INCREMENTAL SUCCESS audit and a single watermark state panel](../assets/screenshots/composites/c13-incremental-backfill.png)](../assets/screenshots/composites/c13-incremental-backfill.png)
-
-*C13: DEV composite. The `customers` audit records `run_type` `BACKFILL`, `load_strategy` `INCREMENTAL`, `SUCCESS`, and source/target counts of 2/2, alongside one watermark-state panel.*
+*Backfill audit and checkpoint state in DEV (C13): the `customers` audit records `run_type` `BACKFILL`, `load_strategy` `INCREMENTAL`, `SUCCESS`, and source/target counts of 2/2, alongside one watermark-state panel.*
 
 The watermark source files are byte-identical and do not establish independent before/after observations. Audit LOW/HIGH and Batch ID are truncated. The captures do not independently establish checkpoint non-advancement, a Bronze append, or exact execution linkage; they do not establish exactly-once business semantics.
 

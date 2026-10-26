@@ -22,7 +22,7 @@ These are SQL Control/Audit tables, not Bronze business tables. The sample SQL s
 
 [![Control and audit data model with enforced foreign keys and a logical audit association](../assets/diagrams/d01-control-audit-er.svg)](../assets/diagrams/d01-control-audit-er.svg)
 
-*D01: Selected fields and relationships across the four Control/Audit tables. Solid lines indicate enforced foreign keys; the dashed audit association is not FK-enforced.*
+*Selected fields and relationships across the four Control/Audit tables. Solid lines indicate enforced foreign keys; the dashed audit association is not FK-enforced.*
 
 ### SQL-enforced guardrails
 
@@ -84,9 +84,9 @@ Compare `catalog.product_categories` with `crm.customers`. The former is configu
 field. The latter is `INCREMENTAL` with an `updated_at` watermark. Both use the same Orchestrator; the
 object-specific behavior comes from the configuration and the selected adapter.
 
-[![DEV ingestion configuration for six database objects and two file feeds](../assets/screenshots/core/c01-control-metadata.png)](../assets/screenshots/core/c01-control-metadata.png)
+[![Ingestion configuration for six database objects and two file feeds](../assets/screenshots/core/c01-control-metadata.png)](../assets/screenshots/core/c01-control-metadata.png)
 
-*C01: Selected DEV configuration columns show six DATABASE objects and two FILE feeds, with their `FULL`/`INCREMENTAL` strategies, watermark fields, targets, and active flags.*
+*Selected configuration columns for six DATABASE objects and two FILE feeds, with their `FULL`/`INCREMENTAL` strategies, watermark fields, targets, and active flags.*
 
 A configuration row also carries two logical connection references. The framework uses these references instead of
 putting a physical Fabric Connection ID directly into every source object's pipeline parameters.
@@ -107,11 +107,11 @@ For the standard demo, `SQL_SERVER_ECOMMERCE` is a SQL Server source, `SFTP_LOGI
 `LH_ECOMMERCE_BRONZE` is the Lakehouse target. Their physical connection and Lakehouse identifiers are stored in
 `connection_settings` and resolved by `lkp_ingestion_config` in the Object Controller.
 
-DEV example of the configuration-to-connection mapping:
-
 [![Source objects mapped to logical source and target connection references and types](../assets/screenshots/core/c02-logical-connections.png)](../assets/screenshots/core/c02-logical-connections.png)
 
-*C02: Configuration-to-connection mapping shows `SQL_SERVER` and `SFTP` sources reusing logical references and a shared `LAKEHOUSE` target; physical connection settings are not displayed.*
+*Configuration-to-connection mapping: `SQL_SERVER` and `SFTP` sources reuse logical references and a shared `LAKEHOUSE` target.*
+
+Physical connection settings are not displayed in this mapping.
 
 Fabric Pipeline activities use a separate set of runtime bindings, stored in `vl_ingestion_connections`, for
 Control SQL, Invoke Pipeline, and Notebook execution. Those Library values are **not** the same as the per-source

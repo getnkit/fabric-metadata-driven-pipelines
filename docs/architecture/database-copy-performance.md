@@ -238,15 +238,15 @@ The `requested_parallel_copies` column is a scenario-selector input repeated acr
 runtime parallelism measurement. These snapshots demonstrate metadata configuration, not completed execution
 results or independently verified configuration-to-run linkage.
 
-[![DEV B1 benchmark metadata with NONE and no parallel override](../assets/screenshots/performance/source-config/p01-b1-none-no-override.png)](../assets/screenshots/performance/source-config/p01-b1-none-no-override.png)
+[![B1 benchmark metadata with NONE and no parallel override](../assets/screenshots/performance/source-config/p01-b1-none-no-override.png)](../assets/screenshots/performance/source-config/p01-b1-none-no-override.png)
 
 *P01-B1: Metadata for `copy_source_partitioned` sets `partition_option = NONE` with no `parallel_copies` override; `requested_parallel_copies` is `NULL`.*
 
-[![DEV B2 benchmark metadata with DYNAMIC_RANGE on event_date and no override](../assets/screenshots/performance/source-config/p01-b2-dynamic-range-no-override.png)](../assets/screenshots/performance/source-config/p01-b2-dynamic-range-no-override.png)
+[![B2 benchmark metadata with DYNAMIC_RANGE on event_date and no override](../assets/screenshots/performance/source-config/p01-b2-dynamic-range-no-override.png)](../assets/screenshots/performance/source-config/p01-b2-dynamic-range-no-override.png)
 
 *P01-B2: Metadata for `copy_source_partitioned` sets `DYNAMIC_RANGE` on `event_date` with no override. Checked-in routing selects service-managed `AUTO`.*
 
-[![DEV B3 benchmark metadata with DYNAMIC_RANGE on event_date and explicit override 4](../assets/screenshots/performance/source-config/p01-b3-dynamic-range-override-4.png)](../assets/screenshots/performance/source-config/p01-b3-dynamic-range-override-4.png)
+[![B3 benchmark metadata with DYNAMIC_RANGE on event_date and explicit override 4](../assets/screenshots/performance/source-config/p01-b3-dynamic-range-override-4.png)](../assets/screenshots/performance/source-config/p01-b3-dynamic-range-override-4.png)
 
 *P01-B3: Metadata for `copy_source_partitioned` requests `DYNAMIC_RANGE` on `event_date` with an explicit `parallel_copies` override of `4`.*
 
@@ -300,17 +300,21 @@ The visible activity names identify `AUTO` or `TUNED` branches; `AUTO` omits
 `parallelCopies`, while `TUNED` supplies a positive explicit override. A successful Copy activity does not
 independently prove terminal SQL audit `SUCCESS`.
 
-[![Completed DEV AUTO Copy reporting one used parallel copy](../assets/screenshots/performance/p02-auto-used-1-copy.png)](../assets/screenshots/performance/p02-auto-used-1-copy.png)
+[![Completed AUTO Copy reporting one used parallel copy](../assets/screenshots/performance/p02-auto-used-1-copy.png)](../assets/screenshots/performance/p02-auto-used-1-copy.png)
 
-*P02: `copy_source_to_bronze_auto` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:05:16, throughput 40.753 MB/s, and one used parallel copy. Partition settings are not shown.*
+*P02: `copy_source_to_bronze_auto` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:05:16, throughput 40.753 MB/s, and one used parallel copy.*
 
-[![Completed DEV AUTO Copy reporting four used parallel copies](../assets/screenshots/performance/p03-auto-used-4-copies.png)](../assets/screenshots/performance/p03-auto-used-4-copies.png)
+Partition settings are not shown in P02.
+
+[![Completed AUTO Copy reporting four used parallel copies](../assets/screenshots/performance/p03-auto-used-4-copies.png)](../assets/screenshots/performance/p03-auto-used-4-copies.png)
 
 *P03: `copy_source_to_bronze_auto` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:04:33, throughput 47.011 MB/s, and four used parallel copies.*
 
-[![Completed DEV TUNED Copy reporting four used parallel copies](../assets/screenshots/performance/p04-tuned-used-4-copies.png)](../assets/screenshots/performance/p04-tuned-used-4-copies.png)
+[![Completed TUNED Copy reporting four used parallel copies](../assets/screenshots/performance/p04-tuned-used-4-copies.png)](../assets/screenshots/performance/p04-tuned-used-4-copies.png)
 
-*P04: `copy_source_to_bronze_tuned` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:02:34, throughput 85.388 MB/s, and four used parallel copies. The cause of the duration difference is unverified.*
+*P04: `copy_source_to_bronze_tuned` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:02:34, throughput 85.388 MB/s, and four used parallel copies.*
+
+The cause of the duration difference is unverified.
 
 All three Copy captures report `Succeeded`, **10,000,000 rows read and written**, and **12.552 GB data read**.
 The descriptive table retains the Copy details **Total duration** and the activity-list **Duration** as separate
@@ -322,7 +326,10 @@ observations; neither is substituted for the other. Times are recorded as displa
 | P03 | `AUTO` | 4 | 00:04:33 | 4m 43s | 47.011 MB/s | 571.46 MB / 8 |
 | P04 | `TUNED` | 4 | 00:02:34 | 2m 43s | 85.388 MB/s | 571.46 MB / 8 |
 
-*P05: Descriptive summary of three completed Copy captures. Configuration-to-run linkage, resource conditions and target pre-run state are unverified. No controlled speedup or general tuning recommendation is inferred.*
+*P05: Descriptive summary of three completed Copy captures.*
+
+Configuration-to-run linkage, resource conditions and target pre-run state are unverified.
+No controlled speedup or general tuning recommendation is inferred.
 
 Result filenames do not prove resolved partition settings. P03 and P04 both report four used parallel copies;
 their duration difference does not

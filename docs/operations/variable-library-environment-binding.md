@@ -46,7 +46,11 @@ own active Library bindings to execute.
 
 [![Environment binding architecture in Microsoft Fabric](../assets/diagrams/d02-environment-binding.svg)](../assets/diagrams/d02-environment-binding.svg)
 
-*D02: Conceptual environment binding for reusable Git-tracked ingestion definitions. Configure or verify five Variable Library `String` IDs, source/target metadata in `control.connection_settings`, and permissions/credentials per workspace. Same-workspace Pipeline and Notebook item references use logical IDs; verify dependency remapping after sync. DEV is implemented; UAT and PROD are design only. The diagram does not establish automatic environment rebinding or successful runtime validation.*
+*Conceptual environment bindings for reusable Git-tracked ingestion definitions: five Variable Library `String` IDs, source/target metadata in `control.connection_settings`, and workspace permissions/credentials.*
+
+Configure or verify these bindings per workspace. Same-workspace Pipeline and Notebook item references use logical
+IDs; verify dependency remapping after sync. DEV is implemented; UAT and PROD are design only. The diagram does not
+establish automatic environment rebinding or successful runtime validation.
 
 ## What is and is not parameterized
 

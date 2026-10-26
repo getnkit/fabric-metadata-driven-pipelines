@@ -6,8 +6,8 @@
 
 The repository's Power BI Report `rpt_ingestion_operations` and Semantic
 Model `sm_ingestion_operations` are authored in Power BI Desktop and tracked
-in `fabric/` as PBIR/TMDL. The Report was subsequently synced back to Fabric
-and verified visually/operationally in DEV (2026-10-13).
+in `fabric/` as PBIR/TMDL. The Report was synced to Fabric and verified
+visually/operationally in DEV (2026-10-13).
 
 The report reads **terminal object-level ingestion audit** from the Fabric SQL
 Database. It does **not** create a separate master-run audit, Eventhouse,
@@ -81,18 +81,26 @@ The page uses 16:9 layout. The visuals are:
 | Clustered bar chart | `Latest Batch Summary by Source System`: Success, Failed, Skipped by Source System, using consistent status colors |
 | History table | `Object Execution History`: Source System, Object, Run Type, Status, Source Rows, Target Rows, Duration (s), End (UTC), Error Code, Pipeline Run ID |
 
-[![DEV ingestion operations report overview](../assets/screenshots/core/c15-operations-report.png)](../assets/screenshots/core/c15-operations-report.png)
+The following screenshots show the report in DEV.
 
-*C15: The DEV report shows two source systems, two terminal object audit records across their latest audited batches, and zero failed sources. Both latest source summaries are `SUCCESS`; history also shows earlier `SUCCESS`/`SKIPPED` outcomes and `REGULAR`/`BACKFILL` run types. These are persisted object audits, not live master-pipeline states.*
+[![Ingestion operations report overview](../assets/screenshots/core/c15-operations-report.png)](../assets/screenshots/core/c15-operations-report.png)
+
+*Operations overview: two source systems, two terminal object audit records across their latest audited batches, and zero failed sources.*
+
+Both latest source summaries are `SUCCESS`; history also shows earlier `SUCCESS`/`SKIPPED` outcomes and
+`REGULAR`/`BACKFILL` run types. These are persisted object audits, not live master-pipeline states.
 
 The summary Table and Chart sort `source_system` ascending;
 Object History sorts `end_time` descending. All displayed timestamps
 are UTC with seconds. Slicer and Chart exclude blank Source System directly.
 No visual must depend on the names of the two demo sources.
 
-[![DEV operations report filtered to LOGISTICS_VENDOR](../assets/screenshots/core/c16-operations-filter.png)](../assets/screenshots/core/c16-operations-filter.png)
+[![Operations report filtered to LOGISTICS_VENDOR](../assets/screenshots/core/c16-operations-filter.png)](../assets/screenshots/core/c16-operations-filter.png)
 
-*C16: With `LOGISTICS_VENDOR` selected, the DEV report shows one source, one object audit record in its latest audited batch, and zero failed sources. Four historical executions remain visible, including an earlier `SKIPPED` outcome. Filtering is by source system and does not restrict history to the latest Batch ID.*
+*With `LOGISTICS_VENDOR` selected, the report shows one source, one object audit record in its latest audited batch, and zero failed sources.*
+
+Four historical executions remain visible, including an earlier `SKIPPED` outcome. Filtering is by source system
+and does not restrict history to the latest Batch ID.
 
 ## Pipeline failure notifications (Activator DEV experiment)
 
@@ -124,7 +132,8 @@ detection/action invocation only, not an end-to-end verified notification servic
   **0** Failed Sources across the latest observed batches:
   `ECOMMERCE` had 6 Objects (1 `SUCCESS`, 5 `SKIPPED`);
   `LOGISTICS_VENDOR` had 2 (1 `SUCCESS`, 1 `SKIPPED`).
-- C15 represents a different, later DEV observation: **2** Source Systems,
+- The [Operations overview](../assets/screenshots/core/c15-operations-report.png) shows a different, later DEV
+  observation: **2** Source Systems,
   **2** Objects and **0** Failed Sources, with one terminal object audit
   record in each source's latest audited batch. The `Objects` measure sums
   terminal object audit records across the latest audited batch of each
@@ -133,10 +142,8 @@ detection/action invocation only, not an end-to-end verified notification servic
   observation does not establish that any configurations were deleted.
 - Source-specific filtering, no blank slicer/chart category, timestamp
   display, historical sorting and the overall Report layout were reviewed.
-- The official Desktop-authored report/model were promoted into canonical
-  Git paths and **the user subsequently confirmed** that Fabric Git Sync
-  completed and the official Report worked normally. This closes the
-  Operational Monitoring UI/implementation phase.
+- The repository owner confirmed that Fabric Git Sync completed and the canonical
+  Desktop-authored Report worked normally in DEV.
 - This evidence does **not** independently certify newest-batch failure
   behavior, every abnormal Pipeline path, fresh-data propagation latency,
   backup recovery, or alert recipient delivery.

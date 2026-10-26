@@ -224,9 +224,9 @@ checkpoint. Audit processing LOW/HIGH still describe the attempted scan. A later
 files to be discovered before any subsequent successful nonempty advance. This
 is not a complete late-arrival guarantee once a later nonempty run advances state.
 
-[![Composite of DEV SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
+[![Composite of SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
 
-*C10: DEV composite showing `customers` and `inventory_movement` audits with `SKIPPED` and zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
+*No-new-data observations in DEV (C10): `customers` and `inventory_movement` audits with `SKIPPED` and zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
 
 The Bronze query/filter is not visible, so its zero count does not independently prove no append. The watermark source files are byte-identical, not independent before/after observations. Run type is not visible, some Run IDs are truncated, and exact execution linkage is unverified.
 

@@ -104,9 +104,9 @@ write failure plus the existing compensating-cleanup path for failed Bronze
 writes. The audit count therefore documents rows processed by the successful
 write; it is not an independent target reconciliation.
 
-[![Composite comparing DEV Binary Copy file counts with Notebook parsed-row counts](../assets/screenshots/composites/o02-file-vs-row-count.png)](../assets/screenshots/composites/o02-file-vs-row-count.png)
+[![Composite comparing Binary Copy file counts with Notebook parsed-row counts](../assets/screenshots/composites/o02-file-vs-row-count.png)](../assets/screenshots/composites/o02-file-vs-row-count.png)
 
-*O02: DEV comparison of Binary Copy file counts (1 read, 1 written) and Notebook row counts (6 source, 6 target).*
+*File and row counts in DEV (O02): Binary Copy reports 1 file read and 1 file written; the Notebook reports 6 source rows and 6 target rows.*
 
 The figure uses separate native-scale UI crops, preserving the Notebook metrics' original line wrapping without reconstructing text. Exact end-to-end execution linkage is unverified.
 

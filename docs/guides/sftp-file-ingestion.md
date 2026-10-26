@@ -4,6 +4,8 @@ Follow the `LOGISTICS_VENDOR` example from control metadata through Fabric pipel
 Bronze Delta, and terminal SQL audit. The `FULL` snapshot and `INCREMENTAL` movement feed share the same orchestration
 framework.
 
+Screenshots in this guide show DEV examples.
+
 To understand source configuration and the master pipeline, start with [Control Plane](control-plane.md) and
 [Pipeline Orchestration](pipeline-orchestration.md). You can read the artifacts below without running Fabric. The
 optional verification queries require an already configured DEV environment. If you are setting up a new workspace,
@@ -104,9 +106,11 @@ The FILE Router checks the file format before choosing an adapter. Its `if_suppo
 the requested format against `DELIMITED_TEXT`; its `sw_file_route` activity uses connection type and load strategy
 to choose the path.
 
-[![DEV FILE Router selecting the SFTP INCREMENTAL adapter](../assets/screenshots/core/c07-01-file-router.png)](../assets/screenshots/core/c07-01-file-router.png)
+[![FILE Router selecting the SFTP INCREMENTAL adapter](../assets/screenshots/core/c07-01-file-router.png)](../assets/screenshots/core/c07-01-file-router.png)
 
-*C07: The DEV FILE Router evaluates `SFTP|INCREMENTAL` after its file-format check and records a successful incremental-adapter invocation. This capture does not demonstrate `FULL` execution.*
+*FILE Router evaluates `SFTP|INCREMENTAL` after its file-format check and records a successful incremental-adapter invocation.*
+
+This capture does not demonstrate `FULL` execution.
 
 Read the [request contract](../operations/run-request-examples.md) for explicit `config_id` requests and `BACKFILL`
 examples. A nonempty `p_run_requests` together with a nonblank `p_source_system` is deliberately rejected as
@@ -227,9 +231,11 @@ filters files; the filename is not the checkpoint. Copy uses `PreserveHierarchy`
 directory. The Notebook parses the landed delimited-text files and appends Bronze Delta rows only when the copy
 reports new files.
 
-[![DEV movement-feed file in its execution-scoped Landing directory](../assets/screenshots/core/c08-sftp-landing.png)](../assets/screenshots/core/c08-sftp-landing.png)
+[![Movement-feed file in its execution-scoped Landing directory](../assets/screenshots/core/c08-sftp-landing.png)](../assets/screenshots/core/c08-sftp-landing.png)
 
-*C08: A DEV movement-feed file is visible in an execution-scoped Landing directory with preserved year/month folders. This is a Landing result view, not independent proof of Binary transfer or byte-for-byte equality.*
+*A movement-feed file in an execution-scoped Landing directory with preserved year/month folders.*
+
+This is a Landing result view, not independent proof of Binary transfer or byte-for-byte equality.
 
 **File-count consistency is checked before `SKIPPED`:** `if_landing_file_count_consistent` requires
 `filesRead = filesWritten`. A consistent `0 / 0` proceeds to `if_no_new_data`, which finalizes `SKIPPED` with zero
@@ -246,9 +252,11 @@ diagram. See [FILE Ingestion Design](../architecture/file-ingestion-design.md) a
 **What the diagrams establish:** these are conceptual traces of the checked-in Pipeline activities, not evidence of
 a new DEV execution or a measured file scan. They do not imply support for JSON/Parquet readers or CDC.
 
-[![DEV SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
+[![SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
 
-*C07: This DEV adapter activity list records successful Landing Copy, file-count validation, Bronze Notebook, and finalization activities. Activity success alone does not independently establish the terminal SQL audit outcome.*
+*The adapter activity list records successful Landing Copy, file-count validation, Bronze Notebook, and finalization activities.*
+
+Activity success alone does not independently establish the terminal SQL audit outcome.
 
 Unlike the SQL Server `INCREMENTAL` adapter, which can skip a `REGULAR` `HIGH = LOW` window before the Loader, SFTP
 determines whether new data exists **after** its Binary Copy completes and the file counts are checked. See
@@ -287,15 +295,19 @@ For an actual success, compare the audit's target, counts, and run identifiers w
 and technical metadata. The FILE Notebook supplies its processed-row metric after a successful write; that count is
 not an independent second Bronze recount.
 
-[![DEV parsed Bronze movement rows with technical lineage](../assets/screenshots/core/c09-sftp-bronze-lineage.png)](../assets/screenshots/core/c09-sftp-bronze-lineage.png)
+[![Parsed Bronze movement rows with technical lineage](../assets/screenshots/core/c09-sftp-bronze-lineage.png)](../assets/screenshots/core/c09-sftp-bronze-lineage.png)
 
-*C09: Visible DEV movement rows contain parsed business columns, batch/run lineage, source-file lineage, and ingestion metadata. Truncated identifiers limit exact cross-image correlation; the sample does not establish the table's total row count.*
+*Visible movement rows contain parsed business columns, batch/run lineage, source-file lineage, and ingestion metadata.*
 
-C08/C09 and C12 show different DEV execution examples. They are not one continuous execution trace.
+Truncated identifiers limit exact cross-image correlation; the sample does not establish the table's total row count.
 
-[![Composite of DEV SFTP audit, Bronze lineage, and before/after checkpoint evidence](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)
+The [Landing](../assets/screenshots/core/c08-sftp-landing.png) and
+[Bronze](../assets/screenshots/core/c09-sftp-bronze-lineage.png) views and the C12 checkpoint composite represent
+different DEV execution examples. They are not one continuous execution trace.
 
-*C12: DEV composite. A `SUCCESS` movement audit reports six processed rows; six visible Bronze rows share the later checkpoint's Batch ID. The displayed checkpoint advances from `2026-10-23T12:31:47.787Z` to `2026-10-24T02:04:02.238Z`.*
+[![Composite of SFTP audit, Bronze lineage, and earlier/later checkpoint evidence](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)
+
+*Audit, Bronze, and checkpoint comparison (C12): a `SUCCESS` movement audit reports six processed rows; six visible Bronze rows share the later checkpoint's Batch ID. The displayed checkpoint advances from `2026-10-23T12:31:47.787Z` to `2026-10-24T02:04:02.238Z`.*
 
 Run type and remote file Last Modified values are not visible. Some run identifiers are truncated, and exact execution linkage is unverified.
 

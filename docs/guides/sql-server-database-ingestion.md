@@ -6,6 +6,8 @@ activities and appends the results to Bronze Delta tables in a Fabric Lakehouse.
 Follow `FULL` and `INCREMENTAL` query-mode Copy through their processing windows, Bronze writes, and audit/watermark
 results. The source SQL Server is separate from the Fabric SQL Database that stores configuration and state.
 
+Screenshots in this guide show DEV examples.
+
 Start with [Control Plane](control-plane.md) and [Pipeline Orchestration](pipeline-orchestration.md) if you have not yet traced the configuration and request-dispatch flow.
 
 ## 1. Compare three database configurations
@@ -86,9 +88,11 @@ Files Landing step**. The native Copy activity writes directly to the configured
 A later successful `FULL` run appends another batch. It does not truncate or replace a previously successful Bronze
 batch, so downstream consumers need to account for execution lineage when working with full snapshots.
 
-[![DEV SQL Server FULL Copy execution details](../assets/screenshots/core/c05-sql-server-copy-execution.png)](../assets/screenshots/core/c05-sql-server-copy-execution.png)
+[![SQL Server FULL Copy execution details](../assets/screenshots/core/c05-sql-server-copy-execution.png)](../assets/screenshots/core/c05-sql-server-copy-execution.png)
 
-*C05: This DEV `FULL` Adapter `AUTO` Copy reports `Succeeded`, with 20 rows read from SQL Server and 20 rows written to Lakehouse. Copy success alone does not establish the terminal object audit outcome.*
+*The `FULL` Adapter's `AUTO` Copy reports `Succeeded`, with 20 rows read from SQL Server and 20 rows written to Lakehouse.*
+
+Copy success alone does not establish the terminal object audit outcome.
 
 ## 4. INCREMENTAL: determine the processing window
 
@@ -168,11 +172,9 @@ watermark. It appends a distinct Bronze batch, preserving the existing successfu
 
 Read [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md) and [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for the full contract.
 
-The DEV captures below compare audit processing bounds with persisted checkpoint values.
+[![Composite of SQL audit and checkpoint screenshots](../assets/screenshots/composites/c11-sql-server-incremental.png)](../assets/screenshots/composites/c11-sql-server-incremental.png)
 
-[![Composite of DEV SQL audit and checkpoint screenshots](../assets/screenshots/composites/c11-sql-server-incremental.png)](../assets/screenshots/composites/c11-sql-server-incremental.png)
-
-*C11: DEV composite. Four `SUCCESS` audit rows have processing bounds consistent with the displayed earlier and later checkpoints, which advance to `2026-10-24T01:08:00.941Z`.*
+*Checkpoint and audit comparison (C11): four `SUCCESS` audit rows have processing bounds consistent with the displayed earlier and later checkpoints, which advance to `2026-10-24T01:08:00.941Z`.*
 
 Run type is not visible and audit Run IDs are truncated; exact execution linkage is unverified.
 
@@ -311,9 +313,12 @@ audit row and Bronze `_pipeline_run_id`. For incremental runs, compare the store
 finalization. A green Copy activity alone does not establish the terminal SQL audit or checkpoint outcome. This guide
 documents implementation behavior; observed outcomes depend on DEV source state at execution time.
 
-[![DEV Bronze category rows with ingestion lineage fields](../assets/screenshots/core/c06-sql-bronze-lineage.png)](../assets/screenshots/core/c06-sql-bronze-lineage.png)
+[![Bronze category rows with ingestion lineage fields](../assets/screenshots/core/c06-sql-bronze-lineage.png)](../assets/screenshots/core/c06-sql-bronze-lineage.png)
 
-*C06: Visible DEV category rows carry shared batch, object-execution, and ingestion-timestamp metadata. This Bronze sample does not establish the table's total row count or independently correlate it with the C05 Copy activity.*
+*Visible category rows carry shared batch, object-execution, and ingestion-timestamp metadata.*
+
+This Bronze sample does not establish the table's total row count or independently correlate it with the
+[FULL Copy example](#3-full-copy-the-current-source-table).
 
 ## 7. Failure and recovery boundaries
 

@@ -89,9 +89,9 @@ shared Batch ID.
 The DEV screenshots below illustrate individual execution observations, not one correlated end-to-end trace.
 A Pipeline invocation marked `Succeeded` does not by itself establish an object audit status of `SUCCESS`.
 
-[![DEV Orchestrator execution using the Paginator path](../assets/screenshots/core/c03-master-orchestration.png)](../assets/screenshots/core/c03-master-orchestration.png)
+[![Orchestrator execution using the Paginator path](../assets/screenshots/core/c03-master-orchestration.png)](../assets/screenshots/core/c03-master-orchestration.png)
 
-*C03: This successful DEV Orchestrator execution follows the Paginator path; the activity list records the completed Paginator invocation.*
+*Successful Orchestrator execution through the Paginator path, with a completed Paginator invocation in the activity list.*
 
 ## 3. Why is there a Paginator?
 
@@ -113,11 +113,13 @@ The current design uses sequential pages and bounded object parallelism inside e
 
 <a id="c04--pagination"></a>
 
-### C04: Pagination
+<a id="c04-pagination"></a>
 
-[![DEV pagination output and page dispatch activity runs](../assets/screenshots/core/c04-01-pagination.png)](../assets/screenshots/core/c04-01-pagination.png)
+### Pagination example
 
-*C04: The DEV pagination Lookup reports eight active configurations across four pages; the activity list shows repeated page Lookups and Dispatcher invocations.*
+[![Pagination output and page dispatch activity runs](../assets/screenshots/core/c04-01-pagination.png)](../assets/screenshots/core/c04-01-pagination.png)
+
+*Pagination Lookup reports eight active configurations across four pages; the activity list shows repeated page Lookups and Dispatcher invocations.*
 
 ## 4. The Dispatcher runs object controllers
 
@@ -134,13 +136,17 @@ in parallel.
 
 <a id="c04--dispatcher"></a>
 
-### C04: Dispatcher
+<a id="c04-dispatcher"></a>
 
-[![DEV Dispatcher execution with two Object Controller invocations](../assets/screenshots/core/c04-02-dispatcher.png)](../assets/screenshots/core/c04-02-dispatcher.png)
+### Dispatcher example
 
-*C04: This DEV Dispatcher execution shows two Object Controller invocations starting in the same displayed second and completing successfully; it does not demonstrate eight simultaneous requests.*
+[![Dispatcher execution with two Object Controller invocations](../assets/screenshots/core/c04-02-dispatcher.png)](../assets/screenshots/core/c04-02-dispatcher.png)
 
-This is a DEV setting, not a general tuning recommendation. In a small all-active DEV comparison (2026-10-11),
+*Two Object Controller invocations start in the same displayed second and complete successfully.*
+
+This capture does not demonstrate eight simultaneous requests.
+
+The Dispatcher setting is not a general tuning recommendation. In a small all-active DEV comparison (2026-10-11),
 `batchCount = 3` took **9m29s** versus **4m44s** with `batchCount = 8`. Both runs recorded eight object audits
 (2 `SUCCESS`, 6 `SKIPPED`) and 32 source/target rows. This observation does **not** establish general scaling or cost savings.
 
@@ -164,13 +170,17 @@ passed the relevant checks.
 
 <a id="c04--controller-routing"></a>
 
-### C04: Controller Routing
+<a id="c04-controller-routing"></a>
 
-[![DEV Object Controller execution invoking the DATABASE Router](../assets/screenshots/core/c04-03-database-controller.png)](../assets/screenshots/core/c04-03-database-controller.png)
+### Controller routing examples
 
-[![DEV Object Controller execution invoking the FILE Router](../assets/screenshots/core/c04-04-file-controller.png)](../assets/screenshots/core/c04-04-file-controller.png)
+[![Object Controller execution invoking the DATABASE Router](../assets/screenshots/core/c04-03-database-controller.png)](../assets/screenshots/core/c04-03-database-controller.png)
 
-*C04: Separate DEV object executions show configuration lookup and request checks followed by DATABASE Router invocation (first image) or FILE Router invocation (second image). These are routing examples, not a single-object execution sequence.*
+[![Object Controller execution invoking the FILE Router](../assets/screenshots/core/c04-04-file-controller.png)](../assets/screenshots/core/c04-04-file-controller.png)
+
+*Separate object executions show configuration lookup and request checks followed by DATABASE Router invocation (first image) or FILE Router invocation (second image).*
+
+These are routing examples, not a single-object execution sequence.
 
 ## 6. The Routers choose the physical adapter
 
@@ -185,11 +195,15 @@ The route key joins the uppercased connection type and load strategy with the pi
 
 <a id="c04--database-routing"></a>
 
-### C04: Database Routing
+<a id="c04-database-routing"></a>
 
-[![DEV DATABASE route output selecting the SQL Server FULL Adapter](../assets/screenshots/core/c04-05-database-router.png)](../assets/screenshots/core/c04-05-database-router.png)
+### Database routing example
 
-*C04: The DEV DATABASE Router evaluates `SQL_SERVER|FULL` and records a successful `FULL` Adapter invocation; this capture does not demonstrate the `INCREMENTAL` branch.*
+[![DATABASE route output selecting the SQL Server FULL Adapter](../assets/screenshots/core/c04-05-database-router.png)](../assets/screenshots/core/c04-05-database-router.png)
+
+*DATABASE Router evaluates `SQL_SERVER|FULL` and records a successful `FULL` Adapter invocation.*
+
+This capture does not demonstrate the `INCREMENTAL` branch.
 
 The FILE Router first checks `if_supported_file_format`. At present, the accepted format is `DELIMITED_TEXT`. The
 SQL Server `INCREMENTAL` adapter adds a separate Loader pipeline for Copy execution and finalization. Each physical
