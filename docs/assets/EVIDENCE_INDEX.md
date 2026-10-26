@@ -74,7 +74,7 @@ Use Python with `Pillow==11.3.0` from the repository root. Run the linked builde
 | C13 (3 inputs) | [cx-s5-audit-backfill.png](screenshots/supporting/s5-backfill/cx-s5-audit-backfill.png)<br>[cx-s5-watermark-after.png](screenshots/supporting/s5-backfill/cx-s5-watermark-after.png)<br>[cx-s5-watermark-before.png](screenshots/supporting/s5-backfill/cx-s5-watermark-before.png) | [build_incremental_composites.py](../../scripts/evidence/build_incremental_composites.py)<br>[Manifest](screenshots/composites/c13-incremental-backfill.manifest.json) |
 | O02 (2 inputs) | [cx-o02-binary-copy.png](screenshots/supporting/optional/o02-file-row-count/cx-o02-binary-copy.png)<br>[cx-o02-notebook-parse.png](screenshots/supporting/optional/o02-file-row-count/cx-o02-notebook-parse.png) | [build_sftp_composites.py](../../scripts/evidence/build_sftp_composites.py)<br>[Manifest](screenshots/composites/o02-file-vs-row-count.manifest.json) |
 
-O02 preserves genuine UI crops; only its metric strips are enlarged 2x with NEAREST. Both Notebook row metrics reuse one parsed DataFrame count, not an independent Bronze recount. Exact end-to-end execution linkage is unverified.
+O02 preserves genuine UI crops at native scale without resizing, retaining original line wrapping. Both Notebook row metrics reuse one parsed DataFrame count, not an independent Bronze recount. Exact end-to-end execution linkage is unverified.
 
 ## Omitted candidates
 
