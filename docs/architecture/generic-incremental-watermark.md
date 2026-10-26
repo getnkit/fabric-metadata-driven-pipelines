@@ -226,7 +226,7 @@ is not a complete late-arrival guarantee once a later nonempty run advances stat
 
 [![Composite of SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
 
-*No-new-data observations in DEV (C10): `customers` and `inventory_movement` audits with `SKIPPED` and zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
+*No-new-data observations in DEV: `customers` and `inventory_movement` audits with `SKIPPED` and zero source/target rows, alongside a separate Bronze count result and one watermark-state panel.*
 
 The Bronze query/filter is not visible, so its zero count does not independently prove no append. The watermark source files are byte-identical, not independent before/after observations. Run type is not visible, some Run IDs are truncated, and exact execution linkage is unverified.
 

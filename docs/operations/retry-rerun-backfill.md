@@ -60,9 +60,8 @@ BACKFILL + INCREMENTAL
 A `FULL` `BACKFILL` may physically read the same source rows as a `REGULAR` `FULL` run. The difference is execution intent
 and lineage: the `BACKFILL` run is performed to repopulate/recover data and is audited as `BACKFILL`.
 
-The current V1 `FULL` `BACKFILL` does not select a historical point-in-time snapshot. If a future source requires a
-historical full snapshot, add an explicit source-appropriate selector such as `data_date`, snapshot ID, source
-version, or timestamp rather than overloading LOW/HIGH.
+The current V1 `FULL` `BACKFILL` rereads the available source scope; it does not select a historical point-in-time
+snapshot. LOW/HIGH define incremental processing windows, not historical `FULL` snapshot selectors.
 
 ## Bronze invariant
 
@@ -96,7 +95,7 @@ Processing-boundary fields are populated only when relevant to the selected scop
 
 [![Composite of a BACKFILL INCREMENTAL SUCCESS audit and a single watermark state panel](../assets/screenshots/composites/c13-incremental-backfill.png)](../assets/screenshots/composites/c13-incremental-backfill.png)
 
-*Backfill audit and checkpoint state in DEV (C13): the `customers` audit records `run_type` `BACKFILL`, `load_strategy` `INCREMENTAL`, `SUCCESS`, and source/target counts of 2/2, alongside one watermark-state panel.*
+*Backfill audit and checkpoint state in DEV: the `customers` audit records `run_type` `BACKFILL`, `load_strategy` `INCREMENTAL`, `SUCCESS`, and source/target counts of 2/2, alongside one watermark-state panel.*
 
 The watermark source files are byte-identical and do not establish independent before/after observations. Audit LOW/HIGH and Batch ID are truncated. The captures do not independently establish checkpoint non-advancement, a Bronze append, or exact execution linkage; they do not establish exactly-once business semantics.
 

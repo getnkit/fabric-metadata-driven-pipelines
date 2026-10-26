@@ -138,7 +138,9 @@ Delta. The parser implements `DELIMITED_TEXT` only; `PARQUET`/`JSON`
 are not active readers. FILE incremental uses the *remote last modified*
 timestamp, not the CSV payload date.
 
-## Execution semantics (the important matrix)
+<a id="execution-semantics-the-important-matrix"></a>
+
+## Execution semantics
 
 | Execution | Implemented behavior | Operational watermark |
 | --- | --- | --- |

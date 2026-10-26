@@ -137,7 +137,7 @@ The Fabric SQL Database stores `audit.ingestion_log.error_message` and the final
 - **Landing file-count mismatch plus cleanup failure:** include `filesRead` / `filesWritten` and `take(cleanup_error,3000)`; no outer `take()` is required.
 
 Validation and Routing messages that do not propagate activity errors keep their existing `concat()` expressions.
-The Error Handler activity dependencies, audit statuses, retries, cleanup, and watermark semantics do not change.
+Truncating error messages preserves the existing activity dependencies, audit statuses, retry policies, cleanup paths, and watermark behavior.
 
 Smoke-check one short lookup error and one source-to-Bronze failure path in DEV after synchronizing the Fabric
 pipeline definitions. Full runtime failure-path coverage has not been performed.

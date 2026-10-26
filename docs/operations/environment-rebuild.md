@@ -88,7 +88,7 @@ Before creating Fabric connections, verify source SQL read-only access, row coun
 ## D. Create the Fabric workspace and import definitions
 
 1. Create/connect the fresh workspace and configure **Settings > Git integration**
-   for repository `getnkit/fabric-metadata-driven-pipelines` (after the GitHub rename), the desired
+   for repository `getnkit/fabric-metadata-driven-pipelines`, the desired
    branch, and **Git folder `fabric`**. Do **not** leave the folder blank:
    the Fabric item definitions live under `fabric/`, not the repository root.
    Prefer a dedicated `rebuild/<environment>` branch based on the selected
@@ -332,8 +332,7 @@ checks succeed. A document/Git review alone is **not** a tested recovery.
 
 ## J. Repo navigation
 
-- [Starter Kit baseline](../../scripts/RUN_ORDER.md): existing detailed
-  install semantics and optional benchmark.
+- [SQL run order](../../scripts/RUN_ORDER.md): installation instructions and optional benchmark.
 - [Source infrastructure](../../infra/source/README.md): fresh EC2,
   existing host, SSH/upload/SFTP particulars.
 - [Variable Library](variable-library-environment-binding.md): exact runtime

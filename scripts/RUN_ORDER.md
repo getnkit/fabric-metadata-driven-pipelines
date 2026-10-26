@@ -2,8 +2,9 @@
 
 Use this guide for a **fresh installation** of Control/Audit SQL for the current Fabric ingestion framework.
 It is not an upgrade procedure for an existing database.
-Core Control/Audit SQL is the same across DEV, UAT and PROD; source demo and
-benchmark fixtures are optional and DEV-only.
+The Control/Audit schema and procedures define a shared logical model for DEV, UAT and PROD.
+SQL Project deployment still requires environment-specific ownership, user, identity and binding review;
+UAT/PROD deployment has not been independently validated. Source demo and benchmark fixtures are optional and DEV-only.
 
 **Starting from a lost/empty workspace?** First follow the
 [end-to-end Environment Rebuild runbook](../docs/operations/environment-rebuild.md)
@@ -156,7 +157,7 @@ sample configs; review before rerun. It **does not UPDATE existing
 checkpoint rows**, change stored Watermark Fields, reset successes, or
 rewrite Audit History. Mismatched metadata vs Watermark State must fail
 during adapter validation and be reconciled explicitly, never reset by
-an ad hoc seed. There are no default API incremental state rows.
+an ad hoc seed.
 
 ## E. Execute via Master and verify
 

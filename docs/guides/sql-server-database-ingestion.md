@@ -132,7 +132,7 @@ from a source Lookup; `BACKFILL` uses the explicitly requested HIGH. After bound
 The diagram stops at the initial finalize activities on the error branches to remain readable. Their dependent
 `fail_*` activities, along with the exact Fabric dependencies and error handling, remain in the
 [INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sql_server_incremental_adapter.DataPipeline/pipeline-content.json).
-The diagram is derived from the checked-in definition, **not** an observed DEV run.
+The diagram summarizes the checked-in Adapter definition.
 
 For a `REGULAR` run the upper bound comes from a source query:
 
@@ -179,7 +179,7 @@ Read [Generic Incremental Watermark](../architecture/generic-incremental-waterma
 
 [![Composite of SQL audit and checkpoint screenshots](../assets/screenshots/composites/c11-sql-server-incremental.png)](../assets/screenshots/composites/c11-sql-server-incremental.png)
 
-*Checkpoint and audit comparison (C11): four `SUCCESS` audit rows have processing bounds consistent with the displayed earlier and later checkpoints, which advance to `2026-10-24T01:08:00.941Z`.*
+*Four `SUCCESS` audit rows have processing bounds consistent with the displayed earlier and later checkpoints, which advance to `2026-10-24T01:08:00.941Z`.*
 
 Run type is not visible and audit Run IDs are truncated; exact execution linkage is unverified.
 
@@ -187,8 +187,8 @@ Run type is not visible and audit Run IDs are truncated; exact execution linkage
 
 The `copy_options` field configures connector-native Copy execution. It is separate from the `load_strategy` and `watermark_field`.
 
-Most normal DEV database configurations have `copy_options = NULL`. In the current SQL Server adapter, that means
-unpartitioned Copy with service-managed parallelism. The `sales.order_items` example uses:
+The SQL Server path maps `copy_options = NULL` to `NONE` partitioning and service-managed `AUTO` parallelism.
+The `sales.order_items` example uses:
 
 ```json
 {
@@ -245,7 +245,7 @@ omitting the property. This is why the `AUTO` branch omits it. Do not treat that
 benchmark.
 
 See [Database Copy Performance](../architecture/database-copy-performance.md) for the Copy option contract,
-recorded DEV observations, and their limitations.
+recorded observations, and their limitations.
 
 ### Transfer consistency and type-conversion safety
 
@@ -263,7 +263,9 @@ compatibility during onboarding. No per-table hardcoded mappings are introduced.
 
 SFTP Binary Copy to Landing and Spark delimited-text parsing have separate consistency/type-handling behavior and do not use `TabularTranslator`.
 
-## 6. Verify the results after a DEV run
+<a id="6-verify-the-results-after-a-dev-run"></a>
+
+## 6. Verify the results after a run
 
 To execute one object through the supported entry point, first obtain the actual configuration ID. Then pass an explicit request to `pl_ingest_orchestrator`:
 
@@ -320,8 +322,8 @@ ORDER BY c.source_schema, c.source_object;
 
 In Fabric Monitor, inspect the executed `FULL` or `INCREMENTAL` Copy branch and match its object Run ID to the SQL
 audit row and Bronze `_pipeline_run_id`. For incremental runs, compare the stored watermark before and after
-finalization. A green Copy activity alone does not establish the terminal SQL audit or checkpoint outcome. This guide
-documents implementation behavior; observed outcomes depend on DEV source state at execution time.
+finalization. A green Copy activity alone does not establish the terminal SQL audit or checkpoint outcome.
+Observed outcomes depend on source state at execution time.
 
 [![Bronze category rows with ingestion lineage fields](../assets/screenshots/core/c06-sql-bronze-lineage.png)](../assets/screenshots/core/c06-sql-bronze-lineage.png)
 

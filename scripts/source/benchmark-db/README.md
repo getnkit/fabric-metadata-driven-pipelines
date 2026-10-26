@@ -49,7 +49,7 @@ and reports actual reserved/used storage.
 
 ### Fabric connection
 
-Create a **Fabric SQL Server 2022 Developer on EC2** connection named:
+Create a Fabric **SQL Server** connection named:
 
 ```text
 cn_src_sql_server_benchmark_db
@@ -176,7 +176,8 @@ is unchanged.
 
 SQL Server **Developer Edition is for development/testing, not production use**. Capture EC2 instance type, EBS
 size/IOPS, SQL Server edition, CPU and memory load, network egress, row counts and effective parallelism for each
-run. Benchmark results are **not directly comparable** with the earlier Azure SQL compute configuration.
+run. Results are specific to this EC2 setup and are **not directly comparable** with other setups without verifying
+equivalent source and test conditions.
 
 The physically partitioned source table is retained **unchanged**: retiring
 Fabric's Table-mode `PHYSICAL_PARTITIONS` option does not remove or modify SQL

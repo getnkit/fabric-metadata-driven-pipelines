@@ -143,6 +143,5 @@ Rules:
 - A given `config_id` may appear at most once in one `p_run_requests` array; duplicates are rejected before Dispatcher fan-out.
 - Source-system filtering is used only in the All Active paginator path; explicit requests never inherit or override the source-system filter.
 
-A future historical FULL-snapshot requirement should add an explicit selector such
-as `data_date`, snapshot ID, or source version. Do not reinterpret LOW/HIGH as a
-historical snapshot identifier.
+`FULL` `BACKFILL` rereads the available source scope rather than selecting a historical point-in-time snapshot.
+LOW/HIGH specify incremental processing boundaries; do not reinterpret them as historical snapshot identifiers.

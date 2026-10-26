@@ -85,7 +85,9 @@ not a guarantee for arbitrary configuration volume.
 
 For acceptance testing, the page size can temporarily be set to a small value such as 2 so the multi-page path can be exercised without seeding thousands of configurations.
 
-## Other activity-specific awareness
+<a id="other-activity-specific-awareness"></a>
+
+## Activity-specific guardrails
 
 ### ForEach
 

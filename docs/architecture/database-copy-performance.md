@@ -302,17 +302,17 @@ independently prove terminal SQL audit `SUCCESS`.
 
 [![Completed AUTO Copy reporting one used parallel copy](../assets/screenshots/performance/p02-auto-used-1-copy.png)](../assets/screenshots/performance/p02-auto-used-1-copy.png)
 
-*P02: `copy_source_to_bronze_auto` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:05:16, throughput 40.753 MB/s, and one used parallel copy.*
+*P02: `copy_source_to_bronze_auto` reports `Succeeded`, with 10,000,000 rows read/written and one used parallel copy.*
 
 Partition settings are not shown in P02.
 
 [![Completed AUTO Copy reporting four used parallel copies](../assets/screenshots/performance/p03-auto-used-4-copies.png)](../assets/screenshots/performance/p03-auto-used-4-copies.png)
 
-*P03: `copy_source_to_bronze_auto` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:04:33, throughput 47.011 MB/s, and four used parallel copies.*
+*P03: `copy_source_to_bronze_auto` reports `Succeeded`, with 10,000,000 rows read/written and four used parallel copies.*
 
 [![Completed TUNED Copy reporting four used parallel copies](../assets/screenshots/performance/p04-tuned-used-4-copies.png)](../assets/screenshots/performance/p04-tuned-used-4-copies.png)
 
-*P04: `copy_source_to_bronze_tuned` reports `Succeeded`, 10,000,000 rows read/written, Total duration 00:02:34, throughput 85.388 MB/s, and four used parallel copies.*
+*P04: `copy_source_to_bronze_tuned` reports `Succeeded`, with 10,000,000 rows read/written and four used parallel copies.*
 
 The cause of the duration difference is unverified.
 

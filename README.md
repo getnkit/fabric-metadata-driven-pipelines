@@ -51,9 +51,9 @@ See [Architecture & Design Decisions](docs/architecture/framework-overview.md) f
 - **Scoped failure recovery.** Failed Bronze writes trigger execution-scoped cleanup. If the final audit step reports an error after an incremental load, the framework checks the saved outcome before removing data.
 - **Operational monitoring.** Fabric Monitor shows pipeline execution; SQL audit tables store object-run outcomes, and a Power BI report presents them in a clear operational view.
 
-[![DEV Operations report over persisted terminal object audits](docs/assets/screenshots/core/c15-operations-report.png)](docs/assets/screenshots/core/c15-operations-report.png)
+[![Operations report over persisted terminal object audits](docs/assets/screenshots/core/c15-operations-report.png)](docs/assets/screenshots/core/c15-operations-report.png)
 
-*DEV Operations report over persisted terminal object audits. The latest audited batches show two sources, two object audit records and zero failed sources; this view does not cover RUNNING work or every master execution.*
+*Operations report from the development workspace (DEV), based on persisted terminal object audits. The latest audited batches show two sources, two object audit records and zero failed sources; this view does not cover RUNNING work or every master execution.*
 
 ## How the framework works
 

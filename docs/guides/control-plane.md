@@ -2,7 +2,7 @@
 
 Fabric SQL Database `sqldb_ingestion_control` keeps source configuration, connection references, checkpoints, and object-run audits separate from physical ingestion logic.
 
-This guide explains the four implemented Control/Audit tables and their DEV examples. SQL Server and SFTP are
+This guide explains the four implemented Control/Audit tables and their sample configurations. SQL Server and SFTP are
 supported.
 
 For the execution path that reads this metadata, continue with [Pipeline Orchestration](pipeline-orchestration.md).
@@ -154,7 +154,7 @@ WHERE source_system = 'LOGISTICS_VENDOR'
 ORDER BY source_object;
 ```
 
-The current reader implements CSV/TSV through `DELIMITED_TEXT`. Other format values appearing in SQL constraints are not evidence of corresponding working readers.
+The current reader implements CSV/TSV through `DELIMITED_TEXT`. Other format names permitted by SQL constraints do not have implemented readers.
 
 See [Database Copy Performance](../architecture/database-copy-performance.md) for the Copy option contract and [SFTP File Ingestion](sftp-file-ingestion.md) for the physical file path.
 
@@ -162,7 +162,7 @@ See [Database Copy Performance](../architecture/database-copy-performance.md) fo
 
 `FULL` configurations do not maintain an incremental checkpoint. The two implemented `INCREMENTAL` patterns, DATABASE and FILE, share `control.pipeline_watermarks`.
 
-Use the read-only query below to inspect which DEV configurations have stored state:
+Use the read-only query below to inspect which configurations have stored state:
 
 ```sql
 SELECT
@@ -239,7 +239,7 @@ You can inspect the exact Lookup and Switch definitions in:
 - [DEV connection seed](../../scripts/control/03_seed_connection_settings.sql)
 - [DEV ingestion configuration seed](../../scripts/control/04_seed_ingestion_metadata.sql)
 
-The seed scripts are for creating or preparing a DEV example, **not** read-only verification scripts. In particular,
+The seed scripts provision DEV sample metadata; they are **not** read-only verification scripts. In particular,
 re-running the ingestion metadata seed may update existing demo configuration rows. Use the `SELECT` statements above
 when you only want to study the current environment.
 
@@ -252,5 +252,5 @@ and dispatches them. Then follow [SQL Server Database Ingestion](sql-server-data
 Use the read-only configuration and watermark queries above to identify the actual object and its checkpoint. Then
 inspect `lkp_ingestion_config` in the checked-in
 [Object Controller definition](../../fabric/pl_ingest_object_controller.DataPipeline/pipeline-content.json) to see
-how the metadata is passed to the router. The SQL results depend on the active DEV environment; do not assume the
+how the metadata is passed to the router. The SQL results depend on the connected environment; do not assume the
 example IDs or values match a fresh deployment.

@@ -13,7 +13,7 @@ Server and SFTP.
 
 | Goal | Read |
 | --- | --- |
-| **Portfolio / architecture scan** | [Architecture](../architecture/framework-overview.md) → [Database Copy Performance](../architecture/database-copy-performance.md) for measured DEV limits |
+| **Portfolio / architecture scan** | [Architecture](../architecture/framework-overview.md) → [Database Copy Performance](../architecture/database-copy-performance.md) for Copy configuration and limited development-workspace observations |
 | **Follow an actual ingestion request** | Steps **1–4** below; choose SQL Server or SFTP |
 | **Understand production-style safety decisions** | Steps **5–7**: watermark, retry/compensation, audit visibility |
 | **Reproduce the DEV demo** | Step **8**, then follow the operator runbooks (not the design documents) |
@@ -121,19 +121,18 @@ of historic Bronze rows, watermarks, audits, or secrets.
 
 **For reviewers:** [Database Copy Performance](../architecture/database-copy-performance.md) records completed and
 partial DEV Copy observations; [Pipeline Orchestration](pipeline-orchestration.md) records the small parallel-dispatch
-comparison; and [Monitoring Report](../operations/monitoring-report.md) records the DEV report review.
+comparison; and [Monitoring Report](../operations/monitoring-report.md) describes audit-based monitoring and its limits.
 [Fabric Data Factory Limits](../architecture/fabric-data-factory-limits.md) documents platform guardrails, while
 [Variable Library Bindings](../operations/variable-library-environment-binding.md) documents environment-specific IDs.
 
-When documenting results for a portfolio, capture **real DEV screenshots** of the ingestion run, Bronze data,
-checkpoint/audit behavior, and Power BI report, with matching run identifiers where applicable. Add only verified
-captures; do not present uncompleted benchmarks, an unverified clean-room rebuild, or production-scale performance
-as tested. Remove connection details and other sensitive information before publishing.
+Verify results against genuine execution evidence, matching run identifiers before correlating captures.
+Distinguish checked-in definitions from observed runtime behavior, and check whether benchmark measurements are
+complete and rebuild outcomes have been independently verified. Development-workspace results do not establish
+production-scale performance. Remove connection details and other sensitive information before sharing captures.
 
-**Check yourself:** Which claims can be confirmed from Git definitions, and which require a live DEV execution or recipient-delivery check?
+**Check yourself:** Which claims can be confirmed from Git definitions, and which require observed runtime results or a recipient-delivery check?
 
 ---
 
-**Use this as a navigation guide, not another implementation specification.** For details, use the linked topic
-guide; for exact behavior, inspect the corresponding Fabric/SQL definitions and runtime evidence. Diagrams alone do
-not establish test completion.
+For exact behavior, use the linked topic guides and Fabric/SQL definitions alongside runtime evidence. Diagrams
+alone do not establish test completion.

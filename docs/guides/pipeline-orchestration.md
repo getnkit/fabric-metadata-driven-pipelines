@@ -85,7 +85,7 @@ flowchart TD
   linkStyle default stroke:#6d7f94
 ```
 
-*Conceptual routing based on the checked-in Fabric Pipeline definitions. Validation and pre-dispatch failure branches are summarized; this is not a screenshot of a particular run.*
+*Conceptual routing based on the checked-in Fabric Pipeline definitions. Validation and pre-dispatch failure branches are summarized.*
 
 The explicit request path invokes `control.usp_validate_run_requests` before dispatch. The Paginator path first
 obtains active configurations from SQL. In either case, the Dispatcher receives an array of object requests and a
@@ -128,7 +128,7 @@ The current design uses sequential pages and bounded object parallelism inside e
 
 ## 4. The Dispatcher runs object controllers
 
-[`pl_ingest_config_dispatcher`](../../fabric/pl_ingest_config_dispatcher.DataPipeline/pipeline-content.json) contains `fe_run_requests`, a parallel ForEach with `batchCount = 8` in the current DEV baseline. For each item, `inv_ingest_object_controller` forwards:
+The checked-in [`pl_ingest_config_dispatcher`](../../fabric/pl_ingest_config_dispatcher.DataPipeline/pipeline-content.json) contains `fe_run_requests`, a parallel ForEach with `batchCount = 8`. For each item, `inv_ingest_object_controller` forwards:
 
 - The shared `p_batch_id`.
 - The requested `config_id` as `p_ingestion_config_id`.
@@ -218,7 +218,9 @@ See [SQL Server Database Ingestion](sql-server-database-ingestion.md),
 [Connector Responsibilities](../architecture/framework-overview.md#pipeline-roles-and-connector-boundary), and
 [SFTP File Ingestion](sftp-file-ingestion.md) for the next level of detail.
 
-## 7. Trace a real run without guessing its result
+<a id="7-trace-a-real-run-without-guessing-its-result"></a>
+
+## 7. Trace and verify a run
 
 If a DEV environment is available, start with a known source system rather than all eight objects:
 

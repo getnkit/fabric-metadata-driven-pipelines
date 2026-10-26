@@ -60,8 +60,7 @@ refresh latency.
   `Objects` sums counts from each source's latest audited batch.
 - The native `Latest Activity (UTC)` measure remains DateTime and is
   formatted without a text-conversion helper. Visual-level
-  `source_system is not blank` filters replace the retired
-  `Valid Source Option` DAX measure.
+  `source_system is not blank` filters exclude blank source systems.
 - TMDL currently embeds the original DEV SQL Database server/database
   in its DirectQuery partitions: rebind in a **new** workspace by following
   [Environment Rebuild](environment-rebuild.md). Do not use those IDs
@@ -125,9 +124,11 @@ failure before object resolution may create no object audit.
 observed. **Delivery to the intended recipient inbox was not independently verified.** This proves event
 detection/action invocation only, not an end-to-end verified notification service.
 
-## Acceptance and follow-up
+<a id="acceptance-and-follow-up"></a>
 
-- DEV screenshot/visual evidence showed **2** Source Systems, **8** Objects,
+## Verification and observed results
+
+- An earlier report capture from the development workspace showed **2** Source Systems, **8** Objects,
   **0** Failed Sources across the latest observed batches:
   `ECOMMERCE` had 6 Objects (1 `SUCCESS`, 5 `SKIPPED`);
   `LOGISTICS_VENDOR` had 2 (1 `SUCCESS`, 1 `SKIPPED`).

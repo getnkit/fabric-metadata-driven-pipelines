@@ -259,8 +259,7 @@ Bronze blindly. The failure branches' additional Finalize and Fail activities ar
 diagram. See [FILE Ingestion Design](../architecture/file-ingestion-design.md) and
 [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md).
 
-**What the diagrams establish:** these are conceptual traces of the checked-in Pipeline activities, not evidence of
-a new DEV execution or a measured file scan. They do not imply support for JSON/Parquet readers.
+These conceptual flows summarize the checked-in Pipeline activities. JSON/Parquet readers are not implemented.
 
 [![SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
 
@@ -275,7 +274,7 @@ rules. Do not infer file ingestion from the payload's business event date.
 
 ## 5. Verify the terminal object audits
 
-After an actual DEV run, use this read-only query to inspect the most recent object outcomes:
+After running the pipeline, use this read-only query to inspect the latest object outcomes:
 
 ```sql
 SELECT TOP (20)
@@ -312,12 +311,12 @@ not an independent second Bronze recount.
 Truncated identifiers limit exact cross-image correlation; the sample does not establish the table's total row count.
 
 The [Landing](../assets/screenshots/core/c08-sftp-landing.png) and
-[Bronze](../assets/screenshots/core/c09-sftp-bronze-lineage.png) views and the C12 checkpoint composite represent
-different DEV execution examples. They are not one continuous execution trace.
+[Bronze](../assets/screenshots/core/c09-sftp-bronze-lineage.png) views and the following checkpoint composite show
+different execution examples. They are not one continuous execution trace.
 
 [![Composite of SFTP audit, Bronze lineage, and earlier/later checkpoint evidence](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)](../assets/screenshots/composites/c12-sftp-new-file-incremental.png)
 
-*Audit, Bronze, and checkpoint comparison (C12): a `SUCCESS` movement audit reports six processed rows; six visible Bronze rows share the later checkpoint's Batch ID. The displayed checkpoint advances from `2026-10-23T12:31:47.787Z` to `2026-10-24T02:04:02.238Z`.*
+*A `SUCCESS` movement audit reports six processed rows; six visible Bronze rows share the later checkpoint's Batch ID. The displayed checkpoint advances from `2026-10-23T12:31:47.787Z` to `2026-10-24T02:04:02.238Z`.*
 
 Run type and remote file Last Modified values are not visible. Some run identifiers are truncated, and exact execution linkage is unverified.
 
@@ -345,4 +344,4 @@ Study [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md
 
 The next step is to follow the [complete technical learning path](learning-path.md), which covers SQL Server Copy, optimistic finalization, recovery, and monitoring in more detail.
 
-The examples describe the checked-in implementation, not the outcome of a new run. Use the audit query above and Fabric Monitor to verify an actual execution.
+Use the audit query above and Fabric Monitor to verify an actual execution.
