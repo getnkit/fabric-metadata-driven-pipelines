@@ -98,7 +98,7 @@ def _cleanup_batch_rows():
         )
 
     print(
-        f"BRONZE_CLEANUP_SUCCESS batch_id={batch_id} "
+        f"BRONZE_CLEANUP_SUCCESS: batch_id={batch_id} "
         f"target={table_relative_path} rows_removed={rows_before}"
     )
 
