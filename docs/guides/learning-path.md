@@ -7,8 +7,7 @@ walkthrough only as far as you need. Each step points to the canonical explanati
 implementation.
 
 **Scope:** Microsoft Fabric Data Pipelines, Fabric SQL Database, Lakehouse Bronze; implemented batch sources are SQL
-Server and SFTP. The repository does **not** contain deployable Azure Data Factory assets or working
-Oracle/PostgreSQL/API/CDC/streaming adapters.
+Server and SFTP.
 
 ## Choose a reading route
 

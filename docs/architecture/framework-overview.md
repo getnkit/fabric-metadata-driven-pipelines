@@ -30,6 +30,9 @@ flowchart TD
   FR -->|INCREMENTAL| FI["pl_ingest_sftp_incremental_adapter"]
   SL -.->|Finalizer error| REC["pl_ingest_incremental_finalize_recovery"]
   FI -.->|Finalizer error| REC
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  linkStyle default stroke:#6d7f94
 ```
 
 The supporting Notebooks are:
@@ -68,9 +71,10 @@ and optimistic checkpoint protection. A **connector adapter** owns its connectio
 identifier quoting, boundary capture, type compatibility, and native Copy settings. An adapter must not silently
 redefine the framework's state or finalization semantics.
 
-The implemented DATABASE connector is SQL Server (`FULL` and `INCREMENTAL`); the FILE connector is SFTP. A future Oracle
-or PostgreSQL connector belongs behind the thin DATABASE router, but deeper shared orchestration should be extracted
-only after a second implementation proves the common contract. Transfer verification and Copy options must be
+The implemented DATABASE connector is SQL Server (`FULL` and `INCREMENTAL`); the FILE connector is SFTP. Additional
+source connectors can be implemented behind the router and adapter boundaries while preserving framework-level
+state and audit semantics. Deeper shared orchestration should be extracted only after a second implementation
+proves the common contract. Transfer verification and Copy options must be
 validated for each actual connector and execution mode; do not assume one vendor's behavior is universal.
 
 Fabric Pipelines handle orchestration and connector-native movement; Notebooks handle reusable Spark/Delta
@@ -116,6 +120,9 @@ flowchart LR
   S["SFTP<br/>CSV files"] --> BC["Binary Copy<br/>Preserve raw files"]
   BC --> L["Landing<br/>Lakehouse Files"]
   L --> N["Notebook<br/>Parse &amp; Append to Delta"] --> B
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  linkStyle default stroke:#6d7f94
 ```
 
 **DATABASE:** the SQL Server 2022 connector uses query-mode Copy for
@@ -198,7 +205,7 @@ for the actual activity branches, audit codes, and verification steps.
 | Choice | Why | What it does *not* solve |
 | --- | --- | --- |
 | One config table + JSON source/copy options | Consistent metadata with connector-specific extensibility | Schema evolution and vendor-neutral parsing for every future connector |
-| Thin DATABASE/FILE router + adapters | Keep business-level state policy separate from physical connector implementation | Out-of-the-box Oracle/PostgreSQL/API connectors |
+| Thin DATABASE/FILE router + adapters | Keep business-level state policy separate from physical connector implementation | Additional connectors without source-specific implementation and validation |
 | Fabric Copy for SQL, Notebook for files | Use native movement engine; Spark only when parsing/Delta operations add value | General Spark transformation or Silver/Gold framework |
 | `AUTO`/`TUNED` split | `AUTO` must omit `parallelCopies`; a DEV test observed different parallelism with explicit zero | Guaranteed optimum performance on arbitrary sources |
 | Append-only successful batches | Preserve ingestion execution lineage, support intentional historical backfill | Global deduplication or a full snapshot versioning system |
@@ -231,8 +238,7 @@ revisited only when workload requirements justify the additional complexity.
 
 ## Reuse boundaries
 
-- Current sources are the **SQL Server** and **SFTP** demo paths, not an
-  implemented multi-vendor ingestion marketplace.
+- Supported source connectors are the **SQL Server** and **SFTP** demo paths.
 - Dispatcher concurrency is bounded per run; there is no shared per-source limit or execution lock.
 - Optional benchmark tables are DEV-only; their existence is not proof of
   scalable production performance.

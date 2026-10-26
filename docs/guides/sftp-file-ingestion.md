@@ -189,6 +189,11 @@ flowchart TD
     E --> F{"if_valid_processing_boundary"}
     F -->|No| Z["sp_finalize_invalid_processing_boundary"]
     F -->|Yes| G["set_landing_relative_path"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  classDef decision fill:#e6f4f0,stroke:#236f65,color:#172b48
+  class A,C,F decision
+  linkStyle default stroke:#6d7f94
 ```
 
 The supported watermark field is `last_modified_time`. The Lookup matches **both** `ingestion_config_id` and
@@ -216,6 +221,11 @@ flowchart TD
     N -->|Succeeded| F["sp_finalize_success"]
     N -.->|Failed| BC["nb_cleanup_bronze_write_failed"]
     F -.->|Failed| R["inv_ingest_incremental_finalize_recovery"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  classDef decision fill:#e6f4f0,stroke:#236f65,color:#172b48
+  class B,C decision
+  linkStyle default stroke:#6d7f94
 ```
 
 `copy_sftp_to_landing` uses the configured `source_path` and trimmed `source_options.file_name_pattern` (for
@@ -250,7 +260,7 @@ diagram. See [FILE Ingestion Design](../architecture/file-ingestion-design.md) a
 [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md).
 
 **What the diagrams establish:** these are conceptual traces of the checked-in Pipeline activities, not evidence of
-a new DEV execution or a measured file scan. They do not imply support for JSON/Parquet readers or CDC.
+a new DEV execution or a measured file scan. They do not imply support for JSON/Parquet readers.
 
 [![SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
 

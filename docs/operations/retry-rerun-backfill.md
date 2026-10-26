@@ -136,5 +136,3 @@ The supported operational entry point remains `pl_ingest_orchestrator`. Direct m
 dispatcher, controller, router, adapter, or loader pipelines is not part of the supported contract.
 
 For deterministic recovery from a failed `REGULAR` run, prefer a new top-level `REGULAR` execution unless the operator intentionally needs `BACKFILL` semantics.
-
-Do not add a framework `REPROCESS` type until a concrete requirement needs a distinct data-replacement policy.

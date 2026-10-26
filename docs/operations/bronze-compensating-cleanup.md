@@ -108,6 +108,9 @@ flowchart TD
     A --> F["fail_bronze_write"]
     C -->|Failed| AF["sp_finalize_bronze_write_cleanup_failed"]
     AF --> FF["fail_bronze_write_cleanup"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  linkStyle default stroke:#6d7f94
 ```
 
 This path is **not** triggered by pre-write metadata or boundary validation failures. Its Cleanup Notebook targets
@@ -170,6 +173,11 @@ flowchart TD
     S -->|CONFIRMED_CONFLICT_DATABASE| D["nb_cleanup_bronze_finalize_conflict"]
     S -->|CONFIRMED_CONFLICT_FILE| F["nb_cleanup_bronze_finalize_conflict_file"]
     F -->|Bronze cleanup succeeded| L["nb_cleanup_landing_finalize_conflict"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  classDef decision fill:#e6f4f0,stroke:#236f65,color:#172b48
+  class S decision
+  linkStyle default stroke:#6d7f94
 ```
 
 The diagram deliberately stops at the conflict cleanup activities: their **`Succeeded`/`Failed` terminal `Fail`

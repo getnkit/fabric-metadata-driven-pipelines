@@ -10,8 +10,7 @@ in `fabric/` as PBIR/TMDL. The Report was synced to Fabric and verified
 visually/operationally in DEV (2026-10-13).
 
 The report reads **terminal object-level ingestion audit** from the Fabric SQL
-Database. It does **not** create a separate master-run audit, Eventhouse,
-real-time refresh engine or scheduled report pipeline. It cannot show
+Database. It does **not** create a separate master-run audit. It cannot show
 `RUNNING` work, master failures before object audit, or unpersisted audit
 outcomes; use Fabric Monitor for those cases. A "latest" audited batch may
 be partially complete while other objects are still running.

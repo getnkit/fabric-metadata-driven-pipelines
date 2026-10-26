@@ -3,7 +3,7 @@
 Fabric SQL Database `sqldb_ingestion_control` keeps source configuration, connection references, checkpoints, and object-run audits separate from physical ingestion logic.
 
 This guide explains the four implemented Control/Audit tables and their DEV examples. SQL Server and SFTP are
-supported; this is not a data-contract system or an API, CDC, or streaming implementation.
+supported.
 
 For the execution path that reads this metadata, continue with [Pipeline Orchestration](pipeline-orchestration.md).
 

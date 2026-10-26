@@ -118,6 +118,11 @@ flowchart TD
     H -->|Yes| I{"if_no_new_data"}
     I -->|Yes| J["sp_finalize_no_new_data_skipped"]
     I -->|No| K["inv_ingest_sql_server_incremental_loader"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  classDef decision fill:#e6f4f0,stroke:#236f65,color:#172b48
+  class B,D,H,I decision
+  linkStyle default stroke:#6d7f94
 ```
 
 **How to read this:** `lkp_current_watermark` and `if_state_found` validate the saved state first. `REGULAR` gets HIGH
@@ -218,6 +223,11 @@ flowchart TD
     C -.->|Copy branch fails| CL["nb_cleanup_bronze_write_failed"]
     CL -->|Cleanup succeeds| CF["sp_finalize_bronze_write_failed"]
     CL -->|Cleanup fails| CFF["sp_finalize_bronze_write_cleanup_failed"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  classDef decision fill:#e6f4f0,stroke:#236f65,color:#172b48
+  class B,C decision
+  linkStyle default stroke:#6d7f94
 ```
 
 The solid arrows show the normal execution path; dashed arrows mark the **failed activity dependencies** in the

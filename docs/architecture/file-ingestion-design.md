@@ -12,7 +12,6 @@ SFTP `FULL` and `INCREMENTAL` ingestion share FILE routing and the framework-wid
 - first-class `source_path`, `landing_path`, and `file_format`
 - pattern-specific parser/source-reading options stored in `source_options`
 - no `control.file_ingestion_config`
-- no Data Contract subsystem in the current scope
 - no Quarantine / Reject Area
 
 ## Metadata model
@@ -144,8 +143,7 @@ The framework intentionally does not auto-clean after an ambiguous
 `sp_finalize_success` failure because the control transaction may already have
 committed.
 
-Business data-quality and a governed Data Contract model are outside
-the current implementation scope.
+Business data-quality validation is outside the current implementation scope.
 
 ## FULL snapshot semantics
 

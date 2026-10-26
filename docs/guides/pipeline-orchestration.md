@@ -78,6 +78,11 @@ flowchart TD
     G --> H{"Ingestion pattern"}
     H -->|DATABASE| I["pl_ingest_database_router"]
     H -->|FILE| J["pl_ingest_file_router"]
+
+  classDef default fill:#edf1f6,stroke:#8a9ab0,color:#172b48
+  classDef decision fill:#e6f4f0,stroke:#236f65,color:#172b48
+  class C,H decision
+  linkStyle default stroke:#6d7f94
 ```
 
 *Conceptual routing based on the checked-in Fabric Pipeline definitions. Validation and pre-dispatch failure branches are summarized; this is not a screenshot of a particular run.*
