@@ -1,4 +1,4 @@
-"""Build C12/O02 from genuine screenshots; O02 metrics use integer enlargement.
+"""Build C12/O02 from genuine screenshots at native scale.
 
 Reproduce from the repository root:
     python -m pip install Pillow==11.3.0
@@ -8,7 +8,7 @@ Rebuild only O02:
     python -c "from scripts.evidence.build_sftp_composites import build_o02; build_o02()"
 
 O02 uses separated UI crops to omit operational/environment identifiers.
-Only its metrics strips are enlarged 2x with NEAREST (exact pixel replication).
+Its metrics retain their native pixels, original wrapping and relative positions.
 Crop boxes are (left, top, right, bottom); destination rectangles are (x, y, w, h).
 The shared style records the local font hash; set EVIDENCE_FONT_PATH to reproduce it.
 """
@@ -82,7 +82,7 @@ def save(canvas, candidate, filename, sources, claim, limitations, title, notes=
         "presentation": (
             "DEV evidence composite; complete native panels; no cropping, resizing or retouching."
             if candidate == "C12" else
-            "DEV evidence composite; genuine UI crops; metrics enlarged 2x with NEAREST; no retouching or token reflow."
+            "DEV evidence composite; vertically stacked cards; genuine native-scale UI crops; no resizing, retouching or token reflow."
         ),
         "supported_claim": claim,
         "limitations": limitations,
@@ -131,29 +131,42 @@ def build_c12():
 
 def build_o02():
     source_dir = BASE / "supporting/optional/o02-file-row-count"
-    canvas = Image.new("RGB", (1386, 530), style.BACKGROUND)
+    left = style.MARGIN + style.PADDING
+    card_width = 647 + 2 * style.PADDING
+    copy_height = 404 + 2 * style.PADDING + style.HEADING_HEIGHT
+    notebook_y = style.FIRST_PANEL_Y + copy_height + style.GAP
+    activity_y = notebook_y + style.PADDING + style.HEADING_HEIGHT
+    output_y = activity_y + 32 + 8
+    metrics_y = output_y + 26 + 4
+    note_y = metrics_y + 33 + style.GAP
+    notebook_height = note_y + style.NOTE_SIZE + style.PADDING - notebook_y
+    canvas = Image.new("RGB", (card_width + 2 * style.MARGIN,
+                               notebook_y + notebook_height + style.MARGIN), style.BACKGROUND)
     title = "SFTP Ingestion - Files Transferred vs Rows Parsed"
     style.label(canvas, (style.MARGIN, 20), title, style.TITLE_SIZE, style.TEXT)
-    cards = [[20, 64, 667, 446], [699, 64, 667, 224]]
+    cards = [[style.MARGIN, style.FIRST_PANEL_Y, card_width, copy_height],
+             [style.MARGIN, notebook_y, card_width, notebook_height]]
     style.card(canvas, cards[0], "Binary Copy file counts")
     style.card(canvas, cards[1], "Notebook row counts")
     sources = [paste_source(canvas, source_dir / "cx-o02-binary-copy.png",
-                            [((1073, 18, 1720, 422), (30, 96))])]
-    # Clip surrounding metadata from each line of the serialized metrics object.
-    # Both strips use the SAME 2x affine transform: no token reflow,
-    # joining of labels/values, or reconstruction of source UI text.
+                            [((1073, 18, 1720, 422),
+                              (left, style.FIRST_PANEL_Y + style.PADDING + style.HEADING_HEIGHT))])]
+    # A rectangular Output crop would include unrelated runtime metadata and
+    # incomplete surrounding tokens. Keep the two genuine wrapped metric lines
+    # at native scale under one translation, without joining or redrawing text.
     metric_boxes = [(1288, 725, 1564, 741), (1262, 744, 1278, 758)]
-    metric_crops = [(box, (709 + (box[0] - 1262) * 2,
-                           174 + (box[1] - 725) * 2), 2) for box in metric_boxes]
+    metric_crops = [(box, (left + box[0] - 1262,
+                          metrics_y + box[1] - 725)) for box in metric_boxes]
     sources.append(paste_source(canvas, source_dir / "cx-o02-notebook-parse.png", [
-        ((90, 835, 545, 867), (709, 96)),
-        ((1255, 562, 1340, 588), (709, 140)),
+        ((90, 835, 545, 867), (left, activity_y)),
+        ((1255, 562, 1340, 588), (left, output_y)),
         *metric_crops,
     ]))
     sources[-1]["crop_method"] = (
         "Serialized metrics object clipped line by line, retaining original relative "
-        "positions and wrapping under a shared 2x NEAREST transform. Surrounding output metadata omitted; no token reflow "
-        "or text reconstruction. Activity and Output heading are separate context crops."
+        "positions and wrapping under a shared native-scale translation. A single rectangular "
+        "Output crop would include unrelated runtime metadata and incomplete surrounding tokens. "
+        "No resizing, token reflow or text reconstruction. Activity and Output heading are separate context crops."
     )
     sources[0]["heading"] = "Binary Copy file counts"
     sources[1]["heading"] = "Notebook row counts"
@@ -161,14 +174,14 @@ def build_o02():
         source["heading_y"] = rectangle[1] + style.PADDING
         source["card_rectangle"] = rectangle
     note = "Both Notebook row metrics reuse one parsed DataFrame count."
-    style.label(canvas, (709, 258), note, style.NOTE_SIZE)
+    style.label(canvas, (left, note_y), note, style.NOTE_SIZE)
     save(canvas, "O02", "o02-file-vs-row-count.png", sources,
          "Binary Copy reports one file read and one written; the Notebook reports six "
          "source rows and six target rows. These are different measurement units.",
          ["Both Notebook row metrics reuse one parsed DataFrame count; no independent Bronze recount.",
           "End-to-end execution correlation is not independently verified.",
           "Separated UI crops omit operational/environment identifiers and intervening metadata.",
-          "Metrics alone are enlarged 2x with NEAREST; original wrapping and relative positions retained."],
+          "A single contiguous Output crop cannot isolate the metrics from unrelated runtime metadata; native-scale line crops retain original wrapping and relative positions."],
          title, [note])
 
 

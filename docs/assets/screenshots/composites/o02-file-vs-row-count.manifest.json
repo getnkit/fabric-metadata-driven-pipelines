@@ -5,10 +5,10 @@
   "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/o02-file-vs-row-count.png",
   "output_dimensions": [
-    1386,
-    530
+    707,
+    715
   ],
-  "output_sha256": "aea6626d4d224b709e35ebc6779e10be77112bb420d6d6e7aa048bcd1ac5a923",
+  "output_sha256": "23f4645cbc019a6f38d4d399d6c72bcc2360e3c0bbec58ef6fd08c3f3f28dd7b",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
   "visual_style": {
@@ -35,13 +35,13 @@
   "on_image_notes": [
     "Both Notebook row metrics reuse one parsed DataFrame count."
   ],
-  "presentation": "DEV evidence composite; genuine UI crops; metrics enlarged 2x with NEAREST; no retouching or token reflow.",
+  "presentation": "DEV evidence composite; vertically stacked cards; genuine native-scale UI crops; no resizing, retouching or token reflow.",
   "supported_claim": "Binary Copy reports one file read and one written; the Notebook reports six source rows and six target rows. These are different measurement units.",
   "limitations": [
     "Both Notebook row metrics reuse one parsed DataFrame count; no independent Bronze recount.",
     "End-to-end execution correlation is not independently verified.",
     "Separated UI crops omit operational/environment identifiers and intervening metadata.",
-    "Metrics alone are enlarged 2x with NEAREST; original wrapping and relative positions retained."
+    "A single contiguous Output crop cannot isolate the metrics from unrelated runtime metadata; native-scale line crops retain original wrapping and relative positions."
   ],
   "sources": [
     {
@@ -96,8 +96,8 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            709,
-            96,
+            30,
+            554,
             455,
             32
           ]
@@ -112,8 +112,8 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            709,
-            140,
+            30,
+            594,
             85,
             26
           ]
@@ -125,13 +125,13 @@
             1564,
             741
           ],
-          "scale": 2,
-          "resampling": "NEAREST",
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
-            761,
-            174,
-            552,
-            32
+            56,
+            624,
+            276,
+            16
           ]
         },
         {
@@ -141,24 +141,24 @@
             1278,
             758
           ],
-          "scale": 2,
-          "resampling": "NEAREST",
+          "scale": 1,
+          "resampling": "none",
           "rectangle": [
-            709,
-            212,
-            32,
-            28
+            30,
+            643,
+            16,
+            14
           ]
         }
       ],
-      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping under a shared 2x NEAREST transform. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops.",
+      "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping under a shared native-scale translation. A single rectangular Output crop would include unrelated runtime metadata and incomplete surrounding tokens. No resizing, token reflow or text reconstruction. Activity and Output heading are separate context crops.",
       "heading": "Notebook row counts",
-      "heading_y": 74,
+      "heading_y": 532,
       "card_rectangle": [
-        699,
-        64,
+        20,
+        522,
         667,
-        224
+        173
       ]
     }
   ]
