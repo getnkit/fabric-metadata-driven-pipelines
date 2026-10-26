@@ -4,14 +4,19 @@ Reproduce from the repository root:
     python -m pip install Pillow==11.3.0
     python scripts/evidence/build_c11_composite.py
 
-Pillow's bundled font avoids dependencies on workstation fonts.
+The shared style records the local font hash; set EVIDENCE_FONT_PATH to reproduce it.
 """
 
 import hashlib
 import json
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont, __version__ as pillow_version
+from PIL import Image, __version__ as pillow_version
+
+if __package__:
+    from . import composite_style as style
+else:
+    import composite_style as style
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,34 +46,21 @@ def main():
                 raise ValueError(f"Unexpected transparency in {path}")
             images.append(image.convert("RGB"))
 
-    margin, heading_height, gap = 20, 28, 20
-    width = max(image.width for image in images) + 2 * margin
-    cursor = 80
+    width, height, panels = style.vertical_layout([image.size for image in images])
     sources = []
-    for (label, path), image in zip(PANELS, images):
+    for (label, path), image, panel in zip(PANELS, images, panels):
         sources.append({
             "path": path.as_posix(),
             "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
             "dimensions": list(image.size),
             "label": label,
-            "heading_y": cursor,
-            "rectangle": [margin, cursor + heading_height, image.width, image.height],
+            **panel,
         })
-        cursor += heading_height + image.height + gap
 
-    canvas = Image.new("RGB", (width, cursor), "#F4F5F6")
-    draw = ImageDraw.Draw(canvas)
-
-    def text(position, value, size, color="#263238"):
-        font = ImageFont.load_default(size=size)
-        bounds = draw.textbbox(position, value, font=font)
-        if bounds[2] > width - margin or bounds[3] > canvas.height - 16:
-            raise ValueError("Label exceeds canvas bounds")
-        draw.text(position, value, font=font, fill=color)
-
-    text((margin, 22), TITLE, 30)
+    canvas = Image.new("RGB", (width, height), style.BACKGROUND)
+    style.label(canvas, (style.MARGIN, 20), TITLE, style.TITLE_SIZE, style.TEXT)
     for source, image in zip(sources, images):
-        text((margin, source["heading_y"]), source["label"], 20)
+        style.card(canvas, source["card_rectangle"], source["label"])
         canvas.paste(image, tuple(source["rectangle"][:2]))
 
     output = ROOT / OUTPUT
@@ -84,6 +76,7 @@ def main():
         "output_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
         "generator": Path(__file__).relative_to(ROOT).as_posix(),
         "pillow_version": pillow_version,
+        "visual_style": style.metadata(),
         "title": TITLE,
         "subtitle": None,
         "on_image_notes": [],

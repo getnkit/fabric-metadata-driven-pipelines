@@ -5,12 +5,31 @@
   "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/o02-file-vs-row-count.png",
   "output_dimensions": [
-    1362,
-    576
+    1386,
+    530
   ],
-  "output_sha256": "d97644184ddaa76d7b2cd89200b9679fe359e55e0aad3e8548dd6fcfd440be67",
+  "output_sha256": "aea6626d4d224b709e35ebc6779e10be77112bb420d6d6e7aa048bcd1ac5a923",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
+  "visual_style": {
+    "canvas_color": "#f6f8fa",
+    "panel_color": "#ffffff",
+    "border_color": "#d0d7de",
+    "border_width": 1,
+    "corner_radius": 4,
+    "title_size": 26,
+    "panel_heading_size": 17,
+    "note_size": 16,
+    "font": {
+      "family": "Arial",
+      "style": "Regular",
+      "file_name": "Arial.ttf",
+      "sha256": "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+    },
+    "margin": 20,
+    "panel_padding": 10,
+    "panel_gap": 12
+  },
   "title": "SFTP Ingestion - Files Transferred vs Rows Parsed",
   "subtitle": null,
   "on_image_notes": [
@@ -43,15 +62,21 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            20,
-            108,
+            30,
+            96,
             647,
             404
           ]
         }
       ],
       "heading": "Binary Copy file counts",
-      "heading_y": 80
+      "heading_y": 74,
+      "card_rectangle": [
+        20,
+        64,
+        667,
+        446
+      ]
     },
     {
       "path": "docs/assets/screenshots/supporting/optional/o02-file-row-count/cx-o02-notebook-parse.png",
@@ -71,8 +96,8 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            695,
-            108,
+            709,
+            96,
             455,
             32
           ]
@@ -87,8 +112,8 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            695,
-            164,
+            709,
+            140,
             85,
             26
           ]
@@ -103,8 +128,8 @@
           "scale": 2,
           "resampling": "NEAREST",
           "rectangle": [
-            747,
-            230,
+            761,
+            174,
             552,
             32
           ]
@@ -119,8 +144,8 @@
           "scale": 2,
           "resampling": "NEAREST",
           "rectangle": [
-            695,
-            268,
+            709,
+            212,
             32,
             28
           ]
@@ -128,7 +153,13 @@
       ],
       "crop_method": "Serialized metrics object clipped line by line, retaining original relative positions and wrapping under a shared 2x NEAREST transform. Surrounding output metadata omitted; no token reflow or text reconstruction. Activity and Output heading are separate context crops.",
       "heading": "Notebook row counts",
-      "heading_y": 80
+      "heading_y": 74,
+      "card_rectangle": [
+        699,
+        64,
+        667,
+        224
+      ]
     }
   ]
 }

@@ -5,12 +5,31 @@
   "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/c11-sql-server-incremental.png",
   "output_dimensions": [
-    1449,
-    596
+    1469,
+    606
   ],
-  "output_sha256": "aa935c677ff9fa4967087a8527727708afbc88057f5404fdf01cd9fc9ca21562",
+  "output_sha256": "0d2c6db15af0221d5a87d480100e4c283bbd351c78de7a580e1095d7026bfb29",
   "generator": "scripts/evidence/build_c11_composite.py",
   "pillow_version": "11.3.0",
+  "visual_style": {
+    "canvas_color": "#f6f8fa",
+    "panel_color": "#ffffff",
+    "border_color": "#d0d7de",
+    "border_width": 1,
+    "corner_radius": 4,
+    "title_size": 26,
+    "panel_heading_size": 17,
+    "note_size": 16,
+    "font": {
+      "family": "Arial",
+      "style": "Regular",
+      "file_name": "Arial.ttf",
+      "sha256": "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+    },
+    "margin": 20,
+    "panel_padding": 10,
+    "panel_gap": 12
+  },
   "title": "SQL Server Incremental - Audit and Watermark Evidence",
   "subtitle": null,
   "on_image_notes": [],
@@ -25,10 +44,16 @@
         124
       ],
       "label": "Earlier checkpoint values",
-      "heading_y": 80,
-      "rectangle": [
+      "card_rectangle": [
         20,
-        108,
+        64,
+        1429,
+        166
+      ],
+      "heading_y": 74,
+      "rectangle": [
+        30,
+        96,
         1409,
         124
       ]
@@ -41,10 +66,16 @@
         124
       ],
       "label": "SUCCESS audit records",
+      "card_rectangle": [
+        20,
+        242,
+        1429,
+        166
+      ],
       "heading_y": 252,
       "rectangle": [
-        20,
-        280,
+        30,
+        274,
         1409,
         124
       ]
@@ -57,9 +88,15 @@
         124
       ],
       "label": "Later checkpoint values",
-      "heading_y": 424,
-      "rectangle": [
+      "card_rectangle": [
         20,
+        420,
+        1429,
+        166
+      ],
+      "heading_y": 430,
+      "rectangle": [
+        30,
         452,
         1409,
         124

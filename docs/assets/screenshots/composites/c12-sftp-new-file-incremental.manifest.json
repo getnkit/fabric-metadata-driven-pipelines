@@ -5,12 +5,31 @@
   "presentation_review": "pending_owner_review",
   "output": "docs/assets/screenshots/composites/c12-sftp-new-file-incremental.png",
   "output_dimensions": [
-    1450,
-    600
+    1470,
+    616
   ],
-  "output_sha256": "586b3db521b694f12ca1a723cfec19176b620e2d15796723dd60e29a1f9c2a40",
+  "output_sha256": "e58c941144809ad26ea4d80d216d8e94013e5e1d3f85110012668f9fbb507f14",
   "generator": "scripts/evidence/build_sftp_composites.py",
   "pillow_version": "11.3.0",
+  "visual_style": {
+    "canvas_color": "#f6f8fa",
+    "panel_color": "#ffffff",
+    "border_color": "#d0d7de",
+    "border_width": 1,
+    "corner_radius": 4,
+    "title_size": 26,
+    "panel_heading_size": 17,
+    "note_size": 16,
+    "font": {
+      "family": "Arial",
+      "style": "Regular",
+      "file_name": "Arial.ttf",
+      "sha256": "525979822591a3447cfc49d943d6f7683508e25543407871c0ed8fed05fd2bd9"
+    },
+    "margin": 20,
+    "panel_padding": 10,
+    "panel_gap": 12
+  },
   "title": "SFTP Incremental - Bronze Lineage and Checkpoint Context",
   "subtitle": null,
   "on_image_notes": [],
@@ -40,15 +59,21 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            20,
-            108,
+            30,
+            96,
             1409,
             52
           ]
         }
       ],
       "heading": "Earlier checkpoint values",
-      "heading_y": 80
+      "heading_y": 74,
+      "card_rectangle": [
+        20,
+        64,
+        1430,
+        94
+      ]
     },
     {
       "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-audit-success.png",
@@ -68,15 +93,21 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            20,
-            208,
+            30,
+            202,
             1409,
             52
           ]
         }
       ],
       "heading": "SUCCESS audit record",
-      "heading_y": 180
+      "heading_y": 180,
+      "card_rectangle": [
+        20,
+        170,
+        1430,
+        94
+      ]
     },
     {
       "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-bronze-new-file-lineage.png",
@@ -96,7 +127,7 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            20,
+            30,
             308,
             1410,
             172
@@ -104,7 +135,13 @@
         }
       ],
       "heading": "Bronze source-file lineage",
-      "heading_y": 280
+      "heading_y": 286,
+      "card_rectangle": [
+        20,
+        276,
+        1430,
+        214
+      ]
     },
     {
       "path": "docs/assets/screenshots/supporting/s4-sftp-incremental/cx-s4-watermark-after.png",
@@ -124,15 +161,21 @@
           "scale": 1,
           "resampling": "none",
           "rectangle": [
-            20,
-            528,
+            30,
+            534,
             1409,
             52
           ]
         }
       ],
       "heading": "Later checkpoint values",
-      "heading_y": 500
+      "heading_y": 512,
+      "card_rectangle": [
+        20,
+        502,
+        1430,
+        94
+      ]
     }
   ]
 }

@@ -6,14 +6,19 @@ Reproduce from the repository root:
 
 Both watermark source files are preserved and recorded. Composition stops if
 their bytes differ; identical files are not independent before/after evidence.
-Pillow's bundled font avoids dependencies on workstation fonts.
+The shared style records the local font hash; set EVIDENCE_FONT_PATH to reproduce it.
 """
 
 import hashlib
 import json
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont, __version__ as pillow_version
+from PIL import Image, __version__ as pillow_version
+
+if __package__:
+    from . import composite_style as style
+else:
+    import composite_style as style
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -92,28 +97,19 @@ def build(spec):
     sources[-1]["duplicate_of"] = original.as_posix()
     sources[-1]["omission_reason"] = "Byte-identical watermark displayed once; not a separate observation."
 
-    width, cursor = max(image.width for image in images.values()) + 40, 80
-    for (heading, filename), source in zip(spec["panels"], sources):
-        image = images[filename]
+    displayed = [images[filename] for _, filename in spec["panels"]]
+    width, height, panels = style.vertical_layout([image.size for image in displayed])
+    for (heading, _), source, panel in zip(spec["panels"], sources, panels):
         source["heading"] = heading
-        source["heading_y"] = cursor
-        source["placements"] = [{"rectangle": [20, cursor + 28, image.width, image.height]}]
-        cursor += 28 + image.height + 20
+        source["heading_y"] = panel["heading_y"]
+        source["card_rectangle"] = panel["card_rectangle"]
+        source["placements"] = [{"rectangle": panel["rectangle"]}]
 
-    canvas = Image.new("RGB", (width, cursor), "#F4F5F6")
-    draw = ImageDraw.Draw(canvas)
-
-    def text(xy, value, size, color="#263238"):
-        font = ImageFont.load_default(size=size)
-        box = draw.textbbox(xy, value, font=font)
-        if box[2] > width - 20 or box[3] > canvas.height - 20:
-            raise ValueError("Label exceeds canvas bounds")
-        draw.text(xy, value, font=font, fill=color)
-
+    canvas = Image.new("RGB", (width, height), style.BACKGROUND)
     title = spec["title"]
-    text((20, 22), title, 30)
+    style.label(canvas, (style.MARGIN, 20), title, style.TITLE_SIZE, style.TEXT)
     for (_, filename), source in zip(spec["panels"], sources):
-        text((20, source["heading_y"]), source["heading"], 20)
+        style.card(canvas, source["card_rectangle"], source["heading"])
         canvas.paste(images[filename], tuple(source["placements"][0]["rectangle"][:2]))
 
     output = BASE / "composites" / spec["output"]
@@ -129,6 +125,7 @@ def build(spec):
         "output_sha256": hashlib.sha256((ROOT / output).read_bytes()).hexdigest(),
         "generator": Path(__file__).relative_to(ROOT).as_posix(),
         "pillow_version": pillow_version,
+        "visual_style": style.metadata(),
         "title": title,
         "subtitle": None,
         "on_image_notes": [],
