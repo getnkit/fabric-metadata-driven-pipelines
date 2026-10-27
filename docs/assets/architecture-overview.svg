@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1220" viewBox="0 0 1440 1220" role="img" aria-labelledby="diag-title diag-desc">
-<title id="diag-title">Metadata-Driven Pipelines in Microsoft Fabric — architecture overview</title>
+<title id="diag-title">Metadata-Driven Ingestion Pipelines in Microsoft Fabric</title>
 <desc id="diag-desc">Logical architecture split into Control and Audit Plane, Orchestration Plane, and Data Plane. Fabric SQL Database stores ingestion configuration, logical source/target connection references, committed watermarks, and terminal object audit. The Orchestrator sends active scopes through Config Paginator to Dispatcher, while explicit run requests bypass pagination to the same Dispatcher. Object Controller looks up and validates configuration, then chooses DATABASE or FILE Router. The router selects SQL Server or SFTP FULL or INCREMENTAL adapter. SQL Server uses Query-mode Copy directly to Lakehouse Bronze Delta; SFTP uses Binary Copy to Landing in Lakehouse Files, then a Notebook parses CSV files and appends Bronze Delta. SQL Server Query-mode Copy supports service-managed or tuned parallel Copy. Successful Bronze batches retain batch and pipeline-run lineage. Operational checkpoints advance only after eligible successfully finalized regular incremental runs.</desc>
 <defs>
 <style>
