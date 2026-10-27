@@ -1,4 +1,4 @@
-<h1 align="center">Metadata-Driven Pipelines in Microsoft Fabric</h1>
+<h1 align="center">Metadata-Driven Ingestion Pipelines in Microsoft Fabric</h1>
 
 <p align="center">
   <strong>Configure ingestion for many source objects without building a separate pipeline for each one.</strong>
@@ -18,9 +18,9 @@
   <a href="#run-the-example">Run the example</a>
 </p>
 
-Separate pipelines work well for a few source objects, but repeating the same load logic across many objects becomes harder to maintain.
+Building a separate pipeline for each table or file feed is a practical starting point in Microsoft Fabric. As more sources are added, repeating the same ingestion logic across pipelines becomes harder to maintain.
 
-This repository implements a **metadata-driven ingestion framework in Microsoft Fabric**. Instead of maintaining
+This repository implements **metadata-driven ingestion pipelines in Microsoft Fabric**. Instead of maintaining
 separate pipelines for individual source objects, the framework uses configuration tables to define what to ingest,
 how to process it, and where to write the results. Reusable orchestration routes each object through the appropriate
 ingestion path, with consistent watermark management and run auditing.
