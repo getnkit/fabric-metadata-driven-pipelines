@@ -96,17 +96,16 @@ p_source_system = "LOGISTICS_VENDOR"
 An empty `p_run_requests` tells the orchestrator to select active configurations using the source-system filter.
 Each object uses its configured connection, load strategy, and Bronze target.
 
-For other execution scenarios, including explicit object selection and historical backfills, see
-[Run Request Examples](docs/operations/run-request-examples.md).
-
-The orchestrator selects matching objects and invokes the required child pipelines. After the run, inspect its
-activities in **Fabric Monitor**, then check `audit.ingestion_log` and the **Power BI Operations Report** for
-recorded results. The [SFTP File Ingestion Guide](docs/guides/sftp-file-ingestion.md) shows how to compare Landing, Bronze,
+After the run, inspect the pipeline activities in **Fabric Monitor**, then check `audit.ingestion_log` and the
+**Power BI Operations Report** for recorded results. The [SFTP File Ingestion Guide](docs/guides/sftp-file-ingestion.md) shows how to compare Landing, Bronze,
 and watermark state.
 
 To set up the optional SQL Server and SFTP demo environment, see the
 [EC2/Docker Compose setup](infra/source/README.md). This environment is not required to explore the repository;
 review its configuration and security notes before deploying it.
+
+For other execution scenarios, including explicit object selection and historical backfills, see
+[Run Request Examples](docs/operations/run-request-examples.md).
 
 ## License
 
