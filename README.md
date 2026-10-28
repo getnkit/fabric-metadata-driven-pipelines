@@ -82,9 +82,8 @@ Compose setup for the demo SQL Server and SFTP sources.
 
 ## Run the example
 
-To reproduce the examples, follow the [workspace setup guide](docs/operations/environment-rebuild.md) and
-[SQL and sample-data setup sequence](scripts/RUN_ORDER.md). These instructions are intended for a new, empty DEV
-workspace and should not be used to overwrite an existing environment.
+To reproduce the examples, follow the [Environment Rebuild](docs/operations/environment-rebuild.md) and
+[SQL Run Order](scripts/RUN_ORDER.md). These instructions are intended for a new, empty workspace and should not be used to overwrite an existing environment.
 
 Once the sources and Fabric items are configured, run `pl_ingest_orchestrator`. For example, to select the active SFTP source objects:
 
@@ -98,7 +97,7 @@ See [Run Request Examples](docs/operations/run-request-examples.md) for explicit
 
 The orchestrator selects matching objects and invokes the required child pipelines. After the run, inspect its
 activities in **Fabric Monitor**, then check `audit.ingestion_log` and the **Power BI Operations Report** for
-recorded results. The [SFTP walkthrough](docs/guides/sftp-file-ingestion.md) shows how to compare Landing, Bronze,
+recorded results. The [SFTP File Ingestion Guide](docs/guides/sftp-file-ingestion.md) shows how to compare Landing, Bronze,
 and watermark state.
 
 To set up the optional SQL Server and SFTP demo environment, see the
