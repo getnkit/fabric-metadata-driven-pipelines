@@ -105,7 +105,3 @@ review its configuration and security notes before deploying it.
 
 For other execution scenarios, including explicit object selection and historical backfills, see
 [Run Request Examples](docs/operations/run-request-examples.md).
-
-## License
-
-No license is currently included. Public access does not by itself grant reuse or redistribution rights.
