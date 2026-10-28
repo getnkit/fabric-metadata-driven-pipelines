@@ -74,10 +74,7 @@ You do **not** need a Fabric workspace to explore the architecture and code. Cho
 | **Understand how it works in code** | [Technical Learning Path](docs/guides/learning-path.md) — guided SQL Server/SFTP walkthroughs, then detailed technical guides |
 | **Set up the demo environment** | [Environment Rebuild](docs/operations/environment-rebuild.md) — new-workspace checklist, with the [SQL run order](scripts/RUN_ORDER.md) |
 
-Some Fabric item definitions in the repository contain environment-specific references. Review and rebind
-these when setting up a new workspace, as described in [Environment Rebuild](docs/operations/environment-rebuild.md).
-
-The **Technical Learning Path** also links to focused guides on control metadata, routing, incremental processing, Copy tuning, failure recovery, and monitoring.
+*For a new workspace, rebind environment-specific references in the Fabric item definitions as described in [Environment Rebuild](docs/operations/environment-rebuild.md).*
 
 **Repository layout:** `fabric/` tracks Fabric Data Pipelines, Notebooks, SQL Database, Lakehouse, Variable Library,
 and Power BI definitions; `scripts/` contains SQL setup and demo fixtures; `infra/` provides optional EC2/Docker
