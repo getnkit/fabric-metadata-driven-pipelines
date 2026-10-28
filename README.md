@@ -85,15 +85,19 @@ Compose setup for the demo SQL Server and SFTP sources.
 To reproduce the examples, follow the [Environment Rebuild](docs/operations/environment-rebuild.md) and
 [SQL Run Order](scripts/RUN_ORDER.md). These instructions are intended for a new, empty workspace and should not be used to overwrite an existing environment.
 
-Once the sources and Fabric items are configured, run `pl_ingest_orchestrator`. For example, to select the active SFTP source objects:
+Once the sources and Fabric items are configured, run `pl_ingest_orchestrator`. For example, to process all
+active source objects belonging to `LOGISTICS_VENDOR`, use:
 
 ```text
 p_run_requests = []
 p_source_system = "LOGISTICS_VENDOR"
 ```
 
-`REGULAR` and `BACKFILL` describe execution intent; `FULL` and `INCREMENTAL` are configured load strategies.
-See [Run Request Examples](docs/operations/run-request-examples.md) for explicit requests and historical windows.
+An empty `p_run_requests` tells the orchestrator to select active configurations using the source-system filter.
+Each object uses its configured connection, load strategy, and Bronze target.
+
+For other execution scenarios, including explicit object selection and historical backfills, see
+[Run Request Examples](docs/operations/run-request-examples.md).
 
 The orchestrator selects matching objects and invokes the required child pipelines. After the run, inspect its
 activities in **Fabric Monitor**, then check `audit.ingestion_log` and the **Power BI Operations Report** for
