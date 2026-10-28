@@ -1,6 +1,6 @@
 <a id="technical-learning-path--metadata-driven-pipelines"></a>
 
-# Technical Learning Path: Metadata-Driven Pipelines
+# Technical Learning Path: Metadata-Driven Ingestion Pipelines
 
 You can understand the framework without provisioning Fabric. Choose a route below, then follow the numbered
 walkthrough only as far as you need. Each step points to the canonical explanation and, when useful, the checked-in

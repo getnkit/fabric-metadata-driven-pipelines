@@ -26,8 +26,8 @@ how to process it, and where to write the results. Reusable orchestration routes
 ingestion path, with consistent watermark management and run auditing.
 
 The repository demonstrates end-to-end **batch ingestion** from SQL Server tables and CSV files delivered over SFTP.
-Both paths support FULL and INCREMENTAL loads into **Bronze Delta tables in a Fabric Lakehouse**.
-FULL loads append new Bronze batches without truncating or replacing existing tables.
+Both paths support `FULL` and `INCREMENTAL` loads into **Bronze Delta tables in a Fabric Lakehouse**.
+Successful loads append new Bronze batches, while incremental processing uses watermarks to track progress where applicable.
 
 ## Architecture
 
@@ -37,10 +37,10 @@ The diagram summarizes the framework's logical responsibilities and two ingestio
 connection references, incremental state, and object-run audits; orchestration routes requests to SQL Server and SFTP
 adapters that write to Bronze Delta tables in a Fabric Lakehouse.](docs/assets/architecture-overview.svg)](docs/assets/architecture-overview.svg)
 
-Fabric SQL Database holds source configurations, logical source/target connection references, incremental state
-(**committed watermarks**), and terminal object-run audits. Each **source object** is a configured ingestion unit:
-a SQL Server table or a logical SFTP file feed that may match multiple physical files. Fabric Data Pipelines use
-this metadata to select ingestion paths and coordinate loading into Bronze Delta tables.
+Fabric SQL Database stores source configurations, logical source/target connection references, committed
+watermarks, and completed object-run audit records. Each **source object** represents a SQL Server table or a
+logical SFTP file feed that may match multiple physical files. Fabric Data Pipelines use this metadata to
+route ingestion and coordinate loading into Bronze Delta tables.
 
 See [Architecture & Design Decisions](docs/architecture/framework-overview.md) for the pipeline structure and design trade-offs.
 
@@ -48,12 +48,12 @@ See [Architecture & Design Decisions](docs/architecture/framework-overview.md) f
 
 - **Reusable, metadata-driven orchestration.** Configure source objects, connections, load strategies, and Bronze targets without building a separate pipeline for each dataset.
 - **Safe incremental checkpoints.** Only eligible successful REGULAR incremental runs advance watermarks; BACKFILL and no-new-data SKIPPED leave them unchanged.
-- **Scoped failure recovery.** Failed Bronze writes trigger execution-scoped cleanup. If the final audit step reports an error after an incremental load, the framework checks the saved outcome before removing data.
+- **Scoped failure recovery.** Failed Bronze writes trigger execution-scoped cleanup. If incremental success finalization fails, the framework checks the committed SQL audit outcome before deciding whether cleanup is safe. An activity error does not necessarily mean the SQL transaction failed.
 - **Operational monitoring.** Fabric Monitor shows pipeline execution; SQL audit tables store object-run outcomes, and a Power BI report presents them in a clear operational view.
 
-[![Operations report over persisted terminal object audits](docs/assets/screenshots/core/c15-operations-report.png)](docs/assets/screenshots/core/c15-operations-report.png)
+[![Power BI operations report showing ingestion status and execution history](docs/assets/screenshots/core/c15-operations-report.png)](docs/assets/screenshots/core/c15-operations-report.png)
 
-*Operations report from the development workspace (DEV), based on persisted terminal object audits. The latest audited batches show two sources, two object audit records and zero failed sources; this view does not cover RUNNING work or every master execution.*
+*The Power BI Operations Report brings ingestion status and execution history into one view. In this example, both source systems show successful latest batch summaries, with no failed sources.*
 
 ## How the framework works
 
@@ -61,28 +61,27 @@ See [Architecture & Design Decisions](docs/architecture/framework-overview.md) f
 | --- | --- |
 | **Configure** | Define source details, connection references, load strategies, and Bronze targets through shared metadata. |
 | **Select and route** | Gather active configurations (optionally filtered by source system) or use an explicit request list. Validate and route each object to the right ingestion path. |
-| **Load Bronze** | Copy SQL Server table data directly into Bronze Delta tables. For SFTP, land the raw files first, then parse and append their records to Bronze Delta tables. |
-| **Finalize and inspect** | Save each object's final status and counts in SQL audit tables, and update eligible incremental checkpoints. Review pipeline execution in Fabric Monitor and audit summaries in Power BI. |
+| **Load into Bronze** | Copy SQL Server table data directly into Bronze Delta tables. For SFTP, land the raw files first, then parse and append their records to Bronze Delta tables. |
+| **Finalize and inspect** | Save each object's final status and row counts in SQL audit tables, and update eligible incremental checkpoints. Review pipeline execution in Fabric Monitor and audit summaries in Power BI. |
 
 ## Start here
 
-You do **not** need a Fabric workspace to review the architecture and code. Choose a route rather than reading every document in order:
+You do **not** need a Fabric workspace to explore the architecture and code. Choose a route rather than reading every document in order:
 
 | Your goal | Recommended entry |
 | --- | --- |
-| **Get the design in one pass** | [Architecture & Design Decisions](docs/architecture/framework-overview.md) — orchestration, state, and trade-offs |
-| **Understand how it works in code** | [Technical Learning Path](docs/guides/learning-path.md) — guided SQL Server/SFTP walkthroughs, then deeper references |
-| **Rebuild a working DEV demo** | [Environment Rebuild](docs/operations/environment-rebuild.md) — new-workspace checklist, with the [SQL run order](scripts/RUN_ORDER.md) |
+| **Understand the architecture** | [Architecture & Design Decisions](docs/architecture/framework-overview.md) — orchestration, state, and trade-offs |
+| **Understand how it works in code** | [Technical Learning Path](docs/guides/learning-path.md) — guided SQL Server/SFTP walkthroughs, then detailed technical guides |
+| **Set up the demo environment** | [Environment Rebuild](docs/operations/environment-rebuild.md) — new-workspace checklist, with the [SQL run order](scripts/RUN_ORDER.md) |
 
-Some checked-in Fabric definitions contain environment-specific DEV references; review and rebind them for a new
-environment as described in [Environment Rebuild](docs/operations/environment-rebuild.md).
+Some Fabric item definitions in the repository contain environment-specific references. Review and rebind
+these when setting up a new workspace, as described in [Environment Rebuild](docs/operations/environment-rebuild.md).
 
 The **Technical Learning Path** also links to focused guides on control metadata, routing, incremental processing, Copy tuning, failure recovery, and monitoring.
 
-**Repository layout:** `fabric/` tracks Fabric Pipeline, Notebook, SQL Database, Lakehouse, Variable Library, and
-Power BI definitions; `scripts/` contains SQL setup and demo fixtures; `infra/` is the optional EC2/Docker Compose
-source environment. Git-tracked definitions are not a backup of Bronze rows, audit history, watermarks, or
-credentials.
+**Repository layout:** `fabric/` tracks Fabric Data Pipelines, Notebooks, SQL Database, Lakehouse, Variable Library,
+and Power BI definitions; `scripts/` contains SQL setup and demo fixtures; `infra/` provides optional EC2/Docker
+Compose setup for the demo SQL Server and SFTP sources.
 
 ## Run the example
 

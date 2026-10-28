@@ -2,7 +2,7 @@
 
 # Environment Rebuild: Fresh DEV From Git
 
-**Goal:** Recreate a functional DEV environment for **Metadata-Driven Pipelines in Microsoft Fabric** after losing
+**Goal:** Recreate a functional DEV environment for **Metadata-Driven Ingestion Pipelines in Microsoft Fabric** after losing
 or retiring a workspace. This is a fresh-install runbook, not a backup/restore procedure. It cannot recover
 historical Bronze, audit, or watermark state from Git alone.
 

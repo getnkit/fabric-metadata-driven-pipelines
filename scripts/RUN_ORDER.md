@@ -1,4 +1,4 @@
-# Metadata-Driven Pipelines in Microsoft Fabric — SQL Run Order
+# Metadata-Driven Ingestion Pipelines in Microsoft Fabric — SQL Run Order
 
 Use this guide for a **fresh installation** of Control/Audit SQL for the current Fabric ingestion framework.
 It is not an upgrade procedure for an existing database.
