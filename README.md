@@ -97,8 +97,7 @@ An empty `p_run_requests` tells the orchestrator to select active configurations
 Each object uses its configured connection, load strategy, and Bronze target.
 
 After the run, inspect the pipeline activities in **Fabric Monitor**, then check `audit.ingestion_log` and the
-**Power BI Operations Report** for recorded results. The [SFTP File Ingestion Guide](docs/guides/sftp-file-ingestion.md) shows how to compare Landing, Bronze,
-and watermark state.
+**Power BI Operations Report** for recorded results.
 
 To set up the optional SQL Server and SFTP demo environment, see the
 [EC2/Docker Compose setup](infra/source/README.md). This environment is not required to explore the repository;
