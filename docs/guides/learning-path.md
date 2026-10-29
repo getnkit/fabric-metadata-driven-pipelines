@@ -2,12 +2,8 @@
 
 # Technical Learning Path: Metadata-Driven Ingestion Pipelines
 
-You can understand the framework without provisioning Fabric. Choose a route below, then follow the numbered
-walkthrough only as far as you need. Each step points to the canonical explanation and, when useful, the checked-in
-implementation.
-
-**Scope:** Microsoft Fabric Data Pipelines, Fabric SQL Database, Lakehouse Bronze; implemented batch sources are SQL
-Server and SFTP.
+Start with a reading route below; follow only the steps relevant to your goal. No Fabric workspace is needed
+to inspect the guides and checked-in definitions.
 
 ## Choose a reading route
 
@@ -29,7 +25,6 @@ Focus on the **Control & Audit Plane** (config/state/terminal audit), **Orchestr
 within one Fabric-based framework, not isolated deployed platforms. The Bronze write and Control SQL finalization
 are not one distributed transaction.
 
-**Check yourself:** What can happen between a Bronze commit and SQL finalization?
 
 <a id="2--inspect-the-metadata"></a>
 
@@ -46,7 +41,6 @@ creates missing objects for a fresh install; it does not migrate an existing sch
 [ingestion seed](../../scripts/control/04_seed_ingestion_metadata.sql) supply DEV examples: six E-commerce DATABASE
 objects and two Logistics FILE objects.
 
-**Check yourself:** Which configs are `FULL` versus `INCREMENTAL`, and why does `FULL` have no persistent checkpoint?
 
 <a id="3--trace-the-request-through-orchestration"></a>
 
@@ -58,7 +52,6 @@ Inspect `fabric/pl_ingest_orchestrator.DataPipeline/`, `pl_ingest_config_paginat
 `pl_ingest_config_dispatcher.DataPipeline/`, `pl_ingest_object_controller.DataPipeline/`, and the DATABASE/FILE
 router definitions under `fabric/`. Only the top-level Orchestrator is a supported external entry point.
 
-**Check yourself:** Why do explicit requests and source-scoped all-active requests reach the same Dispatcher?
 
 <a id="4--follow-one-physical-ingestion-path"></a>
 
@@ -72,7 +65,6 @@ router definitions under `fabric/`. Only the top-level Orchestrator is a support
 `nb_load_file_landing_to_bronze` Notebook; [FILE Design](../architecture/file-ingestion-design.md) records the
 connector and parsing decisions. Only `DELIMITED_TEXT` is implemented.
 
-**Check yourself:** Why is the SQL Server path direct-to-Bronze while SFTP keeps a raw Landing copy?
 
 <a id="5--reason-about-incremental-state"></a>
 
@@ -84,7 +76,6 @@ Inspect [the SQL finalizer procedure](../../fabric/sqldb_ingestion_control.SQLDa
 A normal incremental run derives a LOW/HIGH boundary; an eligible successful `REGULAR` run may advance the
 checkpoint with optimistic protection. `BACKFILL` and no-new-data `SKIPPED` do not advance it.
 
-**Check yourself:** Predict audit and watermark behavior for DATABASE `REGULAR` `INCREMENTAL` with `HIGH = LOW`, and for an incremental historical `BACKFILL`.
 
 <a id="6--inspect-failure-compensation-and-retries"></a>
 
@@ -96,7 +87,6 @@ Inspect `nb_cleanup_bronze_batch_rows.Notebook`, `nb_cleanup_landing_batch_files
 `pl_ingest_incremental_finalize_recovery.DataPipeline` in `fabric/`. A failed Copy/Notebook or Finalizer activity
 does not prove whether a durable write committed.
 
-**Check yourself:** Why does cleanup match both `_batch_id` and `_pipeline_run_id`, and why is blind cleanup unsafe after a failed success Finalizer?
 
 <a id="7--understand-what-monitoring-proves"></a>
 
@@ -108,7 +98,6 @@ The checked-in Power BI report/semantic model use DirectQuery over terminal **ob
 in-progress runs or failures before an object audit. Optional Activator alert delivery has not been independently
 verified.
 
-**Check yourself:** Would an early master-pipeline failure appear in Power BI Object History?
 
 <a id="8--rebuild-or-benchmark-when-needed"></a>
 
@@ -129,10 +118,3 @@ Verify results against genuine execution evidence, matching run identifiers befo
 Distinguish checked-in definitions from observed runtime behavior, and check whether benchmark measurements are
 complete and rebuild outcomes have been independently verified. Development-workspace results do not establish
 production-scale performance. Remove connection details and other sensitive information before sharing captures.
-
-**Check yourself:** Which claims can be confirmed from Git definitions, and which require observed runtime results or a recipient-delivery check?
-
----
-
-For exact behavior, use the linked topic guides and Fabric/SQL definitions alongside runtime evidence. Diagrams
-alone do not establish test completion.
