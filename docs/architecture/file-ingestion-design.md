@@ -194,24 +194,10 @@ The source inventory rows use the same SKU convention as the ECOMMERCE catalog
 (`SKU000001`, `SKU000002`, and so on), which gives the demo a realistic
 cross-source relationship without duplicating the SQL Server source tables.
 
-## SFTP FULL sample and configuration
-
-The active `LOGISTICS_VENDOR` `FULL` example reads `inventory_snapshot.csv` from `/outbound/inventory/` into
-`fulfillment.inventory_snapshots`. It matches the exact source filename rather than sweeping historical movement
-files and has **no watermark**. The raw columns and CSV contents are in the
-[tracked fixture](../../scripts/source/sftp/outbound/inventory/inventory_snapshot.csv).
-
-For the complete `source_options` JSON, logical connections, paths, and target settings, inspect the
-[DEV metadata seed](../../scripts/control/04_seed_ingestion_metadata.sql). To follow the execution through Landing,
-Bronze and audit, use the [SFTP walkthrough](../guides/sftp-file-ingestion.md). Keeping the sample values in their
-source files avoids a second configuration specification here.
-
-## SFTP account boundary (DEV)
-
-The Docker Compose demo provisions one `atmoz/sftp` login, `sftp_logistics_vendor`.
-Uploads use host-side SCP staging followed by copy into the bound outbound folder;
-Fabric accesses that folder with the same identity. Separate producer and read-only
-consumer accounts are not implemented.
+The full snapshot's source filename, target and options are defined in the
+[ingestion metadata seed](../../scripts/control/04_seed_ingestion_metadata.sql).
+See the [SFTP guide](../guides/sftp-file-ingestion.md) for a walkthrough and the
+[source setup guide](../../infra/source/README.md) for demo account and upload details.
 
 ## FILE incremental feed
 
