@@ -39,9 +39,8 @@ separate chart series.
 Different source systems can display different Batch IDs; a previous
 successful batch is not proof that the next scheduled run succeeded.
 
-`Latest Activity (UTC)` represents the latest audited object end time in the
-current filter context, not the report refresh time or a measurement of
-refresh latency.
+`Latest Execution End (UTC)` displays the internal `Latest Activity (UTC)` measure: the latest audited object
+end time in the current filter context, not the report refresh time or a measurement of refresh latency.
 
 ## Semantic model
 
@@ -55,10 +54,9 @@ refresh latency.
   `Source Systems`, `Failed Sources`, `Objects`,
   `Latest Activity (UTC)`, `Successful Objects`,
   `Failed Objects`, `Skipped Objects`.
-- `Failed Sources` counts sources whose **latest audited batch status**
-  is `FAILED`, not the number of failed object executions.
-  `Objects` sums terminal object audit records from each source's latest audited batch, not configured objects or
-  all historical records.
+- `Failed Sources`, displayed as `Sources with Failures`, counts sources whose **latest audited batch status**
+  is `FAILED`, not failed object executions. `Objects`, displayed as `Object Runs`, sums terminal object audit
+  records from each source's latest audited batch, not configured objects or all historical records.
 - The native `Latest Activity (UTC)` measure remains DateTime and is
   formatted without a text-conversion helper. Visual-level
   `source_system is not blank` filters exclude blank source systems.
@@ -73,9 +71,9 @@ The page uses 16:9 layout. The visuals are:
 
 | Section | Content |
 | --- | --- |
-| Header | `Ingestion Operations`; `Latest Recorded Batch per Source System \| All Timestamps in UTC` |
+| Header | `Ingestion Operations`; `Latest Audited Batch per Source System \| All Timestamps in UTC` |
 | Slicer | `Source System`, nonblank values, no hardcoded source allowlist |
-| KPI cards (4) | `Source Systems`, `Failed Sources`, `Objects`, `Latest Activity (UTC)` |
+| KPI cards (4) | `Source Systems`, `Sources with Failures`, `Object Runs`, `Latest Execution End (UTC)` |
 | Table | `Latest Batch Summary by Source System`: Source System, Status, Objects, Success, Failed, Skipped, Last End (UTC) |
 | Clustered bar chart | `Latest Batch Summary by Source System`: Success, Failed, Skipped by Source System, using consistent status colors |
 | History table | `Object Execution History`: Source System, Object, Run Type, Status, Source Rows, Target Rows, Duration (s), End (UTC), Error Code, Pipeline Run ID |
@@ -84,9 +82,9 @@ The following screenshots show the report in DEV.
 
 [![Ingestion operations report overview](../assets/screenshots/core/c15-operations-report.png)](../assets/screenshots/core/c15-operations-report.png)
 
-*Operations overview: two source systems, two terminal object audit records across their latest audited batches, and zero failed sources.*
+*The latest audited batches show two source systems and eight object runs, with no sources reporting failures.*
 
-Both latest source summaries are `SUCCESS`; history also shows earlier `SUCCESS`/`SKIPPED` outcomes and
+Both latest source summaries are `SUCCESS`; history includes multiple batches with `SUCCESS`/`SKIPPED` outcomes and
 `REGULAR`/`BACKFILL` run types. These are persisted object audits, not live master-pipeline states.
 
 The summary Table and Chart sort `source_system` ascending;
@@ -96,10 +94,10 @@ No visual must depend on the names of the two demo sources.
 
 [![Operations report filtered to LOGISTICS_VENDOR](../assets/screenshots/core/c16-operations-filter.png)](../assets/screenshots/core/c16-operations-filter.png)
 
-*With `LOGISTICS_VENDOR` selected, the report shows one source, one object audit record in its latest audited batch, and zero failed sources.*
+*Selecting `LOGISTICS_VENDOR` shows one source system and two object runs in its latest audited batch.*
 
-Four historical executions remain visible, including an earlier `SKIPPED` outcome. Filtering is by source system
-and does not restrict history to the latest Batch ID.
+Six historical executions remain visible. Filtering by `source_system` selects its complete available audit
+history, rather than restricting it to the latest Batch ID.
 
 ## Pipeline failure notifications (Activator DEV experiment)
 
@@ -129,15 +127,10 @@ detection/action invocation only, not an end-to-end verified notification servic
 
 ## Verification and observed results
 
-- An earlier report capture from the development workspace showed **2** Source Systems, **8** Objects,
-  **0** Failed Sources across the latest observed batches:
-  `ECOMMERCE` had 6 Objects (1 `SUCCESS`, 5 `SKIPPED`);
-  `LOGISTICS_VENDOR` had 2 (1 `SUCCESS`, 1 `SKIPPED`).
-- The [Operations overview](../assets/screenshots/core/c15-operations-report.png) shows a different, later DEV
-  observation: **2** Source Systems,
-  **2** Objects and **0** Failed Sources, with one terminal object audit
-  record in each source's latest audited batch. The difference from the earlier eight-object observation reflects
-  the report's latest-batch grain; it does not establish that configurations were deleted.
+- The DEV overview shows six `ECOMMERCE` object runs (1 `SUCCESS`, 0 `FAILED`, 5 `SKIPPED`) and two
+  `LOGISTICS_VENDOR` object runs (1 `SUCCESS`, 0 `FAILED`, 1 `SKIPPED`).
+- The latest execution end is `2026-10-28 01:48:42` UTC in the overview and `2026-10-24 07:16:41` UTC with
+  `LOGISTICS_VENDOR` selected. These are observed results, not guarantees of future outcomes.
 - Source-specific filtering, no blank slicer/chart category, timestamp
   display, historical sorting and the overall Report layout were reviewed.
 - The repository owner confirmed that Fabric Git Sync completed and the canonical
