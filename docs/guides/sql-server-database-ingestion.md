@@ -1,12 +1,12 @@
 # SQL Server Database Ingestion
 
-The current DATABASE implementation reads SQL Server 2022 Developer tables through Fabric Data Factory Copy
+The DATABASE path reads SQL Server tables through Fabric Copy
 activities and appends the results to Bronze Delta tables in a Fabric Lakehouse.
 
 Follow `FULL` and `INCREMENTAL` query-mode Copy through their processing windows, Bronze writes, and audit/watermark
 results. The source SQL Server is separate from the Fabric SQL Database that stores configuration and state.
 
-Screenshots in this guide show DEV examples.
+Screenshots show DEV observations from SQL Server 2022 Developer on EC2.
 
 Start with [Control Plane](control-plane.md) and [Pipeline Orchestration](pipeline-orchestration.md) if you have not yet traced the configuration and request-dispatch flow.
 
@@ -129,10 +129,8 @@ flowchart TD
 from a source Lookup; `BACKFILL` uses the explicitly requested HIGH. After boundary validation, only a `REGULAR`
 `HIGH = LOW` window takes the early `SKIPPED` branch. The other valid windows invoke the Loader.
 
-The diagram stops at the initial finalize activities on the error branches to remain readable. Their dependent
-`fail_*` activities, along with the exact Fabric dependencies and error handling, remain in the
-[INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sql_server_incremental_adapter.DataPipeline/pipeline-content.json).
-The diagram summarizes the checked-in Adapter definition.
+Error branches stop at their initial finalize activity. Dependent `fail_*` activities and exact dependencies are
+in the [INCREMENTAL Adapter JSON](../../fabric/pl_ingest_sql_server_incremental_adapter.DataPipeline/pipeline-content.json).
 
 For a `REGULAR` run the upper bound comes from a source query:
 
@@ -240,12 +238,8 @@ activities after error finalization. They are omitted from the visual only to ke
 see the [INCREMENTAL Loader JSON](../../fabric/pl_ingest_sql_server_incremental_loader.DataPipeline/pipeline-content.json)
 and [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md) for those details.
 
-An earlier isolated DEV experiment showed that explicitly setting `parallelCopies = 0` was not equivalent to
-omitting the property. This is why the `AUTO` branch omits it. Do not treat that observation as a general performance
-benchmark.
-
-See [Database Copy Performance](../architecture/database-copy-performance.md) for the Copy option contract,
-recorded observations, and their limitations.
+`0` is a routing sentinel, not a Copy setting. [Database Copy Performance](../architecture/database-copy-performance.md)
+explains why `AUTO` omits `parallelCopies` and records the isolated explicit-zero experiment and benchmark limits.
 
 ### Transfer consistency and type-conversion safety
 
@@ -339,7 +333,5 @@ framework uses execution-scoped Bronze cleanup when a failed write may have left
 finalization fails with an uncertain outcome, the incremental recovery flow checks durable state before deciding how
 to proceed.
 
-The [Bronze Compensating Cleanup runbook](../operations/bronze-compensating-cleanup.md) includes activity-level
-Mermaid diagrams for both **Bronze write failure** and **post-finalization reconciliation**. Follow those diagrams
-alongside the Pipeline JSON to see why cleanup is conditional on the failure boundary. These behaviors should not be
-simplified into a claim that every rerun is automatically exactly once at business-record level.
+The [Bronze Compensating Cleanup runbook](../operations/bronze-compensating-cleanup.md) covers write-failure
+compensation and post-finalization reconciliation. Neither path guarantees exactly-once business records on rerun.

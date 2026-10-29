@@ -1,6 +1,6 @@
 # Fabric Data Factory Limits and Framework Guardrails
 
-## Purpose
+<a id="purpose"></a>
 
 This document records Fabric Data Factory limits that constrain the orchestration design. Treat these as
 inputs to sizing and validation, not as guarantees that the framework has been load-tested at each limit.
@@ -55,16 +55,9 @@ pl_ingest_config_dispatcher
        -> inv_ingest_object_controller
 ```
 
-The paginator applies the same optional `p_source_system` filter to both
-pagination count and page Lookup. If the selected scope has zero active
-configs (whether a source is specified or not), it fails `NO_ACTIVE_CONFIGS`
-before `fe_config_pages`, with no object-level ingestion audit record. The master rejects mixed explicit requests and
-nonblank source scope with `AMBIGUOUS_RUN_SCOPE` before fan-out.
-
-The paginator emits the minimal `REGULAR` request shape (`config_id`, `run_type`) for each active configuration.
-Optional LOW/HIGH fields are supplied only when a caller's execution semantics require them; the Dispatcher
-normalizes missing optional bounds to empty strings before invoking the Controller. This keeps dispatch
-independent of execution intent and avoids unsupported nested control containers.
+The count and page Lookups apply the same optional `p_source_system` filter. Each page contains only `config_id`
+and `run_type = REGULAR`; source metadata is resolved later by the Object Controller. For scope validation and
+empty-scope failures, see [Run Request Examples](../operations/run-request-examples.md#scope-and-explicit-request-validation).
 
 Default:
 
@@ -98,13 +91,9 @@ sequentially.
 The paginator page loop is sequential to avoid multiplying concurrency by page count. Parallelism is applied inside the bounded request Dispatcher (`batchCount = 8` per run).
 With `concurrency = 1`, one master run is active at a time and its Dispatcher
 can schedule up to eight object controllers concurrently within a page.
-A DEV Run All comparison on 2026-10-11 observed master durations of 9m29s
-at `batchCount = 3` versus 4m44s at `batchCount = 8` (50.1% less time).
-Each run produced eight object audit records: 2 `SUCCESS`, 6 `SKIPPED`, with
-32 source rows and 32 target rows. This is a light-workload orchestration
-observation, **not** a heavy-throughput or capacity-cost benchmark.
-Production sizing still requires checking Fabric capacity usage, source load,
-throttling/errors, and equivalent workloads that do not primarily report `SKIPPED`.
+The [Dispatcher comparison](../guides/pipeline-orchestration.md#4-the-dispatcher-runs-object-controllers) records a
+small DEV timing observation. Production sizing still requires checking Fabric capacity, source load,
+throttling/errors and equivalent workloads that do not primarily report `SKIPPED`.
 
 ### Get Metadata
 

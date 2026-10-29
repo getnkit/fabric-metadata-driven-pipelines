@@ -134,7 +134,9 @@ After the benchmark session, run the scenario script with:
 
 Source benchmark data stays in the EC2 SQL Server Developer test database between runs.
 
-## Core comparison
+<a id="core-comparison"></a>
+
+## Comparison procedure
 
 Run at least:
 
@@ -179,11 +181,7 @@ size/IOPS, SQL Server edition, CPU and memory load, network egress, row counts a
 run. Results are specific to this EC2 setup and are **not directly comparable** with other setups without verifying
 equivalent source and test conditions.
 
-The physically partitioned source table is retained **unchanged**: retiring
-Fabric's Table-mode `PHYSICAL_PARTITIONS` option does not remove or modify SQL
-Server partitions. No source DDL change, repartitioning, or 10M-row regeneration
-is required for this Query-only benchmark. Both DYNAMIC scenarios now use
-`event_date` as their connector range key. `PHYSICAL_PARTITIONS` is not an
-available framework copy strategy.
-Do not assume Dynamic Range always equals native physical-partition scan
-performance or that more parallelism is faster on a burstable EC2 instance.
+The framework does not support `PHYSICAL_PARTITIONS` as a Copy strategy. Scenario selection leaves the SQL Server
+physical partitions unchanged; no source DDL change, repartitioning or 10M-row regeneration is required. Do not
+assume Dynamic Range matches native physical-partition scan performance or that more parallelism is faster on a
+burstable EC2 instance.

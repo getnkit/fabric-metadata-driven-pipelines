@@ -1,18 +1,14 @@
 # File Ingestion Design
 
-This is the design reference for the implemented SFTP-to-Landing-to-Bronze path. For an executable walkthrough,
+SFTP ingestion preserves delivered files in Landing before parsing them into Bronze Delta tables. For a walkthrough,
 start with the [SFTP ingestion guide](../guides/sftp-file-ingestion.md); for exact metadata values, use the
 [DEV SQL seed](../../scripts/control/04_seed_ingestion_metadata.sql).
 
 ## Implemented scope
 
-SFTP `FULL` and `INCREMENTAL` ingestion share FILE routing and the framework-wide watermark state. The scope includes:
-
-- one shared `control.ingestion_config`
-- first-class `source_path`, `landing_path`, and `file_format`
-- pattern-specific parser/source-reading options stored in `source_options`
-- no `control.file_ingestion_config`
-- no Quarantine / Reject Area
+SFTP `FULL` and `INCREMENTAL` share FILE routing and `control.ingestion_config`; incremental feeds use the common
+watermark table. FILE-specific fields hold source/Landing paths and format selection, with parser options in
+`source_options`. There is no separate `control.file_ingestion_config` or Quarantine / Reject Area.
 
 ## Metadata model
 
@@ -33,7 +29,7 @@ For the DATABASE path, both fields are `NULL` because the source is already
 identified by `source_schema` + `source_object` and the pipeline writes directly
 to Bronze.
 
-For FILE ingestion, both fields are first-class metadata. The FILE `landing_path` contract is strict: use
+The FILE `landing_path` contract is strict: use
 `landing/...` (relative to the Lakehouse **Files** root), never `Files/landing/...`. The adapter concatenates this
 base path with `ingestion_date` and per-object execution segments without `replace()` or automatic path-prefix
 correction. Fabric Copy receives the Files-relative `folderPath`; Bronze and Landing-cleanup notebooks prepend the
@@ -69,13 +65,9 @@ formats are audited and failed once with `UNSUPPORTED_FILE_FORMAT` before invoki
 This gate precedes incremental LOW/HIGH resolution, so its failure audit has `NULL` processing bounds.
 An invalid format therefore takes precedence over state or boundary validation.
 
-`nb_load_file_landing_to_bronze` owns reader dispatch and also validates the format.
-Only `DELIMITED_TEXT` is implemented; `PARQUET` and `JSON` are unsupported.
-The Router rejects unsupported formats before raw Landing work starts.
-
-Landing is retained for FILE ingestion because the delivered file is itself the raw ingestion artifact and can be reused for troubleshooting or reprocessing.
-
-DATABASE ingestion remains direct-to-Bronze.
+`nb_load_file_landing_to_bronze` also validates the format and owns reader dispatch. Only `DELIMITED_TEXT` is
+implemented; `PARQUET` and `JSON` are unsupported. Landing retains the raw artifact for troubleshooting or
+reprocessing. DATABASE ingestion writes directly to Bronze.
 
 ## Transfer consistency
 
@@ -114,8 +106,6 @@ Copy pair and execution mode; otherwise a suitable fallback such as the SFTP fil
 
 ## Failure behavior
 
-The project does not implement Quarantine.
-
 Fatal file-access or reader errors fail the ingestion run through the normal audit path.
 The checked-in CSV reader does not set a parsing `mode`, so Spark's default
 [`PERMISSIVE` mode](https://spark.apache.org/docs/latest/sql-data-sources-csv.html#data-source-option)
@@ -129,19 +119,14 @@ recursively deletes only the validated leaf folder ending in
 The cleanup Notebook requires these three matching IDs and the ingestion date
 before deletion; it cannot delete another config's shared-batch Landing files.
 
-When a failed path may already have appended rows to Bronze, the framework invokes
-the reusable `nb_cleanup_bronze_batch_rows` notebook. Cleanup is scoped to both the
-current `_batch_id` and object `_pipeline_run_id`. If cleanup succeeds and verifies
-that zero rows for that execution remain, the original ingestion failure is
-finalized with watermark advancement disabled. If cleanup fails, the framework
-can still finalize the run as `FAILED` with `BRONZE_CLEANUP_FAILED`; residual Bronze
-rows may remain. Investigate and reconcile the affected batch before rerunning.
-Unsuccessful cleanup does not guarantee rerun safety or provide business-key
-deduplication.
+A failed Bronze write activity invokes `nb_cleanup_bronze_batch_rows`, scoped to the current `_batch_id` and object
+`_pipeline_run_id`. Cleanup verifies zero remaining rows before finalizing the original failure without watermark
+advancement. A cleanup failure is reported as `FAILED / BRONZE_CLEANUP_FAILED`; reconcile any residual rows before
+rerunning. This does not provide business-key deduplication.
 
-The framework intentionally does not auto-clean after an ambiguous
-`sp_finalize_success` failure because the control transaction may already have
-committed.
+An ambiguous `sp_finalize_success` failure cannot safely trigger cleanup because SQL may already have committed.
+The [Bronze Compensating Cleanup runbook](../operations/bronze-compensating-cleanup.md) owns the committed-audit
+checks and source-specific recovery branches.
 
 Business data-quality validation is outside the current implementation scope.
 
@@ -214,9 +199,6 @@ load_strategy      = INCREMENTAL
 watermark_field    = last_modified_time
 ```
 
-FILE incremental reuses `control.pipeline_watermarks`; there is no
-FILE-specific state table.
-
 The initial checkpoint is:
 
 ```text
@@ -248,14 +230,9 @@ LOW <= LastModified < HIGH
 SFTP incremental discovery supports arbitrary nested subfolders beneath
 `source_path` without implementing folder traversal in pipeline control flow.
 
-The SFTP Copy activity performs one recursive Binary copy from the configured
-source root to the batch-specific Landing folder. It applies the configured
-`file_name_pattern` together with the LOW/HIGH Last Modified window and uses
-`PreserveHierarchy`, so the connector itself handles arbitrary folder depth.
-
-After Landing succeeds, `nb_load_file_landing_to_bronze` recursively
-reads only that batch's Landing folder, parses the delimited files, adds the
-technical lineage columns, and appends the result to the Bronze Delta table.
+One recursive Binary Copy applies `file_name_pattern` and the Last Modified window from the configured source
+root. `PreserveHierarchy` keeps the relative folders in execution-scoped Landing. The Notebook then recursively
+parses only that folder, adds lineage columns, and appends Bronze Delta rows.
 
 This keeps responsibilities narrow:
 
@@ -294,15 +271,10 @@ whose Last Modified falls within the previously empty window, at the cost of
 rescanning that window. It does not guarantee detection of files delivered after
 a later nonempty successful run has already advanced the watermark.
 
-`run_type` and `load_strategy` are independent. The FILE config keeps its
-configured `FULL` or `INCREMENTAL` strategy for every execution.
-
-For an `INCREMENTAL` FILE config, `BACKFILL` reuses the bounded SFTP adapter and
-applies the explicitly requested LOW/HIGH window to source-file Last Modified
-time instead of the committed operational checkpoint. A successful `INCREMENTAL` `BACKFILL` does not advance the operational watermark.
-
-For a `FULL` FILE config, `BACKFILL` rereads the same current source scope as `REGULAR`.
-The distinction is execution intent and lineage; each successful run appends a new batch-specific Landing/Bronze copy.
+`BACKFILL` does not change the configured load strategy. An `INCREMENTAL` backfill applies requested LOW/HIGH to
+remote Last Modified time without advancing the operational checkpoint. A `FULL` backfill rereads the current
+source scope and appends a new Landing/Bronze batch. See [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md)
+for the shared run-intent contract.
 
 | Timestamp / date | Origin and meaning |
 | --- | --- |
@@ -315,12 +287,6 @@ midnight. SQL `DATETIME2(3)` represents UTC by convention.
 FILE watermark HIGH is persisted as the exact UTC-with-`Z` object-run start string;
 source-derived watermark bounds preserve their original precision and timezone
 semantics. Do not append `Z` to a source-native value without a UTC contract.
-
-The FILE Router validates `DELIMITED_TEXT` before the SFTP incremental adapter validates watermark state and
-LOW/HIGH boundaries. The adapter then performs recursive Binary Copy into execution-scoped Landing and checks
-`filesRead == filesWritten` before deciding whether to load Bronze. A consistent `0 / 0` finalizes as `SKIPPED`
-without a Bronze write or checkpoint advance. With matching nonzero file counts, the Notebook parses Landing,
-appends Bronze, and proceeds to success finalization.
 
 For activity-level details, follow [Step A: state and boundary validation](../guides/sftp-file-ingestion.md#step-a-validate-state-and-establish-the-processing-window)
 and [Step B: Copy, file counts, SKIPPED and Bronze loading](../guides/sftp-file-ingestion.md#step-b-discover-files-copy-to-landing-then-decide-whether-to-write-bronze).
@@ -336,9 +302,6 @@ by UTC year and month to exercise recursive source traversal:
 2026/09/inventory_movement_20260927T131500Z.csv
 2026/10/inventory_movement_20261002T150000Z.csv
 ```
-
-The adapter recursively discovers these subfolders and preserves the relative
-hierarchy under each isolated Landing batch.
 
 This strategy assumes the SFTP server exposes a reliable UTC Last Modified value
 that reflects delivery/update time. A source that preserves stale timestamps

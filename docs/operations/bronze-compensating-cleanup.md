@@ -47,7 +47,7 @@ existing `(_batch_id, _pipeline_run_id)` predicate.
 
 ## Reusable component
 
-The framework uses one notebook item:
+Bronze cleanup uses:
 
 ```text
 nb_cleanup_bronze_batch_rows
@@ -113,9 +113,8 @@ flowchart TD
   linkStyle default stroke:#6d7f94
 ```
 
-This path is **not** triggered by pre-write metadata or boundary validation failures. Its Cleanup Notebook targets
-the specific Bronze table and the `(_batch_id, _pipeline_run_id)` pair. A successful cleanup leads to a terminal
-**`FAILED`** audit for the original write failure; cleanup failure is separately surfaced as `BRONZE_CLEANUP_FAILED`.
+This path follows a Bronze write failure, not pre-write validation. Successful cleanup leaves the original write
+outcome **`FAILED`**; cleanup failure is surfaced separately as `BRONZE_CLEANUP_FAILED`.
 
 FILE ingestion also has **Landing Copy** and file-count consistency failure branches, with their own Landing cleanup
 activities (for example, `nb_cleanup_landing_copy_failed`). Do not treat those as the Bronze write-failure branch
@@ -153,13 +152,10 @@ The parent activity is `inv_ingest_incremental_finalize_recovery`. It passes a b
 original finalization error message alongside config/batch/run identifiers, so
 recovery Fail messages retain diagnostic context without complex expressions.
 
-The child pipeline reads a **committed terminal Audit record** matched by
-`ingestion_config_id`, `batch_id`, and `pipeline_run_id` and classifies it:
-
 ### Activity-level flow: reconcile the committed outcome
 
-The recovery child reads `audit.ingestion_log` using the exact `ingestion_config_id`, `batch_id`, and object
-`pipeline_run_id`. Its SQL Lookup maps committed `SUCCESS` to `COMMITTED_SUCCESS`, committed
+The recovery child reads the **committed** `audit.ingestion_log` outcome using the exact `ingestion_config_id`,
+`batch_id`, and object `pipeline_run_id`. Its SQL Lookup maps committed `SUCCESS` to `COMMITTED_SUCCESS`, committed
 `FAILED / WATERMARK_CONFLICT` to `CONFIRMED_CONFLICT`, and missing or other outcomes to `OTHER`.
 
 ```mermaid
@@ -180,10 +176,9 @@ flowchart TD
   linkStyle default stroke:#6d7f94
 ```
 
-The diagram deliberately stops at the conflict cleanup activities: their **`Succeeded`/`Failed` terminal `Fail`
-activities** are listed in the
+The diagram stops at conflict cleanup; terminal `Fail` dependencies are in the
 [recovery pipeline JSON](../../fabric/pl_ingest_incremental_finalize_recovery.DataPipeline/pipeline-content.json).
-In the DATABASE conflict branch, successful Bronze cleanup is followed by `fail_confirmed_watermark_conflict`;
+In the DATABASE branch, successful Bronze cleanup is followed by `fail_confirmed_watermark_conflict`;
 failed cleanup by `fail_bronze_finalize_cleanup`. In the FILE conflict branch, successful Bronze **and** Landing
 cleanup is followed by `fail_confirmed_watermark_conflict_file`; failures use `fail_bronze_finalize_cleanup_file`
 or `fail_landing_finalize_cleanup`.

@@ -9,9 +9,9 @@ to inspect the guides and checked-in definitions.
 
 | Goal | Read |
 | --- | --- |
-| **Portfolio / architecture scan** | [Architecture](../architecture/framework-overview.md) → [Database Copy Performance](../architecture/database-copy-performance.md) for Copy configuration and limited development-workspace observations |
-| **Follow an actual ingestion request** | Steps **1–4** below; choose SQL Server or SFTP |
-| **Understand production-style safety decisions** | Steps **5–7**: watermark, retry/compensation, audit visibility |
+| **Understand the design** | [Architecture](../architecture/framework-overview.md) → [Database Copy Performance](../architecture/database-copy-performance.md) for Copy configuration and limited development-workspace observations |
+| **Trace an ingestion request** | Steps **1–4** below; choose SQL Server or SFTP |
+| **Review failure handling** | Steps **5–7**: watermark, retry/compensation, audit visibility |
 | **Reproduce the DEV demo** | Step **8**, then follow the operator runbooks (not the design documents) |
 
 <a id="1--understand-the-architectural-problem"></a>
@@ -20,10 +20,8 @@ to inspect the guides and checked-in definitions.
 
 **Read:** [Architecture & Design Decisions](../architecture/framework-overview.md).
 
-Focus on the **Control & Audit Plane** (config/state/terminal audit), **Orchestration Plane**
-(selection/validation/routing), and **Data Plane** (source → Landing/Bronze). These are logical responsibilities
-within one Fabric-based framework, not isolated deployed platforms. The Bronze write and Control SQL finalization
-are not one distributed transaction.
+Follow the three logical planes: Control and Audit, Orchestration, and Data. Pay particular attention to the
+transaction boundary between Bronze writes and Control SQL finalization.
 
 
 <a id="2--inspect-the-metadata"></a>
@@ -34,12 +32,11 @@ are not one distributed transaction.
 `control.connection_settings`, `control.ingestion_config`, `control.pipeline_watermarks`, and
 `audit.ingestion_log`.
 
-**Inspect the definitions:** The [Fabric SQL Database Project](../../fabric/sqldb_ingestion_control.SQLDatabase/)
-is the schema source of truth. The [Control schema bootstrap](../../scripts/control/01_create_control_schema.sql)
-creates missing objects for a fresh install; it does not migrate an existing schema. The
-[connection seed](../../scripts/control/03_seed_connection_settings.sql) and
-[ingestion seed](../../scripts/control/04_seed_ingestion_metadata.sql) supply DEV examples: six E-commerce DATABASE
-objects and two Logistics FILE objects.
+**Inspect:** the [Fabric SQL Database Project](../../fabric/sqldb_ingestion_control.SQLDatabase/) and its
+[create-if-absent bootstrap](../../scripts/control/01_create_control_schema.sql). The
+[connection](../../scripts/control/03_seed_connection_settings.sql) and
+[ingestion](../../scripts/control/04_seed_ingestion_metadata.sql) seeds provision DEV examples; use the guide's
+read-only queries when studying an existing environment.
 
 
 <a id="3--trace-the-request-through-orchestration"></a>
@@ -108,11 +105,8 @@ verification; [SQL Run Order](../../scripts/RUN_ORDER.md) covers the executable 
 [EC2/SFTP source setup](../../infra/source/README.md) handles optional source services. Do not treat Git as a backup
 of historic Bronze rows, watermarks, audits, or secrets.
 
-**For reviewers:** [Database Copy Performance](../architecture/database-copy-performance.md) records completed and
-partial DEV Copy observations; [Pipeline Orchestration](pipeline-orchestration.md) records the small parallel-dispatch
-comparison; and [Monitoring Report](../operations/monitoring-report.md) describes audit-based monitoring and its limits.
-[Fabric Data Factory Limits](../architecture/fabric-data-factory-limits.md) documents platform guardrails, while
-[Variable Library Bindings](../operations/variable-library-environment-binding.md) documents environment-specific IDs.
+Before changing scale or environments, review [Fabric Data Factory Limits](../architecture/fabric-data-factory-limits.md)
+and [Variable Library Bindings](../operations/variable-library-environment-binding.md).
 
 Verify results against genuine execution evidence, matching run identifiers before correlating captures.
 Distinguish checked-in definitions from observed runtime behavior, and check whether benchmark measurements are

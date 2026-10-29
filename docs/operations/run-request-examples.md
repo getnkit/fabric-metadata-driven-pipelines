@@ -35,14 +35,10 @@ p_run_requests = []
 p_source_system = "ECOMMERCE"
 ```
 
-This selects only active `ECOMMERCE` configs (seeded IDs 1–6). Another independent
-run with `p_source_system = "LOGISTICS_VENDOR"` selects active IDs 7–8.
-Both runs receive different master Run IDs and generated Batch IDs. Two
-schedules may invoke this same pipeline with different parameters; at the
-current `concurrency = 1`, these master executions are serialized rather
-than executed simultaneously. A blank/whitespace-only source system is equivalent
-to no filter (all active). The filter is trimmed and treated as an exact
-metadata value according to the Control SQL Database collation.
+This selects only active `ECOMMERCE` configs (seeded IDs 1–6). A separate run with
+`p_source_system = "LOGISTICS_VENDOR"` selects active IDs 7–8. Query the metadata for actual IDs in an existing
+environment. The filter is trimmed and compared as an exact metadata value under the Control SQL Database
+collation; blank or whitespace-only input selects all active configurations.
 
 If the resolved scope has **zero active configs**, the paginator fails with
 `NO_ACTIVE_CONFIGS` for both unfiltered ALL ACTIVE and a specified source system.
@@ -74,12 +70,11 @@ places this validation before child dispatch.
 
 ### Execution and concurrency boundaries
 
-The master currently uses **`concurrency = 1`**, so source-scoped master
-runs have separate Batch IDs and monitoring outcomes but execute one master
-run at a time. The Dispatcher uses static `fe_run_requests.batchCount = 8`
-and can process up to eight object requests in parallel *within* a master run.
+Schedules can invoke the same master with different source-system parameters. Each execution receives its own
+master Run ID and Batch ID, but **`concurrency = 1`** serializes master runs. The Dispatcher uses
+`fe_run_requests.batchCount = 8` for up to eight parallel object requests *within* one master run.
 For the DEV comparison and its limits, see [the Dispatcher section](../guides/pipeline-orchestration.md#4-the-dispatcher-runs-object-controllers).
-This DEV baseline is not a production throughput or capacity recommendation. Dynamic per-source
+This concurrency setting is not a production throughput or capacity recommendation. Dynamic per-source
 concurrency and config-level execution locks remain out of scope.
 
 Do not increase master concurrency without assessing overlapping config

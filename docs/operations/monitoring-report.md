@@ -57,7 +57,8 @@ refresh latency.
   `Failed Objects`, `Skipped Objects`.
 - `Failed Sources` counts sources whose **latest audited batch status**
   is `FAILED`, not the number of failed object executions.
-  `Objects` sums counts from each source's latest audited batch.
+  `Objects` sums terminal object audit records from each source's latest audited batch, not configured objects or
+  all historical records.
 - The native `Latest Activity (UTC)` measure remains DateTime and is
   formatted without a text-conversion helper. Visual-level
   `source_system is not blank` filters exclude blank source systems.
@@ -135,11 +136,8 @@ detection/action invocation only, not an end-to-end verified notification servic
 - The [Operations overview](../assets/screenshots/core/c15-operations-report.png) shows a different, later DEV
   observation: **2** Source Systems,
   **2** Objects and **0** Failed Sources, with one terminal object audit
-  record in each source's latest audited batch. The `Objects` measure sums
-  terminal object audit records across the latest audited batch of each
-  source system; it does not count all configured ingestion objects or all
-  historical audit records. The difference from the earlier eight-object
-  observation does not establish that any configurations were deleted.
+  record in each source's latest audited batch. The difference from the earlier eight-object observation reflects
+  the report's latest-batch grain; it does not establish that configurations were deleted.
 - Source-specific filtering, no blank slicer/chart category, timestamp
   display, historical sorting and the overall Report layout were reviewed.
 - The repository owner confirmed that Fabric Git Sync completed and the canonical
@@ -150,7 +148,6 @@ detection/action invocation only, not an end-to-end verified notification servic
 - When re-creating DEV, check SQL views, DirectQuery credentials, the
   Slicer interaction and metric counts, not only that PBIR files import.
   See [Environment Rebuild](environment-rebuild.md).
-- For optional operator notifications and the still-unverified delivery evidence, see [Pipeline failure notifications](#pipeline-failure-notifications-activator-dev-experiment).
 
 ### Source of truth
 
@@ -160,10 +157,6 @@ detection/action invocation only, not an end-to-end verified notification servic
 - `scripts/monitoring/01_create_monitoring_views.sql`: runnable SQL views.
 - `fabric/sqldb_ingestion_control.SQLDatabase/audit/Views/`: SQL Project views.
 
-For a new workspace, create the three monitoring views, import/sync both
-canonical Fabric artifacts, rebind the model's two DirectQuery partitions to
-the new SQL Database, configure Entra credentials and verify the four KPI
-cards, Source System slicer, latest-batch summary and 10-column history.
-See [Environment Rebuild](environment-rebuild.md) for the deployment and
-connection/ID checklist. For future edits, use Power BI Desktop and commit
-the native PBIR/TMDL definitions to the canonical `fabric/` paths.
+Follow [Environment Rebuild](environment-rebuild.md#g-rebind-operational-power-bi) for deployment and source
+rebinding. Author report/model changes in Power BI Desktop and commit the native PBIR/TMDL definitions under
+`fabric/`.

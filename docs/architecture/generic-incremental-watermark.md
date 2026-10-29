@@ -40,13 +40,9 @@ For the SQL Server and SFTP `INCREMENTAL` adapters, the initial
 a checkpoint exists for that exact pair. A missing checkpoint **or a mismatched field**
 follows `STATE_NOT_FOUND`, with the requested config ID and watermark field in the message.
 
-The SFTP `INCREMENTAL` adapter checks `if_supported_watermark_field` **before**
-`lkp_current_watermark` to reject unsupported field types with
-`UNSUPPORTED_FILE_WATERMARK` even when no matching state row exists. For the
-supported `last_modified_time` field, the lookup then checks for the exact
-`ingestion_config_id` and `watermark_field` pair; no matching row produces
-`STATE_NOT_FOUND`. The checkpoint's optimistic comparison during successful
-finalization remains unchanged.
+Before this lookup, the SFTP `INCREMENTAL` adapter checks `if_supported_watermark_field` and rejects any field other
+than `last_modified_time` with `UNSUPPORTED_FILE_WATERMARK`, even if no state row exists. The lookup then enforces
+the same config/field match as SQL Server.
 
 ## Generic processing boundaries
 
@@ -192,11 +188,8 @@ upper boundary is captured at the start of the current ingestion run. After a
 successful `REGULAR` ingestion with matching files and a completed Bronze write, guarded finalization advances
 the watermark to that upper boundary. When no files match, the status is `SKIPPED` and the checkpoint stays at LOW.
 
-The source filename remains a file identity/evidence field, not the incremental
-checkpoint.
-
-The fixture names therefore only need to be unique and match the configured
-pattern. They do not need a sortable `_001`, `_002` sequence.
+The source filename provides identity and lineage, not the checkpoint. Fixture names need only be unique and
+match the configured pattern; sortable `_001`, `_002` sequences are unnecessary.
 
 ## Delivery assumption
 
@@ -218,11 +211,9 @@ watermark.
 This optimistic comparison keeps the watermark state update and terminal audit
 insert atomic inside the control SQL database.
 
-A no-data FILE scan finishes as `SKIPPED` with zero rows and never advances its Last Modified
-checkpoint. Audit processing LOW/HIGH still describe the attempted scan. A later
-`REGULAR` run repeats that original LOW-to-new-HIGH range, allowing late-arriving
-files to be discovered before any subsequent successful nonempty advance. This
-is not a complete late-arrival guarantee once a later nonempty run advances state.
+For a no-data FILE scan, audit LOW/HIGH describe the attempted window while the checkpoint stays unchanged. The
+next `REGULAR` run scans from that original LOW to a new HIGH, allowing late arrivals to be discovered until a
+nonempty successful run advances state. This does not guarantee discovery after that advance.
 
 [![Composite of SKIPPED audits, Bronze count result, and a single watermark state panel](../assets/screenshots/composites/c10-no-new-data-skipped.png)](../assets/screenshots/composites/c10-no-new-data-skipped.png)
 
@@ -232,7 +223,7 @@ The Bronze query/filter is not visible, so its zero count does not independently
 
 ## Run types and recovery
 
-The framework run-type contract is intentionally small:
+For incremental configurations:
 
 ```text
 REGULAR
@@ -242,12 +233,7 @@ BACKFILL
 = explicit historical LOW/HIGH processing that does not advance the operational watermark
 ```
 
-Fabric Retry/Rerun is an execution-recovery mechanism, not a framework run type.
-A failed `REGULAR` ingestion can be recovered by starting another top-level `REGULAR`
-execution; the committed watermark remains the source of truth for the next
-forward window.
-
-`BACKFILL` may overlap a historical interval that was processed successfully before.
-The framework does not delete or replace a previously successful Bronze batch when
-that happens. Bronze remains append-oriented and each execution is distinguished by
-its batch/run lineage.
+Recover a failed `REGULAR` ingestion through a new top-level execution using the committed checkpoint.
+Fabric Retry/Rerun is not a framework run type. Overlapping backfills append distinct Bronze batches without
+replacing previous successes; see [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for run intent
+and side-effect retry policies.

@@ -8,10 +8,6 @@ The [SQL Server ingestion guide](../guides/sql-server-database-ingestion.md) fol
 The SQL Server adapter uses Copy activities in Fabric Data Pipelines to ingest data into Bronze.
 The tested source environment is SQL Server 2022 Developer running on EC2.
 
-The framework keeps orchestration in Fabric Data Pipelines and uses
-connector-native partitioning for relational extraction. This path does not need
-Spark because it performs data movement without distributed transformations.
-
 Official references:
 
 - https://learn.microsoft.com/en-us/fabric/data-factory/connector-sql-server-copy-activity
@@ -19,13 +15,9 @@ Official references:
 
 ## Metadata model
 
-`control.ingestion_config.copy_options` is optional JSON execution metadata.
-
-It is separate from `source_options`, which controls source reading and parsing.
-`copy_options` controls connector-native data movement and tuning.
-
-Keeping copy execution hints in one JSON column avoids adding many nullable,
-connector-specific columns to the shared ingestion configuration table.
+`control.ingestion_config.copy_options` holds optional connector-native tuning settings. It is separate from
+`source_options`, which controls source reading and parsing. A JSON envelope keeps connector-specific hints out
+of the shared table's column structure.
 
 ### Supported Copy configuration
 
@@ -85,9 +77,7 @@ p_copy_partition_column
 p_copy_parallel_copies
 ```
 
-The pipeline validates the supported combination before moving data.
-
-Execution then selects one of two **query** Copy branches:
+After validating the settings, execution selects one of two query-mode Copy branches:
 
 ```text
 p_copy_parallel_copies = 0
@@ -344,9 +334,6 @@ assume that other connectors support SQL Server's partition mechanisms.
 
 ### EC2 SQL Server Developer sizing note
 
-The benchmark generator defaults to **10,000,000 rows per table** across two permanent fixture tables (`CHAR(512)`
-payload). This is a DEV/test workload: confirm EBS free space, SQL data/log growth and Fabric egress cost before
-generation. Do not
-assume 80 GiB EBS will always be sufficient for arbitrary future increases in test data or index size. Retest
-generic `SqlServerSource` query-mode and partition options in Fabric DEV; repository validation alone does not
-establish runtime acceptance.
+The [benchmark setup guide](../../scripts/source/benchmark-db/README.md#storage-safety) covers EBS space, SQL
+data/log growth and test costs. Its 80 GiB EBS assumption is not a sizing guarantee. Retest `SqlServerSource`
+query-mode and partition options in Fabric DEV; repository validation alone does not establish runtime acceptance.

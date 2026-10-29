@@ -151,9 +151,11 @@ in parallel.
 
 This capture does not demonstrate eight simultaneous requests.
 
-The Dispatcher setting is not a general tuning recommendation. In a small all-active DEV comparison (2026-10-11),
-`batchCount = 3` took **9m29s** versus **4m44s** with `batchCount = 8`. Both runs recorded eight object audits
-(2 `SUCCESS`, 6 `SKIPPED`) and 32 source/target rows. This observation does **not** establish general scaling or cost savings.
+In a small all-active DEV comparison (2026-10-11), `batchCount = 3` took **9m29s** versus **4m44s** with
+`batchCount = 8` (50.1% less time). Both runs recorded eight object audits (2 `SUCCESS`, 6 `SKIPPED`) and 32
+source/target rows. This light workload does **not** establish heavy-throughput capacity, cost savings or a general
+concurrency recommendation. See [platform guardrails](../architecture/fabric-data-factory-limits.md) before sizing
+larger workloads.
 
 ## 5. The Object Controller looks up and validates configuration
 
@@ -252,25 +254,17 @@ WHERE source_system = 'LOGISTICS_VENDOR'
 ORDER BY ingestion_log_id DESC;
 ```
 
-The expected result depends on the remote files and current checkpoint. A `FULL` snapshot may append a new batch while
-the unchanged `INCREMENTAL` movement feed finishes `SKIPPED`. You cannot infer the audit status from the parameter
-values alone.
+Results depend on the remote files and current checkpoint. A `FULL` snapshot may append a new batch while the
+unchanged `INCREMENTAL` movement feed finishes `SKIPPED`; parameter values alone do not establish the outcome.
 
 Use the shared Batch ID to connect the object outcomes, and the object Pipeline Run ID to inspect a specific
 execution. A master run that fails before object dispatch may have **no object audit record**. Use Fabric Monitor
 for that case.
 
-For verification, compare the master run parameters and child activity outcomes in Fabric Monitor with the object
-audit rows returned by the query. The diagram describes the implemented routing; only an observed run establishes
-what happened in a particular execution.
+Compare the master parameters and child activity outcomes in Fabric Monitor with these audit rows. Static routing
+definitions do not establish what happened in an execution.
 
-## 8. What to read next
+<a id="8-what-to-read-next"></a>
 
-- [Control Plane](control-plane.md): the configuration and state each object reads.
-- [SFTP File Ingestion](sftp-file-ingestion.md): Binary Copy to Landing, Notebook parsing, Bronze append and audit.
-- [SQL Server Database Ingestion](sql-server-database-ingestion.md): a guided `FULL` and `INCREMENTAL` Copy example.
-- [Connector Responsibilities](../architecture/framework-overview.md#pipeline-roles-and-connector-boundary): framework versus SQL Server adapter ownership.
-- [Generic Incremental Watermark](../architecture/generic-incremental-watermark.md): processing boundaries, `SKIPPED`, and state changes.
-- [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md): execution intent versus data-loading strategy.
-
-Only `pl_ingest_orchestrator` is a supported external execution entry point. The child pipelines in this guide are implementation components, not independent run targets.
+Follow the [SQL Server](sql-server-database-ingestion.md) or [SFTP](sftp-file-ingestion.md) walkthrough for the
+physical load, and [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for recovery choices.

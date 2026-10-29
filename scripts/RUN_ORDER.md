@@ -9,8 +9,7 @@ UAT/PROD deployment has not been independently validated. Source demo and benchm
 **Starting from a lost/empty workspace?** First follow the
 [end-to-end Environment Rebuild runbook](../docs/operations/environment-rebuild.md)
 for prerequisites, source infrastructure, connection/ID rebinding, report
-DirectQuery binding and recovery limitations. This file remains the canonical
-SQL/script run order and runtime contract reference.
+DirectQuery binding and recovery limitations.
 
 ## A. Prerequisites / Fabric items
 
@@ -18,17 +17,14 @@ SQL/script run order and runtime contract reference.
   framework Data Pipelines and the three Notebook items from `fabric/`.
 - Sync `fabric/vl_ingestion_connections.VariableLibrary` into the same
   workspace as `pl_ingest_orchestrator`.
-- Set five environment-specific **String** values in the active Library:
-  `ingestion_control_connection_id`, `ingestion_control_item_id`,
-  `ingestion_control_workspace_id`,
-  `pipeline_invoke_connection_id`, `notebook_execution_connection_id`.
-  Set the workspace variable to the real GUID of the Control SQL Database workspace (from the Fabric URL `/groups/<workspace-id>/`).
+- Configure all five **String** runtime bindings in the active value set using
+  [Variable Library configuration](../docs/operations/variable-library-environment-binding.md#scope-and-decision).
+  Connection IDs, workspace IDs and Fabric item IDs are distinct values.
 - Grant access to each Fabric Connection, SQL Database, Notebook, Lakehouse
   and child Pipeline as appropriate. Verify Invoke and Notebook targets
   are correctly rebound after workspace deployment.
 - Source and target Copy Connections come from SQL
   `control.connection_settings`, NOT the five runtime variables.
-  See [Variable Library configuration](../docs/operations/variable-library-environment-binding.md).
 
 ## B. Core Control Plane — mandatory SQL
 
@@ -147,10 +143,7 @@ is present, it also inserts **two INACTIVE benchmark DATABASE** configs
 without overwriting existing benchmark scenario settings. It creates initial
 Watermark State only for missing DATABASE/FILE INCREMENTAL config IDs
 (five E-commerce DATABASE and one SFTP FILE). FULL configs have no
-watermark row. SQL Server FULL/INCREMENTAL uses **query-mode** Copy only;
-`NONE` and `DYNAMIC_RANGE` are the supported `copy_options.partition_option`
-values. The relational Bronze `_ingestion_timestamp` is produced by a source
-`DATETIME2(3)` CAST and lands as a timestamp in Delta.
+watermark row. See [Control Plane](../docs/guides/control-plane.md) for the metadata contract and inspection queries.
 
 **Seed safety:** `04_seed_ingestion_metadata.sql` can UPDATE existing
 sample configs; review before rerun. It **does not UPDATE existing
@@ -167,24 +160,15 @@ connectivity and TLS/network restrictions. Populate `@EcommerceSourceConnectionI
 connector's ID. The source database is bound in the Fabric Connection; metadata JSON contains its `connectionId`
 only. Source SQL Server is separate from the Fabric Control SQL Database.
 
-Run only `pl_ingest_orchestrator` as the standard entry point:
-`p_run_requests = []` with blank `p_source_system` runs all active configs
-as REGULAR; `p_run_requests = []` with e.g. `p_source_system = "ECOMMERCE"`
-runs only active configs for that source system. A non-empty request array
-runs explicit `config_id` and `run_type` requests **only when** `p_source_system`
-is blank; mixing both fails `AMBIGUOUS_RUN_SCOPE` before dispatch. An empty active-config scope (whether source-scoped or unfiltered) fails
-`NO_ACTIVE_CONFIGS` before dispatch and does not write object-level audit. Backfill is
-an explicit request with LOW/HIGH for INCREMENTAL. Supported run types
-are REGULAR and BACKFILL; `load_strategy` remains FULL/INCREMENTAL.
+Run only `pl_ingest_orchestrator`. Use `p_run_requests = []` with blank `p_source_system` for all active configs,
+or set `p_source_system = "ECOMMERCE"` for that subset. Explicit requests require a blank source-system filter;
+mixing scopes fails `AMBIGUOUS_RUN_SCOPE`. An empty active scope fails `NO_ACTIVE_CONFIGS` without an object audit.
+See [Run Request Examples](../docs/operations/run-request-examples.md) for explicit `REGULAR` and `BACKFILL` inputs.
 
-For independent source-system schedules, invoke the same master with separate
-`p_source_system` values (e.g. `ECOMMERCE` and `LOGISTICS_VENDOR`).
-The master has `concurrency = 1`: independent source-system runs keep distinct
-Batch IDs but execute serially. Dispatcher `batchCount = 8` allows bounded
-parallelism of up to eight object requests within each master run. For the
-light-workload DEV observation and its limits, see [the Dispatcher section](../docs/guides/pipeline-orchestration.md#4-the-dispatcher-runs-object-controllers).
-This setting does not establish heavy-load throughput or Fabric capacity efficiency. No config-level execution lock
-is implemented. See [run requests](../docs/operations/run-request-examples.md).
+The master serializes runs with `concurrency = 1`; the Dispatcher bounds object parallelism within a run using
+`batchCount = 8`. This does not provide config-level execution locks or establish heavy-load capacity. Review
+[Pipeline Orchestration](../docs/guides/pipeline-orchestration.md#4-the-dispatcher-runs-object-controllers) before
+changing concurrency.
 
 - DATABASE: SQL Server 2022 Developer on EC2 reads directly into Bronze Delta; source-derived
   HIGH comes from the configured watermark column; REGULAR with
@@ -199,8 +183,8 @@ is implemented. See [run requests](../docs/operations/run-request-examples.md).
   Failed Bronze/Copy operations use existing compensation logic.
   BACKFILL never advances the operational Watermark State.
 - Verify SQL audit exactly once per object child RunId, status and
-  source/target counts, processing LOW/HIGH, correct advancement and
-  optimistic conflict protection. UTC timestamps are standard.
+  source/target counts, processing LOW/HIGH, correct advancement and optimistic conflict protection. Interpret
+  timestamps using the [source-specific contract](../docs/architecture/generic-incremental-watermark.md#timestamp-ownership-and-timezone-contract).
 - For File regression, test `inventory_snapshot.csv` and the sample
   `inventory_movement_*.csv` files; verify full and incremental runs,
   an empty incremental run, and explicit BACKFILL.
@@ -215,12 +199,8 @@ is implemented. See [run requests](../docs/operations/run-request-examples.md).
   Landing, Bronze and all failure paths must pass in Fabric DEV.
   Git static validation alone does not establish runtime compatibility.
 
-More details:
-[run requests](../docs/operations/run-request-examples.md),
-[FILE design](../docs/architecture/file-ingestion-design.md),
-[watermark semantics](../docs/architecture/generic-incremental-watermark.md),
-[retry/rerun/backfill](../docs/operations/retry-rerun-backfill.md),
-[SQL verification](../docs/guides/control-plane.md#sql-enforced-guardrails).
+For failed or uncertain writes, follow [Bronze Compensating Cleanup](../docs/operations/bronze-compensating-cleanup.md)
+before rerunning.
 
 ## F. Optional performance benchmark (separate)
 

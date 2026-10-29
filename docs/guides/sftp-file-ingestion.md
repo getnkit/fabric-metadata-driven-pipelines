@@ -11,16 +11,9 @@ To understand source configuration and the master pipeline, start with [Control 
 optional verification queries require an already configured DEV environment. If you are setting up a new workspace,
 complete the [environment rebuild guide](../operations/environment-rebuild.md) first.
 
-## What you will learn
-
-By the end, you should be able to explain:
-
-- How an ingestion configuration identifies a source, target, and loading strategy.
-- How the same orchestrator dispatches a `FULL` file snapshot and an `INCREMENTAL` file feed.
-- Why SFTP files are copied to Lakehouse Files before the Notebook writes Bronze Delta.
-- Where to inspect a run's terminal status, record counts, and watermark.
-
 The canonical execution entry point is `pl_ingest_orchestrator`. Do not start a child adapter directly.
+
+<a id="what-you-will-learn"></a>
 
 ## 1. Start with two source objects
 
@@ -71,8 +64,6 @@ Look for three important differences:
 The parser options are stored in `source_options`, including `file_name_pattern`, `delimiter`, `has_header`,
 `encoding`, `quote`, and `escape`. The FILE Router currently supports `DELIMITED_TEXT` only. A schema column may
 permit other format names without implying that their readers are implemented.
-
-**Why this matters:** adding another supported file object is principally a metadata and source-onboarding task. It should not require copying the entire orchestration tree.
 
 ## 2. Choose the run scope at the orchestrator
 
@@ -259,8 +250,6 @@ Bronze blindly. The failure branches' additional Finalize and Fail activities ar
 diagram. See [FILE Ingestion Design](../architecture/file-ingestion-design.md) and
 [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md).
 
-These conceptual flows summarize the checked-in Pipeline activities. JSON/Parquet readers are not implemented.
-
 [![SFTP INCREMENTAL adapter activity results](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)](../assets/screenshots/core/c07-02-sftp-incremental-adapter.png)
 
 *The adapter activity list records successful Landing Copy, file-count validation, Bronze Notebook, and finalization activities.*
@@ -320,9 +309,8 @@ different execution examples. They are not one continuous execution trace.
 
 Run type and remote file Last Modified values are not visible. Some run identifiers are truncated, and exact execution linkage is unverified.
 
-The [Power BI monitoring report](../operations/monitoring-report.md) summarizes persisted object audits. It cannot
-show master runs that fail before an object audit is written, or every in-progress activity. Use Fabric Monitor for
-those cases.
+Use the [Power BI monitoring report](../operations/monitoring-report.md) for persisted object audits and Fabric
+Monitor for in-progress work or master failures before an object audit exists.
 
 ## 6. Explain the failure boundary
 
@@ -333,15 +321,8 @@ rows by the combination of `_batch_id` and `_pipeline_run_id` and avoids deletin
 object sharing the same batch ID. An ambiguous success-finalization failure needs reconciliation before any
 compensation decision.
 
-Study [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md) and [Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for the detailed behavior.
+<a id="try-explaining-it-back"></a>
 
-## Try explaining it back
-
-- Why do the snapshot and movement feed use the same Object Controller but different SFTP adapters?
-- Which timestamp determines whether a movement file is new?
-- What would be incorrect about advancing the watermark before Bronze has committed?
-- Why does an append-only successful `BACKFILL` not guarantee that a downstream business table contains no duplicate business keys?
-
-The next step is to follow the [complete technical learning path](learning-path.md), which covers SQL Server Copy, optimistic finalization, recovery, and monitoring in more detail.
-
-Use the audit query above and Fabric Monitor to verify an actual execution.
+Follow [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md) for the recovery decisions and
+[Retry, Rerun, and Backfill](../operations/retry-rerun-backfill.md) for safe replay. An overlapping backfill appends
+another batch; it does not guarantee unique downstream business keys.

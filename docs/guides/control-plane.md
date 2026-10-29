@@ -16,9 +16,9 @@ For the execution path that reads this metadata, continue with [Pipeline Orchest
 | `control.pipeline_watermarks` | Last successfully committed incremental checkpoint for a configuration | The `INCREMENTAL` adapter reads LOW; successful `REGULAR` finalization may advance it |
 | `audit.ingestion_log` | One terminal result per object Pipeline Run ID, with counts, boundaries, status, and errors | Operations and troubleshooting after object execution |
 
-These are SQL Control/Audit tables, not Bronze business tables. The sample SQL schema is defined in
-[01_create_control_schema.sql](../../scripts/control/01_create_control_schema.sql). The SQL Database Project under
-`fabric/sqldb_ingestion_control.SQLDatabase/` is the corresponding tracked schema definition.
+These are Control/Audit tables, separate from Bronze business data. The
+[SQL Database Project](../../fabric/sqldb_ingestion_control.SQLDatabase/) is the physical schema source of truth;
+[01_create_control_schema.sql](../../scripts/control/01_create_control_schema.sql) bootstraps missing objects.
 
 [![Control and audit data model with enforced foreign keys and a logical audit association](../assets/diagrams/d01-control-audit-er.svg)](../assets/diagrams/d01-control-audit-er.svg)
 
@@ -26,8 +26,7 @@ These are SQL Control/Audit tables, not Bronze business tables. The sample SQL s
 
 ### SQL-enforced guardrails
 
-The **SQL Database Project** under `fabric/sqldb_ingestion_control.SQLDatabase/` is the physical schema source of
-truth. Key enforced constraints complement, rather than replace, pipeline validation:
+SQL constraints complement pipeline validation:
 
 | SQL object | Invariant |
 | --- | --- |
@@ -243,14 +242,8 @@ The seed scripts provision DEV sample metadata; they are **not** read-only verif
 re-running the ingestion metadata seed may update existing demo configuration rows. Use the `SELECT` statements above
 when you only want to study the current environment.
 
-**Next:** [Pipeline Orchestration](pipeline-orchestration.md) shows how the master selects these configuration rows
-and dispatches them. Then follow [SQL Server Database Ingestion](sql-server-database-ingestion.md) or
-[SFTP File Ingestion](sftp-file-ingestion.md) into the source-specific adapters.
+<a id="check-the-execution-contract"></a>
 
-### Check the execution contract
-
-Use the read-only configuration and watermark queries above to identify the actual object and its checkpoint. Then
-inspect `lkp_ingestion_config` in the checked-in
-[Object Controller definition](../../fabric/pl_ingest_object_controller.DataPipeline/pipeline-content.json) to see
-how the metadata is passed to the router. The SQL results depend on the connected environment; do not assume the
-example IDs or values match a fresh deployment.
+Use the read-only queries above to identify actual configuration IDs and checkpoint values; they depend on the
+connected environment. Continue with [Pipeline Orchestration](pipeline-orchestration.md) to follow selection and
+dispatch into the [SQL Server](sql-server-database-ingestion.md) or [SFTP](sftp-file-ingestion.md) adapter.

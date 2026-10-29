@@ -1,7 +1,8 @@
 # Architecture & Design Decisions
 
-This document explains the implemented architecture, why its boundaries exist, and where they stop. For exact
-runtime behavior, consult the linked Fabric Pipelines, Notebooks, and SQL definitions.
+The framework separates source configuration, orchestration, and physical ingestion so that adding source objects
+does not require duplicating pipelines. This reference explains those boundaries, their trade-offs, and the
+limits of the implemented SQL Server and SFTP paths.
 
 ## What problem does this solve?
 
@@ -72,10 +73,9 @@ identifier quoting, boundary capture, type compatibility, and native Copy settin
 redefine the framework's state or finalization semantics.
 
 The implemented DATABASE connector is SQL Server (`FULL` and `INCREMENTAL`); the FILE connector is SFTP. Additional
-source connectors can be implemented behind the router and adapter boundaries while preserving framework-level
-state and audit semantics. Deeper shared orchestration should be extracted only after a second implementation
-proves the common contract. Transfer verification and Copy options must be
-validated for each actual connector and execution mode; do not assume one vendor's behavior is universal.
+connectors need source-specific adapters that preserve framework state and audit semantics. Extract shared
+connector logic only when another implementation demonstrates the same contract. Validate transfer verification
+and Copy options for each connector and execution mode.
 
 Fabric Pipelines handle orchestration and connector-native movement; Notebooks handle reusable Spark/Delta
 operations such as file parsing and scoped cleanup. The relational SQL Server path deliberately stays with native
@@ -160,22 +160,10 @@ timestamp, not the CSV payload date.
 
 ## Fault tolerance: what is and is not atomic?
 
-A Copy/Notebook write can partially affect Bronze before SQL audit/state
-finalization. This is the point of the compensating-cleanup design.
-
-1. Use `_batch_id` **and** `_pipeline_run_id` to identify precisely the
-   failed object execution; multiple objects can share one batch ID.
-2. If a Bronze write fails, an idempotent Notebook deletes only that
-   execution's failed rows. Landing cleanup uses a correspondingly narrow
-   execution folder.
-3. The SQL finalizer stores terminal object audit and applies guarded
-   checkpoint advancement under the rules for `REGULAR`/`INCREMENTAL`.
-4. If advancement conflicts with newer state, the incremental recovery path
-   inspects the durable finalize outcome and compensates only where safely
-   established; ambiguous outcomes require explicit operator review.
-
-This is **compensation + optimistic state control**, not a distributed
-transaction across Delta and SQL.
+A Copy or Notebook can write Bronze rows before Control SQL finalization completes. The framework uses
+execution-scoped compensation and optimistic checkpoint protection because Delta and SQL do not share a
+distributed transaction. Cleanup identifies the affected object by **both** `_batch_id` and `_pipeline_run_id`;
+multiple objects can share a Batch ID. FILE Landing cleanup targets that execution's leaf folder.
 
 Physical Bronze may contain rows from failed, cancelled, or unconfirmed executions.
 Downstream consumers must use confirmed `SUCCESS` object-execution audits to identify committed ingestion data,
@@ -186,9 +174,8 @@ This repository does **not** implement that downstream `SUCCESS` consumption gat
 
 ### What happens when something goes wrong?
 
-The most important distinction is whether a failure happened during the Bronze
-write or after SQL finalization was attempted. A failed activity does not by
-itself prove that the SQL transaction failed.
+Recovery depends on whether the failure occurred during the Bronze write or after SQL finalization was attempted.
+A failed activity alone does not prove that the SQL transaction failed.
 
 | Observed condition | Framework response | Why it matters |
 | --- | --- | --- |
@@ -201,6 +188,8 @@ The finalization-recovery branches above apply to the implemented **incremental*
 SQL Server and SFTP paths; do not assume the same recovery contract for `FULL`
 loads or every possible failure. See [Bronze Compensating Cleanup](../operations/bronze-compensating-cleanup.md)
 for the actual activity branches, audit codes, and verification steps.
+
+<a id="reuse-boundaries"></a>
 
 ## Engineering trade-offs and non-goals
 
@@ -238,15 +227,5 @@ These are **possible extensions, not implemented features**. The current framewo
 dependency coordination, shared per-source concurrency enforcement, or execution locks. The design should be
 revisited only when workload requirements justify the additional complexity.
 
-## Reuse boundaries
-
-- Supported source connectors are the **SQL Server** and **SFTP** demo paths.
-- Dispatcher concurrency is bounded per run; there is no shared per-source limit or execution lock.
-- Optional benchmark tables are DEV-only; their existence is not proof of
-  scalable production performance.
-- Avoid hardcoding DEV Connection IDs into any new deployment. See the
-  [fresh-DEV rebuild runbook](../operations/environment-rebuild.md).
-- To inspect exact constraints and testable edge cases, start with
-  [retry/backfill](../operations/retry-rerun-backfill.md),
-  [watermarks](../architecture/generic-incremental-watermark.md),
-  and [Bronze compensation](../operations/bronze-compensating-cleanup.md).
+For deployment bindings, follow [Environment Rebuild](../operations/environment-rebuild.md). The
+[Copy observations](database-copy-performance.md) describe limited DEV tests, not production-scale validation.
