@@ -116,7 +116,7 @@ BEGIN
             RETURN 0;
         END;
 
-        THROW 51007, 'FINALIZE_OUTCOME_MISMATCH: existing audit does not match requested finalization.', 1;
+        THROW 51008, 'FINALIZE_OUTCOME_MISMATCH: existing audit does not match requested finalization.', 1;
     END;
 
     IF @advance_watermark = 1
@@ -124,14 +124,21 @@ BEGIN
         IF @status <> 'SUCCESS'
             THROW 51003, 'INVALID_WATERMARK_ADVANCE: watermark can advance only for SUCCESS.', 1;
 
+        -- Only regular incremental ingestion may advance the watermark.
+        IF @run_type IS NULL
+           OR @run_type <> 'REGULAR'
+           OR @load_strategy IS NULL
+           OR @load_strategy <> 'INCREMENTAL'
+            THROW 51004, 'INVALID_WATERMARK_ADVANCE: only REGULAR INCREMENTAL runs can advance watermark.', 1;
+
         IF @ingestion_config_id IS NULL
            OR @watermark_field IS NULL
            OR @ExpectedWatermark IS NULL
            OR @NewWatermark IS NULL
-            THROW 51004, 'INVALID_WATERMARK_ADVANCE: config, watermark field, current value, and new value are required.', 1;
+            THROW 51005, 'INVALID_WATERMARK_ADVANCE: config, watermark field, current value, and new value are required.', 1;
 
         IF @NewWatermark = @ExpectedWatermark
-            THROW 51005, 'INVALID_WATERMARK_ADVANCE: new watermark must differ from current watermark.', 1;
+            THROW 51006, 'INVALID_WATERMARK_ADVANCE: new watermark must differ from current watermark.', 1;
     END;
 
     BEGIN TRY
@@ -228,7 +235,7 @@ BEGIN
                 );
 
                 COMMIT TRANSACTION;
-                THROW 51006, 'WATERMARK_CONFLICT: current state changed before finalization.', 1;
+                THROW 51007, 'WATERMARK_CONFLICT: current state changed before finalization.', 1;
             END;
         END;
 

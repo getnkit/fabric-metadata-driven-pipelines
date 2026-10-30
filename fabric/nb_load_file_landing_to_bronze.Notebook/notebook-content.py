@@ -188,7 +188,7 @@ try:
     # Capture one UTC instant immediately before the Bronze Delta append.
     # This is the approximate write-start time, not the Delta commit timestamp.
     bronze_write_utc = datetime.now(timezone.utc)
-    bronze_ingestion_timestamp = bronze_write_utc.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    bronze_ingestion_timestamp = bronze_write_utc.isoformat(timespec="microseconds").replace("+00:00", "Z")
     bronze_ingestion_date = bronze_write_utc.date()
 
     # Bronze ingestion is append-oriented; failed batches are compensated by the cleanup notebook.

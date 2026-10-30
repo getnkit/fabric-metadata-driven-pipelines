@@ -129,7 +129,7 @@ flowchart LR
 both `FULL` and `INCREMENTAL`. Optional `copy_options` selects
 `NONE | DYNAMIC_RANGE`, and optionally a positive `parallel_copies`
 override backed by tests. `_ingestion_timestamp` is typed via the source
-query as `DATETIME2(3)` before Bronze append. The SQL Source is a separate
+query as `DATETIME2(6)` before Bronze append. The SQL Source is a separate
 SQL Server; the Control Plane is a **Fabric SQL Database**.
 
 **FILE:** SFTP is copied in Binary to a scoped Landing directory first.

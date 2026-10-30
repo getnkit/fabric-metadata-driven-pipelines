@@ -279,7 +279,7 @@ for the shared run-intent contract.
 | Timestamp / date | Origin and meaning |
 | --- | --- |
 | `p_start_time`, Landing `ingestion_date` | The Object Controller captures one UTC run-start instant as `yyyy-MM-ddTHH:mm:ss.fffZ`. The full string supplies FILE `REGULAR` HIGH; its UTC date forms the Landing path. |
-| Bronze `_ingestion_timestamp` | After counting parsed Landing rows, the Notebook captures a separate UTC instant immediately before Delta append. It serializes milliseconds with `Z` before casting to Spark timestamp. This is approximate write-start time, not Delta commit time. |
+| Bronze `_ingestion_timestamp` | After counting parsed Landing rows, the Notebook captures a separate UTC instant immediately before Delta append. It serializes microseconds (six fractional digits) with `Z` before casting to Spark timestamp. This is approximate write-start time, not Delta commit time. |
 | Bronze `_ingestion_date` | The UTC calendar date of that same Notebook instant. The write-scoped `mergeSchema` option adds this column to existing FILE Bronze tables. |
 
 Landing `ingestion_date` and Bronze `_ingestion_date` can differ across UTC

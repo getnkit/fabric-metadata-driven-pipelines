@@ -51,7 +51,7 @@ partition_option = NONE | DYNAMIC_RANGE
 ```
 
 All SQL Server ingestion uses **query-mode Copy**. `_ingestion_timestamp` is
-CAST to `DATETIME2(3)` in the source query, so newly created Bronze Delta
+CAST to `DATETIME2(6)` in the source query, so newly created Bronze Delta
 tables receive a timestamp technical column rather than a String. Physical
 source table layout is independent of this connector execution strategy.
 
@@ -174,7 +174,7 @@ created Bronze table (SQL endpoint: `datetime2(6)`), but manually maintained
 per-source mappings conflict with schema-agnostic metadata-driven ingestion.
 Generating per-source mapping JSON would add maintenance and runtime coupling.
 
-Instead, query-mode `SELECT *, CAST(... AS DATETIME2(3))` preserves the
+Instead, query-mode `SELECT *, CAST(... AS DATETIME2(6))` preserves the
 Bronze timestamp contract and still supports `DYNAMIC_RANGE` with
 `?DfDynamicRangePartitionCondition` for connector-native parallel Copy.
 It is **not** assumed to be equal in throughput to native physical partition

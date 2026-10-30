@@ -80,7 +80,7 @@ For `catalog.product_categories`, the `FULL` Adapter builds a query against the 
 
 - `_batch_id`, the identifier of the master ingestion batch.
 - `_pipeline_run_id`, the object execution identifier used for audit and recovery.
-- `_ingestion_timestamp`, generated once for this adapter execution and cast as SQL Server `DATETIME2(3)` in the source query.
+- `_ingestion_timestamp`, generated once for this adapter execution and cast as SQL Server `DATETIME2(6)` in the source query.
 
 The Copy sink uses a Lakehouse table with `Append` behavior. In this DATABASE path there is **no separate Lakehouse
 Files Landing step**. The native Copy activity writes directly to the configured Bronze Delta table.
