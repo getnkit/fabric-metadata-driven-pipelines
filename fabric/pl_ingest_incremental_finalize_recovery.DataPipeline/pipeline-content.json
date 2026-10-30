@@ -7,7 +7,7 @@
           "source": {
             "type": "FabricSqlDatabaseSource",
             "sqlReaderQuery": {
-              "value": "@concat(\n    'SELECT COALESCE((',\n    'SELECT CASE ',\n    'WHEN a.status = ''SUCCESS'' THEN ''COMMITTED_SUCCESS'' ',\n    'WHEN a.status = ''FAILED'' AND a.error_code = ''WATERMARK_CONFLICT'' THEN ''CONFIRMED_CONFLICT'' ',\n    'ELSE ''OTHER'' END ',\n    'FROM audit.ingestion_log AS a ',\n    'WHERE a.pipeline_run_id = ''',\n    replace(pipeline().parameters.p_audit_pipeline_run_id, '''', ''''''),\n    ''' AND a.batch_id = ''',\n    replace(pipeline().parameters.p_batch_id, '''', ''''''),\n    ''' AND a.ingestion_config_id = ',\n    string(pipeline().parameters.p_ingestion_config_id),\n    '), ''OTHER'') AS finalize_outcome;'\n)",
+              "value": "@concat(\n    'SELECT COALESCE((',\n    'SELECT CASE ',\n    'WHEN status = ''SUCCESS'' THEN ''COMMITTED_SUCCESS'' ',\n    'WHEN status = ''FAILED'' AND error_code = ''WATERMARK_CONFLICT'' THEN ''CONFIRMED_CONFLICT'' ',\n    'ELSE ''OTHER'' END ',\n    'FROM audit.ingestion_log ',\n    'WHERE pipeline_run_id = ''',\n    replace(pipeline().parameters.p_audit_pipeline_run_id, '''', ''''''),\n    ''' AND batch_id = ''',\n    replace(pipeline().parameters.p_batch_id, '''', ''''''),\n    ''' AND ingestion_config_id = ',\n    string(pipeline().parameters.p_ingestion_config_id),\n    '), ''OTHER'') AS finalize_outcome;'\n)",
               "type": "Expression"
             },
             "partitionOption": "None",

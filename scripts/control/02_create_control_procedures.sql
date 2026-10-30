@@ -86,30 +86,30 @@ BEGIN
         IF EXISTS
         (
             SELECT 1
-            FROM audit.ingestion_log AS a
-            WHERE a.pipeline_run_id = @pipeline_run_id
-              AND a.batch_id = @batch_id
-              AND a.status = @status
-              AND a.run_type = @run_type
+            FROM audit.ingestion_log
+            WHERE pipeline_run_id = @pipeline_run_id
+              AND batch_id = @batch_id
+              AND status = @status
+              AND run_type = @run_type
               AND
               (
-                  a.ingestion_config_id = @ingestion_config_id
-                  OR (a.ingestion_config_id IS NULL AND @ingestion_config_id IS NULL)
+                  ingestion_config_id = @ingestion_config_id
+                  OR (ingestion_config_id IS NULL AND @ingestion_config_id IS NULL)
               )
               AND
               (
-                  a.error_code = @error_code
-                  OR (a.error_code IS NULL AND @error_code IS NULL)
+                  error_code = @error_code
+                  OR (error_code IS NULL AND @error_code IS NULL)
               )
               AND
               (
-                  a.processing_lower_bound = @processing_lower_bound
-                  OR (a.processing_lower_bound IS NULL AND @processing_lower_bound IS NULL)
+                  processing_lower_bound = @processing_lower_bound
+                  OR (processing_lower_bound IS NULL AND @processing_lower_bound IS NULL)
               )
               AND
               (
-                  a.processing_upper_bound = @processing_upper_bound
-                  OR (a.processing_upper_bound IS NULL AND @processing_upper_bound IS NULL)
+                  processing_upper_bound = @processing_upper_bound
+                  OR (processing_upper_bound IS NULL AND @processing_upper_bound IS NULL)
               )
         )
         BEGIN
@@ -139,10 +139,10 @@ BEGIN
 
         -- Resolve source metadata for this log entry without new Pipeline parameters.
         SELECT
-            @AuditSourcePath = c.source_path,
-            @AuditIngestionPattern = c.ingestion_pattern
-        FROM control.ingestion_config AS c
-        WHERE c.ingestion_config_id = @ingestion_config_id;
+            @AuditSourcePath = source_path,
+            @AuditIngestionPattern = ingestion_pattern
+        FROM control.ingestion_config
+        WHERE ingestion_config_id = @ingestion_config_id;
 
         IF @advance_watermark = 1
         BEGIN

@@ -105,50 +105,50 @@ GO
 IF EXISTS
 (
     SELECT
-        c.name,
-        TYPE_NAME(c.user_type_id) AS type_name,
-        c.max_length,
-        c.precision,
-        c.scale,
-        c.is_nullable
-    FROM sys.columns c
-    WHERE c.object_id = OBJECT_ID('benchmark.copy_source_unpartitioned')
+        name,
+        TYPE_NAME(user_type_id) AS type_name,
+        max_length,
+        precision,
+        scale,
+        is_nullable
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('benchmark.copy_source_unpartitioned')
 
     EXCEPT
 
     SELECT
-        c.name,
-        TYPE_NAME(c.user_type_id) AS type_name,
-        c.max_length,
-        c.precision,
-        c.scale,
-        c.is_nullable
-    FROM sys.columns c
-    WHERE c.object_id = OBJECT_ID('benchmark.copy_source_partitioned')
+        name,
+        TYPE_NAME(user_type_id) AS type_name,
+        max_length,
+        precision,
+        scale,
+        is_nullable
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('benchmark.copy_source_partitioned')
 )
 OR EXISTS
 (
     SELECT
-        c.name,
-        TYPE_NAME(c.user_type_id) AS type_name,
-        c.max_length,
-        c.precision,
-        c.scale,
-        c.is_nullable
-    FROM sys.columns c
-    WHERE c.object_id = OBJECT_ID('benchmark.copy_source_partitioned')
+        name,
+        TYPE_NAME(user_type_id) AS type_name,
+        max_length,
+        precision,
+        scale,
+        is_nullable
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('benchmark.copy_source_partitioned')
 
     EXCEPT
 
     SELECT
-        c.name,
-        TYPE_NAME(c.user_type_id) AS type_name,
-        c.max_length,
-        c.precision,
-        c.scale,
-        c.is_nullable
-    FROM sys.columns c
-    WHERE c.object_id = OBJECT_ID('benchmark.copy_source_unpartitioned')
+        name,
+        TYPE_NAME(user_type_id) AS type_name,
+        max_length,
+        precision,
+        scale,
+        is_nullable
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('benchmark.copy_source_unpartitioned')
 )
 BEGIN
     THROW 51100, 'Benchmark tables do not have the same logical schema.', 1;

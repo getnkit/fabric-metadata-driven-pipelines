@@ -2,13 +2,13 @@ CREATE VIEW audit.v_monitor_latest_source
 AS
 WITH ranked_batches AS
 (
-    SELECT b.*,
+    SELECT *,
            ROW_NUMBER() OVER
            (
-               PARTITION BY b.source_system
-               ORDER BY b.batch_end_time DESC, b.batch_id DESC
+               PARTITION BY source_system
+               ORDER BY batch_end_time DESC, batch_id DESC
            ) AS recency_rank
-    FROM audit.v_monitor_source_batch AS b
+    FROM audit.v_monitor_source_batch
 )
 SELECT
     source_system,

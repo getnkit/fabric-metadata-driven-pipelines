@@ -88,19 +88,19 @@ BEGIN
         payload
     )
     SELECT
-        r.benchmark_id,
-        DATEADD(DAY, CONVERT(INT, (r.benchmark_id - 1) % 365), @BaseDate),
+        benchmark_id,
+        DATEADD(DAY, CONVERT(INT, (benchmark_id - 1) % 365), @BaseDate),
         DATEADD(
             MILLISECOND,
-            CONVERT(INT, r.benchmark_id % 1000),
+            CONVERT(INT, benchmark_id % 1000),
             DATEADD(
                 SECOND,
-                CONVERT(INT, r.benchmark_id % 86400),
-                CONVERT(DATETIME2(3), DATEADD(DAY, CONVERT(INT, (r.benchmark_id - 1) % 365), @BaseDate))
+                CONVERT(INT, benchmark_id % 86400),
+                CONVERT(DATETIME2(3), DATEADD(DAY, CONVERT(INT, (benchmark_id - 1) % 365), @BaseDate))
             )
         ),
-        1 + (r.benchmark_id % 1000000),
-        CASE r.benchmark_id % 8
+        1 + (benchmark_id % 1000000),
+        CASE benchmark_id % 8
             WHEN 0 THEN 'TH'
             WHEN 1 THEN 'SG'
             WHEN 2 THEN 'MY'
@@ -110,29 +110,29 @@ BEGIN
             WHEN 6 THEN 'JP'
             ELSE 'AU'
         END,
-        CASE r.benchmark_id % 5
+        CASE benchmark_id % 5
             WHEN 0 THEN 'NEW'
             WHEN 1 THEN 'ACTIVE'
             WHEN 2 THEN 'PENDING'
             WHEN 3 THEN 'CLOSED'
             ELSE 'REVIEW'
         END,
-        CONVERT(DECIMAL(18,2), (r.benchmark_id % 10000000) / 100.0),
-        CONVERT(INT, r.benchmark_id % 100000),
-        r.benchmark_id * 17,
+        CONVERT(DECIMAL(18,2), (benchmark_id % 10000000) / 100.0),
+        CONVERT(INT, benchmark_id % 100000),
+        benchmark_id * 17,
         CONVERT(
             CHAR(512),
             LEFT(
                 CONCAT(
                     'BENCH-',
-                    RIGHT(CONCAT(REPLICATE('0', 20), CONVERT(VARCHAR(20), r.benchmark_id)), 20),
+                    RIGHT(CONCAT(REPLICATE('0', 20), CONVERT(VARCHAR(20), benchmark_id)), 20),
                     '-',
                     REPLICATE('X', 512)
                 ),
                 512
             )
         )
-    FROM R r;
+    FROM R;
 
     SET @StartId += @ThisBatch;
 
