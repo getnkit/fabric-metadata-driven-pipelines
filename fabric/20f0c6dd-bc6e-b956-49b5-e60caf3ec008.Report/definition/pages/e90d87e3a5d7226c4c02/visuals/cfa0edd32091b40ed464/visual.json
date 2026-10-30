@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "LatestSource.Objects",
-              "nativeQueryRef": "Objects"
+              "nativeQueryRef": "Object Runs",
+              "displayName": "Object Runs"
             }
           ]
         }

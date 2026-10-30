@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "rpt_ingestion_operations"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "adaab9ac-b154-80d6-482b-a52eb37dd3af"
+  }
+}

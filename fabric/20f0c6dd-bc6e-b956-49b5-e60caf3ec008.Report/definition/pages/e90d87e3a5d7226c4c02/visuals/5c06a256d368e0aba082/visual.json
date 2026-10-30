@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Latest Recorded Batch per Source System | All Timestamps in UTC",
+                    "value": "Latest Audited Batch per Source System | All Timestamps in UTC",
                     "textStyle": {
                       "fontSize": "12pt"
                     }

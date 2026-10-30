@@ -50,6 +50,17 @@
   },
   "resourcePackages": [
     {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "Custom7570841786348123.json",
+          "path": "Custom7570841786348123.json",
+          "type": "Image"
+        }
+      ]
+    },
+    {
       "name": "SharedResources",
       "type": "SharedResources",
       "items": [
@@ -57,17 +68,6 @@
           "name": "Fluent2-CY26SU09",
           "path": "BaseThemes/Fluent2-CY26SU09.json",
           "type": "BaseTheme"
-        }
-      ]
-    },
-    {
-      "name": "RegisteredResources",
-      "type": "RegisteredResources",
-      "items": [
-        {
-          "name": "Custom7570841786348123.json",
-          "path": "Custom7570841786348123.json",
-          "type": "CustomTheme"
         }
       ]
     }
